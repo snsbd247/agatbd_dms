@@ -1,0 +1,130 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source "../**/*.blade.php";
+@source "../**/*.js";
+@source "../**/*.vue";
+
+@theme {
+    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji';
+}
+
+[x-cloak] {
+    display: none !important;
+}
+
+html {
+    overscroll-behavior-y: contain;
+}
+
+body {
+    -webkit-tap-highlight-color: transparent;
+    overscroll-behavior-y: contain;
+}
+
+a, button {
+    touch-action: manipulation;
+}
+
+.pt-safe {
+    padding-top: env(safe-area-inset-top);
+}
+
+.pb-safe {
+    padding-bottom: env(safe-area-inset-bottom);
+}
+
+.pb-safe-nav {
+    padding-bottom: calc(4.5rem + env(safe-area-inset-bottom));
+}
+
+/* Responsive table: renders as a normal table on sm+ screens, and as a
+   stacked list of cards on mobile using each cell's data-label as the
+   row's field name. A cell with no data-label (typically the Action
+   column) is right-aligned instead of getting a label row. */
+@media (max-width: 639.98px) {
+    .rtable thead {
+        display: none;
+    }
+
+    .rtable, .rtable tbody, .rtable tr, .rtable td {
+        display: block;
+        width: 100%;
+    }
+
+    .rtable {
+        border: none;
+    }
+
+    .rtable tr {
+        margin-bottom: 0.75rem;
+        border: 1px solid rgb(226 232 240);
+        border-radius: 0.75rem;
+        overflow: hidden;
+    }
+
+    .rtable tr:last-child {
+        margin-bottom: 0;
+    }
+
+    .rtable td {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.625rem 0.875rem;
+        border-bottom: 1px solid rgb(241 245 249);
+        font-size: 0.875rem;
+    }
+
+    .rtable td:last-child {
+        border-bottom: none;
+    }
+
+    .rtable td[data-label] {
+        justify-content: space-between;
+        text-align: right;
+    }
+
+    .rtable td[data-label]::before {
+        content: attr(data-label);
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: rgb(100 116 139);
+        text-align: left;
+        flex-shrink: 0;
+    }
+
+    .rtable td:not([data-label]) {
+        justify-content: flex-end;
+    }
+
+    .rtable-hide-mobile {
+        display: none !important;
+    }
+
+    .rtable td.rtable-block {
+        flex-direction: column;
+        align-items: flex-start;
+        text-align: left;
+    }
+
+    .rtable td.rtable-block::before {
+        margin-bottom: 0.25rem;
+    }
+
+    /* Card "header" row: icon avatar + title/subtitle + trailing badge, all
+       on one compact line, no data-label prefix — used as the first row of
+       a card so the record's identity reads at a glance before the detail
+       rows below it. */
+    .rtable td.rtable-title {
+        justify-content: flex-start;
+        background: rgb(248 250 252);
+        padding: 0.875rem;
+    }
+
+    .rtable td.rtable-title::before {
+        content: none;
+    }
+}

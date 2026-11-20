@@ -1,0 +1,37 @@
+<?php
+
+namespace App\Models\Returns;
+
+use App\Models\Retailer;
+use App\Models\User;
+use Illuminate\Database\Eloquent\Model;
+
+class ReturnRequest extends Model
+{
+    protected $fillable = ['number', 'retailer_id', 'requested_by', 'request_date', 'status', 'reason'];
+
+    protected function casts(): array
+    {
+        return ['request_date' => 'date'];
+    }
+
+    public function retailer()
+    {
+        return $this->belongsTo(Retailer::class);
+    }
+
+    public function requestedBy()
+    {
+        return $this->belongsTo(User::class, 'requested_by');
+    }
+
+    public function items()
+    {
+        return $this->hasMany(ReturnRequestItem::class);
+    }
+
+    public function receives()
+    {
+        return $this->hasMany(ReturnReceive::class);
+    }
+}

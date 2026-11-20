@@ -1,0 +1,30 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class PaymentCollection extends Model
+{
+    protected $table = 'collections';
+
+    protected $fillable = ['number', 'retailer_id', 'collected_by', 'collection_date', 'amount', 'method', 'reference_no'];
+
+    protected function casts(): array
+    {
+        return [
+            'collection_date' => 'date',
+            'amount' => 'decimal:2',
+        ];
+    }
+
+    public function retailer()
+    {
+        return $this->belongsTo(Retailer::class);
+    }
+
+    public function collectedBy()
+    {
+        return $this->belongsTo(User::class, 'collected_by');
+    }
+}

@@ -1,0 +1,162 @@
+<?php
+
+namespace App\Services;
+
+use App\Models\Batch;
+use App\Models\Stock;
+use App\Models\StockLedger;
+use App\Models\User;
+use App\Notifications\LowStockAlert;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Notification;
+
+class InventoryService
+{
+    public function receiveStock(
+        int $productId,
+        int $warehouseId,
+        string $batchNo,
+        ?string $expiryDate,
+        float $costPrice,
+        float $quantity,
+        Model $reference,
+    ): Batch {
+        return DB::transaction(function () use ($productId, $warehouseId, $batchNo, $expiryDate, $costPrice, $quantity, $reference) {
+            $batch = Batch::create([
+                'product_id' => $productId,
+                'warehouse_id' => $warehouseId,
+                'batch_no' => $batchNo,
+                'expiry_date' => $expiryDate,
+                'cost_price' => $costPrice,
+                'quantity_received' => $quantity,
+                'quantity_available' => $quantity,
+            ]);
+
+            $stock = Stock::firstOrCreate(
+                ['warehouse_id' => $warehouseId, 'product_id' => $productId],
+                ['quantity' => 0]
+            );
+            $stock = Stock::query()->whereKey($stock->id)->lockForUpdate()->first();
+            $stock->increment('quantity', $quantity);
+
+            StockLedger::create([
+                'product_id' => $productId,
+                'warehouse_id' => $warehouseId,
+                'batch_id' => $batch->id,
+                'type' => 'in',
+                'quantity' => $quantity,
+                'reference_type' => $reference->getMorphClass(),
+                'reference_id' => $reference->getKey(),
+                'balance_after' => $stock->quantity,
+            ]);
+
+            return $batch;
+        });
+    }
+
+    /**
+     * @return array<int, array{batch_id: int, quantity: float}>
+     */
+    public function consumeStock(int $productId, int $warehouseId, float $quantity, Model $reference): array
+    {
+        $beforeQuantity = null;
+        $afterStock = null;
+
+        $consumed = DB::transaction(function () use ($productId, $warehouseId, $quantity, $reference, &$beforeQuantity, &$afterStock) {
+            $stock = Stock::query()
+                ->where('warehouse_id', $warehouseId)
+                ->where('product_id', $productId)
+                ->lockForUpdate()
+                ->first();
+
+            if (! $stock || bccomp((string) $stock->quantity, (string) $quantity, 3) < 0) {
+                throw new \RuntimeException('Insufficient stock to fulfill the requested quantity.');
+            }
+
+            $beforeQuantity = (float) $stock->quantity;
+
+            $batches = Batch::query()
+                ->where('product_id', $productId)
+                ->where('warehouse_id', $warehouseId)
+                ->where('quantity_available', '>', 0)
+                ->oldest('created_at')
+                ->lockForUpdate()
+                ->get();
+
+            $remaining = $quantity;
+            $consumed = [];
+
+            foreach ($batches as $batch) {
+                if ($remaining <= 0) {
+                    break;
+                }
+
+                $take = min((float) $batch->quantity_available, $remaining);
+                $batch->decrement('quantity_available', $take);
+                $remaining -= $take;
+                $consumed[] = ['batch_id' => $batch->id, 'quantity' => $take];
+            }
+
+            $stock->decrement('quantity', $quantity);
+
+            StockLedger::create([
+                'product_id' => $productId,
+                'warehouse_id' => $warehouseId,
+                'batch_id' => $consumed[0]['batch_id'] ?? null,
+                'type' => 'out',
+                'quantity' => $quantity,
+                'reference_type' => $reference->getMorphClass(),
+                'reference_id' => $reference->getKey(),
+                'balance_after' => $stock->quantity,
+            ]);
+
+            $afterStock = $stock;
+
+            return $consumed;
+        });
+
+        if (
+            $afterStock
+            && (float) $afterStock->reorder_level > 0
+            && $beforeQuantity > (float) $afterStock->reorder_level
+            && (float) $afterStock->quantity <= (float) $afterStock->reorder_level
+        ) {
+            $recipients = User::role(['Dealer', 'Manager'])->get()->filter(fn (User $u) => $u->wantsNotification('low_stock_alert'));
+            Notification::send($recipients, new LowStockAlert($afterStock->load(['product', 'warehouse'])));
+        }
+
+        return $consumed;
+    }
+
+    public function returnToSupplier(int $batchId, float $quantity, Model $reference): void
+    {
+        DB::transaction(function () use ($batchId, $quantity, $reference) {
+            $batch = Batch::query()->whereKey($batchId)->lockForUpdate()->first();
+
+            if (! $batch || bccomp((string) $batch->quantity_available, (string) $quantity, 3) < 0) {
+                throw new \RuntimeException('Insufficient batch quantity to return to supplier.');
+            }
+
+            $batch->decrement('quantity_available', $quantity);
+
+            $stock = Stock::query()
+                ->where('warehouse_id', $batch->warehouse_id)
+                ->where('product_id', $batch->product_id)
+                ->lockForUpdate()
+                ->first();
+            $stock->decrement('quantity', $quantity);
+
+            StockLedger::create([
+                'product_id' => $batch->product_id,
+                'warehouse_id' => $batch->warehouse_id,
+                'batch_id' => $batch->id,
+                'type' => 'out',
+                'quantity' => $quantity,
+                'reference_type' => $reference->getMorphClass(),
+                'reference_id' => $reference->getKey(),
+                'balance_after' => $stock->quantity,
+            ]);
+        });
+    }
+}
