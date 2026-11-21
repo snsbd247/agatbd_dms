@@ -182,7 +182,9 @@ F:\Lovable\xampp\php\php.exe vendor\bin\phpunit   # সব টেস্ট প�
 
 Apache কনফিগ বদলালে: `F:\Lovable\xampp\apache\bin\httpd.exe -t`, তারপর `httpd.exe -k restart -n Apache2.4`।
 
-## লাইভ সার্ভার: https://dms.agatbd.com
+## লাইভ সার্ভার: https://dms.agatbd.com (সরানো হয়েছে)
+
+> **২২ নভেম্বর ২০২৬:** ব্যবহারকারীর কথায় cPanel থেকে পুরো DMS সরানো হয়েছে: সাবডোমেইন, DNS রেকর্ড, `~/dms.agatbd.com`, docroot symlink আর DMS-এর cron লাইন। agatbd.com-এ হাত দেওয়া হয়নি। শেষ ব্যাকআপ (ডেমো ডাটাসহ) আর ডেমোর আগের খালি ব্যাকআপ রাখা আছে এই পিসির `storage/backups/live-final/`-এ (git-এ যায় না)। আবার চালু করতে হলে নিচের ধাপগুলোই প্রযোজ্য: প্রথমে সাবডোমেইন বানাতে হবে, তারপর clone, composer, `.env`, symlink আর cron।
 
 একটা cPanel অ্যাকাউন্টে চলে (LiteSpeed, CloudLinux)। একই অ্যাকাউন্টে আরেকটা প্রজেক্টও আছে, agatbd.com (`~/public_html`)। ওটার কোনো ফাইলে, cron লাইনে বা `~/agatbd-deploy` ফোল্ডারে হাত দেওয়া যাবে না।
 
