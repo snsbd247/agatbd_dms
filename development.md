@@ -213,7 +213,7 @@ $P artisan migrate --force
 $P artisan optimize
 ```
 
-**ডেমো ডাটা (২১ নভেম্বর ২০২৬):** লাইভে পরীক্ষার জন্য এক বছরের ডেমো ডাটা দেওয়া আছে, ডিসেম্বর ২০২৫ থেকে নভেম্বর ২০২৬। এটা এসেছে `DemoDataSeeder` → `YearlyDemoSeeder` → `YearlyExtrasSeeder` থেকে। ডেমো ইউজারদের ইমেইল `@dms.local` দিয়ে শেষ হয়। ডাটা দেওয়ার আগের খালি অবস্থার ব্যাকআপ আছে `storage/backups/auto/dms-before-demo-data.zip`-এ। আসল কাজ শুরুর আগে More → Backup & Restore থেকে ওটা restore করলে ডেমো ডাটা মুছে যাবে।
+**ডেমো ডাটা (২১ নভেম্বর ২০২৬):** লাইভে পরীক্ষার জন্য এক বছরের ডেমো ডাটা দেওয়া আছে, ডিসেম্বর ২০২৫ থেকে নভেম্বর ২০২৬। এটা এসেছে `DemoDataSeeder` → `YearlyDemoSeeder` → `YearlyExtrasSeeder` থেকে। ডেমো ইউজারদের ইমেইল `@dms.local` দিয়ে শেষ হয়। ডাটা দেওয়ার আগের খালি অবস্থার ব্যাকআপ আছে `storage/backups/auto/dms-before-demo-data.zip`-এ। আসল কাজ শুরুর আগে More → Backup & Restore থেকে ওটা restore করলে ডেমো ডাটা মুছে যাবে। রোজকার `dms:backup --keep=30` ৩০ দিনের পুরনো ব্যাকআপ মুছে দেয়, তাই এই ফাইলটাও ২১ ডিসেম্বর ২০২৬-এর পর থাকবে না। রাখতে চাইলে তার আগেই ডাউনলোড করে নিন।
 
 crontab বদলাতে হলে প্রথমে `crontab -l > file` করে ফাইলটা এডিট করুন, তারপর `crontab file` চালান। `crontab -l | ... | crontab -` পাইপ ব্যবহার করবেন না। এই সার্ভারে একবার এভাবে agatbd.com-এর cron লাইন মুছে গিয়েছিল।
 
