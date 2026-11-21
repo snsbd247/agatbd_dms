@@ -13,6 +13,17 @@
 
     RewriteEngine On
 
+    # Live server (dms.agatbd.com): this folder sits under the main site's
+    # public_html, so refuse it when reached through another host name, and
+    # send plain http to https. Other hosts (localhost/dms on XAMPP) are untouched.
+    RewriteRule ^\.well-known/ - [L]
+    RewriteCond %{HTTP_HOST} ^(www\.)?agatbd\.com$ [NC]
+    RewriteRule ^ - [F,L]
+    RewriteCond %{HTTP_HOST} ^dms\.agatbd\.com$ [NC]
+    RewriteCond %{HTTPS} !=on
+    RewriteCond %{HTTP:X-Forwarded-Proto} !https
+    RewriteRule ^(.*)$ https://%{HTTP_HOST}/$1 [R=301,L]
+
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
