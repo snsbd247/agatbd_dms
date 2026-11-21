@@ -112,6 +112,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
     Route::get('/search', \App\Livewire\GlobalSearch::class)->name('search');
+    Route::get('/help', \App\Livewire\Help::class)->name('help');
     Route::get('/notifications', NotificationsIndex::class)->name('notifications.index');
     Route::get('/notifications/{notification}/open', [NotificationController::class, 'open'])->name('notifications.open');
 
@@ -259,6 +260,7 @@ Route::middleware('auth')->group(function () {
     Route::middleware('can:settings.manage')->prefix('settings')->name('settings.')->group(function () {
         Route::get('/company-profile', SettingsCompanyProfile::class)->name('company-profile');
         Route::get('/numbering', SettingsNumbering::class)->name('numbering');
+        Route::get('/email-sms', \App\Livewire\Settings\Messaging::class)->name('messaging');
         Route::get('/warranty-policies', SettingsWarrantyPoliciesIndex::class)->name('warranty-policies');
         Route::get('/users', SettingsUsersIndex::class)->name('users');
         Route::get('/login-history', SettingsLoginHistories::class)->name('login-history');

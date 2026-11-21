@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\Auditable;
 use Illuminate\Database\Eloquent\Model;
 
 class Representative extends Model
 {
+    use Auditable;
+
     protected $fillable = [
         'user_id', 'employee_code', 'name', 'phone', 'area_id',
         'salary_base', 'commission_rate', 'target_amount', 'active',

@@ -3,20 +3,16 @@
 namespace App\Notifications;
 
 use App\Models\Warranty\WarrantyClaim;
+use App\Notifications\Concerns\AlsoSendsEmail;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 
 class WarrantyClaimPending extends Notification
 {
-    use Queueable;
+    use AlsoSendsEmail, Queueable;
 
     public function __construct(private WarrantyClaim $claim)
     {
-    }
-
-    public function via($notifiable): array
-    {
-        return ['database'];
     }
 
     public function toArray($notifiable): array

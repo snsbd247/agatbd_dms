@@ -36,6 +36,19 @@
                 </div>
                 <input wire:model="low_stock_alert" type="checkbox" class="w-5 h-5 rounded accent-indigo-600 shrink-0">
             </label>
+            <label class="flex items-center justify-between gap-4 py-3 cursor-pointer border-t mt-2 pt-4">
+                <div>
+                    <p class="font-medium text-sm">Also send by email</p>
+                    <p class="text-xs text-slate-400">
+                        @if($mailEnabled)
+                            The notifications you turned on above are also emailed to {{ auth()->user()->email }}.
+                        @else
+                            Email is not set up yet (Settings → Email &amp; SMS), so for now notifications appear only in the app.
+                        @endif
+                    </p>
+                </div>
+                <input wire:model="email" type="checkbox" class="w-5 h-5 rounded accent-indigo-600 shrink-0">
+            </label>
         </div>
 
         <div class="mt-6 flex justify-end">

@@ -4,10 +4,13 @@ namespace App\Models\Returns;
 
 use App\Models\Company;
 use App\Models\Warehouse;
+use App\Models\Concerns\Auditable;
 use Illuminate\Database\Eloquent\Model;
 
 class CompanyReturn extends Model
 {
+    use Auditable;
+
     protected $fillable = ['number', 'company_id', 'warehouse_id', 'return_date', 'status'];
 
     protected function casts(): array

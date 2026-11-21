@@ -4,10 +4,13 @@ namespace App\Models\Purchase;
 
 use App\Models\User;
 use App\Models\Warehouse;
+use App\Models\Concerns\Auditable;
 use Illuminate\Database\Eloquent\Model;
 
 class GoodsReceipt extends Model
 {
+    use Auditable;
+
     protected $fillable = ['number', 'purchase_order_id', 'warehouse_id', 'receipt_date', 'total_amount', 'created_by'];
 
     protected function casts(): array

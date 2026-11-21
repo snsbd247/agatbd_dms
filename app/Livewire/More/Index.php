@@ -19,6 +19,7 @@ class Index extends Component
             ['route' => 'payroll.index', 'permission' => 'payroll.view', 'icon' => 'wallet', 'title' => 'Payroll', 'color' => 'indigo'],
             ['route' => 'settings.company-profile', 'permission' => 'settings.manage', 'icon' => 'cog', 'title' => 'Settings', 'color' => 'orange'],
             ['route' => 'more.backup-restore', 'permission' => 'settings.manage', 'icon' => 'archive-box', 'title' => 'Backup Data', 'color' => 'amber'],
+            ['route' => 'help', 'permission' => null, 'icon' => 'book-open', 'title' => 'Help & User Guide', 'color' => 'teal'],
             ['route' => 'more.about', 'permission' => null, 'icon' => 'question-mark-circle', 'title' => 'About DMS', 'color' => 'slate'],
         ])->filter(fn ($item) => is_null($item['permission']) || collect((array) $item['permission'])->contains(fn ($p) => auth()->user()->can($p)))->values();
 

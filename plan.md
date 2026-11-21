@@ -57,8 +57,12 @@
 | 18 | Global search | হেডারে লাইভ সার্চ (মোবাইলে `/search`), পারমিশন অনুযায়ী ৯ ধরনের রেকর্ড | ✅ সম্পন্ন |
 | 19 | Stock Adjustment | নষ্ট, হারানো, গণনার ভুল বা পাওয়া স্টক ঠিক করা, batch বা FIFO অনুযায়ী, লেজারে লেখা হয় | ✅ সম্পন্ন |
 | 20 | Retailer Portal | `/portal`: নিজের অর্ডার দেওয়া, দেখা আর বাতিল করা, ইনভয়েস PDF, হিসাব-বিবরণী | ✅ সম্পন্ন |
-| 21 | Help | হেডারের হেল্প বাটন | ⏳ বাকি |
-| 22 | Automated tests | Feature/Unit test | ⏳ বাকি (শুধু Laravel-এর example test আছে) |
+| 21 | Help | `/help`: বাংলায় ব্যবহারের নির্দেশিকা, রোল অনুযায়ী অংশ দেখায়, সার্চ করা যায় | ✅ সম্পন্ন |
+| 22 | Audit log | ২৫টা মূল মডেলের তৈরি, বদল আর মোছা নিজে থেকে লগ হয় (কোন ফিল্ড কী থেকে কী), module, ইউজার আর তারিখ দিয়ে ফিল্টার | ✅ সম্পন্ন |
+| 23 | Discount | approve-এর আগে অর্ডারে ৳ বা % ডিসকাউন্ট, ডেলিভারিগুলোতে অনুপাতে ভাগ হয়, ইনভয়েস আর লেজারে ডিসকাউন্টের পরের মূল্য | ✅ সম্পন্ন |
+| 24 | Email ও SMS | Settings → Email & SMS: SMTP আর যেকোনো HTTP SMS gateway, test বাটন, SMS লগ; রিটেইলার approve, ডেলিভারি আর পেমেন্টে SMS পায়; স্টাফ নোটিফিকেশন ইমেইলেও পায় | ✅ সম্পন্ন (SMTP আর gateway-এর তথ্য দেওয়া বাকি) |
+| 25 | Invoice PDF | কোম্পানির লোগো, ঠিকানা আর footer | ✅ সম্পন্ন |
+| 26 | Automated tests | Feature/Unit test | ⏳ বাকি (শুধু Laravel-এর example test আছে) |
 
 ## ৪. মূল ব্যবসায়িক ফ্লো
 
@@ -105,22 +109,25 @@ Payroll:   Base salary + Commission + Bonus − Advance − Other = Net salary �
 
 ২১ নভেম্বর ২০২৬-এ আরও শেষ হয়েছে: Stock Adjustment, Backup Restore, Forgot password, Retailer পোর্টাল, Global search, আর রোলের পারমিশন ঠিক করা।
 
+২১ নভেম্বর ২০২৬-এ আরও শেষ হয়েছে: Help পেজ, Audit log বাড়ানো, PDF-এ লোগো আর footer, ডিসকাউন্ট, Email ও SMS।
+
+**ইউজারের কাছ থেকে তথ্য লাগবে**
+1. SMTP-এর তথ্য (যেমন Gmail app password) আর SMS gateway-এর URL ও API key → Settings → Email & SMS-এ বসিয়ে Send test।
+2. Company Profile-এ কোম্পানির নাম, ঠিকানা, লোগো আর invoice footer।
+
 **অসম্পূর্ণ ফিচার**
-1. **Help পেজ**।
-2. Audit log-এ Sales, Purchase, Collection আর Stock-এর পরিবর্তন যোগ করা।
-3. ইনভয়েস PDF-এ কোম্পানির লোগো আর footer দেখানো, Delivery Invoice-এ ডিসকাউন্ট।
-4. SMS বা Email নোটিফিকেশন (SMTP দিলে Forgot password-এর ইমেইল লিংকও চালু হবে)।
-5. Retailer পোর্টালে Return request আর Warranty claim।
+3. Retailer পোর্টালে Return request আর Warranty claim।
+4. SMS-এর লেখা Settings থেকে বদলানোর ব্যবস্থা (এখন ইংরেজিতে নির্দিষ্ট লেখা)।
 
 **মান ও স্থায়িত্ব**
-6. **Automated tests**: Inventory (FIFO, adjustment), Payment allocation, Numbering, Sales credit hold, Delivery invoice, Portal isolation, Restore।
-7. Timezone `Asia/Dhaka` করা।
-8. GitHub-এ push করা (রিপোর লিংক পেলে) আর অফসাইট ব্যাকআপ।
-9. ডোমেইন নিয়ে আসল SSL সার্টিফিকেট (এখন self-signed)।
-10. MySQL-এ নেওয়া (দরকার হলে)।
+5. **Automated tests**: Inventory (FIFO, adjustment), Payment allocation, Discount ভাগ, Numbering, Sales credit hold, Delivery invoice, Portal isolation, Restore।
+6. Timezone `Asia/Dhaka` করা।
+7. GitHub-এ push করা (রিপোর লিংক পেলে) আর অফসাইট ব্যাকআপ।
+8. ডোমেইন নিয়ে আসল SSL সার্টিফিকেট (এখন self-signed)।
+9. MySQL-এ নেওয়া (দরকার হলে)।
 
 **ঐচ্ছিক**
-11. বাংলা ভাষা, ডার্ক মোড, রিপোর্টের PDF এক্সপোর্ট, Sales Invoice আর মানি রিসিট প্রিন্ট।
+10. বাংলা ভাষা, ডার্ক মোড, রিপোর্টের PDF এক্সপোর্ট, Sales Invoice আর মানি রিসিট প্রিন্ট।
 
 ## ৭. সার্ভার
 

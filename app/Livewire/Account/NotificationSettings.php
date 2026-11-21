@@ -14,6 +14,7 @@ class NotificationSettings extends Component
     public bool $return_request_pending = true;
     public bool $warranty_claim_pending = true;
     public bool $low_stock_alert = true;
+    public bool $email = true;
     public bool $saved = false;
 
     public function mount(): void
@@ -23,6 +24,7 @@ class NotificationSettings extends Component
         $this->return_request_pending = $user->wantsNotification('return_request_pending');
         $this->warranty_claim_pending = $user->wantsNotification('warranty_claim_pending');
         $this->low_stock_alert = $user->wantsNotification('low_stock_alert');
+        $this->email = $user->wantsNotification('email');
     }
 
     public function save(): void
@@ -33,6 +35,7 @@ class NotificationSettings extends Component
                 'return_request_pending' => $this->return_request_pending,
                 'warranty_claim_pending' => $this->warranty_claim_pending,
                 'low_stock_alert' => $this->low_stock_alert,
+                'email' => $this->email,
             ],
         ]);
 
@@ -41,6 +44,8 @@ class NotificationSettings extends Component
 
     public function render()
     {
-        return view('livewire.account.notification-settings');
+        return view('livewire.account.notification-settings', [
+            'mailEnabled' => \App\Services\MailSettings::enabled(),
+        ]);
     }
 }

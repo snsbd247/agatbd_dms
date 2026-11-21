@@ -32,6 +32,9 @@
             <div class="text-right shrink-0">
                 <span class="px-3 py-1 rounded-full text-sm {{ $badge }}">{{ $statusText }}</span>
                 <p class="text-2xl font-bold mt-2">৳ {{ number_format($order->grand_total, 2) }}</p>
+                @if((float) $order->discount > 0)
+                    <p class="text-xs text-green-700 mt-1">Includes discount ৳ {{ number_format($order->discount, 2) }}</p>
+                @endif
             </div>
         </div>
         @if(in_array($order->status, ['pending', 'credit_hold'], true))

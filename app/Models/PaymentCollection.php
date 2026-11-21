@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\Auditable;
 use Illuminate\Database\Eloquent\Model;
 
 class PaymentCollection extends Model
 {
+    use Auditable;
+
     protected $table = 'collections';
 
     protected $fillable = ['number', 'retailer_id', 'collected_by', 'collection_date', 'amount', 'method', 'reference_no'];

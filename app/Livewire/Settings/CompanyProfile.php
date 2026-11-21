@@ -5,14 +5,20 @@ namespace App\Livewire\Settings;
 use App\Models\Settings\AuditLog;
 use App\Models\Settings\CompanyProfile as CompanyProfileModel;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 
 #[Layout('layouts.app')]
 #[Title('Company Profile')]
 class CompanyProfile extends Component
 {
+    use WithFileUploads;
+
+    public $logo;
+
     public string $name = '';
     public string $address = '';
     public string $phone = '';
@@ -78,8 +84,58 @@ class CompanyProfile extends Component
         $this->saved = true;
     }
 
+    public function saveLogo(): void
+    {
+        $this->authorize('settings.manage');
+
+        $this->validate(['logo' => 'required|image|mimes:png,jpg,jpeg|max:1024'], [], ['logo' => 'logo']);
+
+        $profile = CompanyProfileModel::first();
+
+        if (! $profile) {
+            $this->addError('logo', 'Save the company name first, then upload the logo.');
+
+            return;
+        }
+
+        $old = $profile->logo_path;
+        $path = $this->logo->storeAs('company', 'logo-'.now()->format('YmdHis').'.'.$this->logo->extension(), 'public');
+        $profile->update(['logo_path' => $path]);
+
+        if ($old && $old !== $path) {
+            Storage::disk('public')->delete($old);
+        }
+
+        AuditLog::create([
+            'user_id' => Auth::id(),
+            'action' => 'company_profile.logo_updated',
+            'auditable_type' => CompanyProfileModel::class,
+            'auditable_id' => $profile->id,
+            'old_values' => ['logo_path' => $old],
+            'new_values' => ['logo_path' => $path],
+            'ip_address' => request()->ip(),
+        ]);
+
+        $this->reset('logo');
+        $this->saved = true;
+    }
+
+    public function removeLogo(): void
+    {
+        $this->authorize('settings.manage');
+
+        $profile = CompanyProfileModel::first();
+
+        if ($profile?->logo_path) {
+            Storage::disk('public')->delete($profile->logo_path);
+            $profile->update(['logo_path' => null]);
+        }
+    }
+
     public function render()
     {
-        return view('livewire.settings.company-profile');
+        return view('livewire.settings.company-profile', [
+            'logoUrl' => CompanyProfileModel::first()?->logoUrl(),
+        ]);
     }
 }

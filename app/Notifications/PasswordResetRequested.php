@@ -3,6 +3,7 @@
 namespace App\Notifications;
 
 use App\Models\User;
+use App\Notifications\Concerns\AlsoSendsEmail;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 
@@ -12,15 +13,10 @@ use Illuminate\Notifications\Notification;
  */
 class PasswordResetRequested extends Notification
 {
-    use Queueable;
+    use AlsoSendsEmail, Queueable;
 
     public function __construct(private User $user, private ?string $ip)
     {
-    }
-
-    public function via($notifiable): array
-    {
-        return ['database'];
     }
 
     public function toArray($notifiable): array

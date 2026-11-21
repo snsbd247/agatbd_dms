@@ -4,10 +4,13 @@ namespace App\Models\Delivery;
 
 use App\Models\Retailer;
 use App\Models\Sales\SalesOrder;
+use App\Models\Concerns\Auditable;
 use Illuminate\Database\Eloquent\Model;
 
 class DeliveryInvoice extends Model
 {
+    use Auditable;
+
     protected $fillable = [
         'number', 'sales_order_id', 'delivery_note_id', 'retailer_id',
         'invoice_date', 'subtotal', 'discount', 'grand_total', 'status',

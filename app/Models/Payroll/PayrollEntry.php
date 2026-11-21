@@ -3,10 +3,13 @@
 namespace App\Models\Payroll;
 
 use App\Models\Representative;
+use App\Models\Concerns\Auditable;
 use Illuminate\Database\Eloquent\Model;
 
 class PayrollEntry extends Model
 {
+    use Auditable;
+
     protected $fillable = [
         'number', 'representative_id', 'period', 'base_salary', 'commission_amount',
         'bonus_amount', 'advance_deduction', 'other_deduction', 'net_salary', 'status', 'paid_at',

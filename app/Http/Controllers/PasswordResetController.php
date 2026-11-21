@@ -39,7 +39,11 @@ class PasswordResetController extends Controller
 
         if ($user) {
             if (self::mailEnabled()) {
-                Password::sendResetLink(['email' => $user->email]);
+                try {
+                    Password::sendResetLink(['email' => $user->email]);
+                } catch (\Throwable $e) {
+                    report($e);   // SMTP down: same answer to the user, error goes to the log
+                }
             } else {
                 $alreadyAsked = DB::table('notifications')
                     ->where('type', PasswordResetRequested::class)

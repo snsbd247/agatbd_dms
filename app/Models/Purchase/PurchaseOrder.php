@@ -5,10 +5,13 @@ namespace App\Models\Purchase;
 use App\Models\Company;
 use App\Models\User;
 use App\Models\Warehouse;
+use App\Models\Concerns\Auditable;
 use Illuminate\Database\Eloquent\Model;
 
 class PurchaseOrder extends Model
 {
+    use Auditable;
+
     protected $fillable = [
         'number', 'company_id', 'warehouse_id', 'status',
         'order_date', 'expected_date', 'total_amount', 'created_by',

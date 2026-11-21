@@ -6,10 +6,13 @@ use App\Models\Representative;
 use App\Models\Retailer;
 use App\Models\User;
 use App\Models\Warehouse;
+use App\Models\Concerns\Auditable;
 use Illuminate\Database\Eloquent\Model;
 
 class SalesOrder extends Model
 {
+    use Auditable;
+
     protected $fillable = [
         'number', 'order_type', 'retailer_id', 'representative_id', 'warehouse_id',
         'status', 'order_date', 'subtotal', 'discount', 'grand_total', 'approved_by', 'approved_at',
@@ -64,5 +67,36 @@ class SalesOrder extends Model
     public function deliveryInvoices()
     {
         return $this->hasMany(\App\Models\Delivery\DeliveryInvoice::class);
+    }
+
+    /**
+     * Share of the order discount for one delivery worth $deliveredValue.
+     *
+     * Each delivery gets the discount in proportion to its value; the final
+     * delivery takes whatever is left, so the invoices always add up to the
+     * order discount exactly. What was already given is read from the sales
+     * invoices of this order.
+     */
+    public function discountForDelivery(float $deliveredValue, bool $isFinalDelivery): float
+    {
+        $discount = (float) $this->discount;
+
+        if ($discount <= 0 || $deliveredValue <= 0) {
+            return 0.0;
+        }
+
+        $remaining = round($discount - (float) $this->invoices()->sum('discount'), 2);
+
+        if ($remaining <= 0) {
+            return 0.0;
+        }
+
+        if ($isFinalDelivery || (float) $this->subtotal <= 0) {
+            return min($remaining, round($deliveredValue, 2));
+        }
+
+        $share = round($discount * $deliveredValue / (float) $this->subtotal, 2);
+
+        return min($share, $remaining, round($deliveredValue, 2));
     }
 }

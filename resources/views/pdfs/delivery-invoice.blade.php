@@ -168,7 +168,7 @@
         <div class="header">
             <div class="header-top">
                 <div class="company-info">
-                    <h1>{{ $company?->name ?? config('app.name', 'DMS') }}</h1>
+                    @include('pdfs.partials.company')
                     <p><strong>Delivery Invoice</strong></p>
                 </div>
                 <div>
@@ -297,6 +297,7 @@
 
         <!-- Footer -->
         <div class="footer">
+            @include('pdfs.partials.footer-note')
             <p>This is a computer-generated document. No signature is required.</p>
             <p>Generated on: {{ now()->format('d-M-Y H:i:s') }}</p>
         </div>

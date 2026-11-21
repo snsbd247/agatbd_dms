@@ -5,10 +5,13 @@ namespace App\Models\Warranty;
 use App\Models\Product;
 use App\Models\Retailer;
 use App\Models\Sales\SalesInvoice;
+use App\Models\Concerns\Auditable;
 use Illuminate\Database\Eloquent\Model;
 
 class WarrantyClaim extends Model
 {
+    use Auditable;
+
     protected $fillable = ['number', 'retailer_id', 'product_id', 'sales_invoice_id', 'claim_date', 'issue_description', 'status'];
 
     protected function casts(): array

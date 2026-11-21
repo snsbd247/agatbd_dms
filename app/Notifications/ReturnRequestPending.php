@@ -3,20 +3,16 @@
 namespace App\Notifications;
 
 use App\Models\Returns\ReturnRequest;
+use App\Notifications\Concerns\AlsoSendsEmail;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 
 class ReturnRequestPending extends Notification
 {
-    use Queueable;
+    use AlsoSendsEmail, Queueable;
 
     public function __construct(private ReturnRequest $request)
     {
-    }
-
-    public function via($notifiable): array
-    {
-        return ['database'];
     }
 
     public function toArray($notifiable): array

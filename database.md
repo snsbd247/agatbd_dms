@@ -6,7 +6,7 @@
 
 FK-এর পাশের চিহ্ন: **null** = parent মুছলে NULL হয়, **cascade** = parent মুছলে row-ও মোছে, কিছু না লেখা থাকলে restrict।
 
-> সর্বশেষ আপডেট: ২০ নভেম্বর ২০২৬ (সর্বশেষ migration: `2026_08_14_000001_create_delivery_invoices_table`)
+> সর্বশেষ আপডেট: ২১ নভেম্বর ২০২৬ (সর্বশেষ migration: `2026_11_21_000001_create_app_settings_and_sms_logs_tables`)
 
 ---
 
@@ -585,3 +585,22 @@ erDiagram
     representatives ||--o{ advances : takes
     representatives ||--o{ bonuses : gets
 ```
+
+## ১৩. Settings (অ্যাপ থেকে বদলানো যায়)
+
+### app_settings (migration `2026_11_21`)
+| কলাম | টাইপ | নোট |
+|---|---|---|
+| key | string | unique, যেমন `mail_host`, `sms_url`, `sms_event_delivered` |
+| value | text | nullable; `mail_password` আর `sms_api_key` APP_KEY দিয়ে encrypted |
+
+### sms_logs (migration `2026_11_21`)
+| কলাম | টাইপ | নোট |
+|---|---|---|
+| to | string(30) | নম্বর (8801… বা 01…) |
+| message | text | |
+| event | string(50) | `order_approved`, `delivered`, `payment_received`, `test` |
+| status | string(20) | `sent` বা `failed` |
+| response | text | gateway-এর উত্তর (API key লুকানো) |
+
+> `audit_logs` এখন ২৫টা মডেল থেকে নিজে থেকে ভরে (`App\Models\Concerns\Auditable`)। `stock_adjustments` টেবিল এখন Inventory → Stock Adjustments পেজ থেকে ব্যবহার হয়।

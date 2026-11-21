@@ -109,6 +109,14 @@
 - **রোলের পারমিশন ঠিক করা হলো:** লাইভ ডাটাবেসে চারটা রোলেরই সব পারমিশন ছিল। আগে ব্যাকআপ নিয়ে PermissionSeeder আর RoleSeeder চালানো হলো। এখন Dealer ২৭টা, Manager ২৩টা, Sales Rep ৯টা আর Retailer ১টা পারমিশন পায়।
 - **টেস্ট:** চার রোল দিয়ে HTTPS-এ access matrix যাচাই করা হলো। portal isolation (অন্যের অর্ডারে 404, তালিকা বা সার্চে দেখা যায় না) আর রিটেইলারের অর্ডার দেওয়া ও বাতিল করা rollback-সহ টেস্ট হলো। restore ডাটাবেসের কপিতে টেস্ট হলো (৫৫টা টেবিল, ৪০২টা রেকর্ড ফিরেছে, foreign key ঠিক)। পুরো forgot ও reset ফ্লো আর সব পেজের smoke test-ও করা হলো।
 
+### ২১ নভেম্বর ২০২৬ (চতুর্থ ধাপ): Help, Audit, ডিসকাউন্ট, লোগো, Email ও SMS
+- **Help:** [Help.php](app/Livewire/Help.php), route `/help`। বাংলায় ১৬টা অংশ, প্রতিটা অংশে পারমিশন বা রোল দেওয়া আছে, তাই ইউজার শুধু নিজের কাজের অংশ দেখে। পেজে সার্চ (Alpine) আছে। হেডারের ? বাটন আর More মেনু এখানে আনে।
+- **Audit log:** [Auditable.php](app/Models/Concerns/Auditable.php) trait ২৫টা মডেলে (Sales, Purchase, Delivery, Collection, Returns, Warranty, Payroll, Master data, StockAdjustment, Retailer, Representative ইত্যাদি)। action হয় `<model>.created|updated|deleted`। update-এ শুধু বদলানো ফিল্ড থাকে (পুরনো ও নতুন মান)। ইউজার ছাড়া console থেকে চালালে (seeder, ব্যাকআপ) লগ হয় না। লগ লিখতে না পারলেও মূল কাজ থামে না। Audit Log পেজে module, action, ইউজার আর তারিখের ফিল্টার আছে, আর বদলগুলো "ফিল্ড: পুরনো → নতুন" আকারে দেখায়।
+- **ডিসকাউন্ট:** Sales order পেজে approver অনুমোদনের আগে ৳ বা % দিতে পারেন। `SalesOrder::discountForDelivery()` প্রতিটা ডেলিভারিকে মূল্যের অনুপাতে ভাগ দেয়, আর শেষ ডেলিভারি বাকিটা নেয়। Sales invoice, delivery invoice, রিটেইলারের due আর লেজার সব জায়গায় ডিসকাউন্টের পরের মূল্য বসে। টেস্টে ১০% ডিসকাউন্ট দুই ডেলিভারিতে ৯.৬০ + ১২.৮০ = ২২.৪০ হয়ে ঠিক মিলেছে।
+- **লোগো ও footer:** Company Profile-এ লোগো আপলোড (PNG বা JPG, ১ MB পর্যন্ত, `storage/app/public/company/`)। PDF-এ লোগো base64 হিসেবে যায়, সাথে ঠিকানা, ফোন আর invoice footer। partial: `resources/views/pdfs/partials/`।
+- **Email ও SMS:** নতুন টেবিল `app_settings` (key/value; পাসওয়ার্ড আর API key APP_KEY দিয়ে encrypted) আর `sms_logs`। `MailSettings::apply()` boot-এ SMTP config বসায়। নোটিফিকেশনে `AlsoSendsEmail` trait আর `SafeMailChannel` আছে, তাই SMTP নষ্ট থাকলেও কাজ আটকায় না। `.local` ইমেইলে মেইল যায় না। ইউজার Notification Settings-এ "Also send by email" চালু বা বন্ধ করতে পারে। `SmsService` যেকোনো HTTP gateway-এর সাথে কাজ করে (`{api_key} {sender_id} {to} {message}`)। নম্বর 8801… বা 01… ফরম্যাটে বদলায়। SMS যায় অর্ডার approve, ডেলিভারি আর পেমেন্টে। ব্যর্থ হলেও কাজ থামে না, আর লগে লেখা থাকে।
+- **টেস্ট:** audit entry, SMS (এই সার্ভারের `/dms/up`-কে নকল gateway বানিয়ে, API key লগে লুকানো), ভাঙা SMTP-তেও নোটিফিকেশন জমা হয়, লোগোসহ PDF, রোলভিত্তিক access আর সব পেজের smoke test করা হলো, সবই rollback-সহ।
+
 ---
 
 ## জানা সমস্যা (Known issues)

@@ -12,6 +12,7 @@
                     'bg-cyan-600' => $item['color'] === 'cyan',
                     'bg-amber-500' => $item['color'] === 'amber',
                     'bg-slate-500' => $item['color'] === 'slate',
+                    'bg-teal-600' => $item['color'] === 'teal',
                 ])>
                     <x-icon :name="$item['icon']" class="w-6 h-6" />
                 </div>

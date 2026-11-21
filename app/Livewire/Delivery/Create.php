@@ -84,7 +84,9 @@ class Create extends Component
             return;
         }
 
-        DB::transaction(function () use ($numbers, $inventory, $deliveryInvoices) {
+        $smsInvoice = null;
+
+        DB::transaction(function () use ($numbers, $inventory, $deliveryInvoices, &$smsInvoice) {
             $deliveryNote = DeliveryNote::create([
                 'number' => $numbers->generate('delivery_note'),
                 'sales_order_id' => $this->salesOrder->id,
@@ -136,16 +138,20 @@ class Create extends Component
                 $item->increment('delivered_quantity', $qty);
             }
 
+            $isFinalDelivery = $this->salesOrder->items()->whereColumn('delivered_quantity', '<', 'quantity')->doesntExist();
+            $discount = $this->salesOrder->discountForDelivery($invoiceTotal, $isFinalDelivery);
+            $netTotal = round($invoiceTotal - $discount, 2);
+
             $invoice = SalesInvoice::create([
                 'number' => $numbers->generate('sales_invoice'),
                 'sales_order_id' => $this->salesOrder->id,
                 'retailer_id' => $this->salesOrder->retailer_id,
                 'invoice_date' => today(),
                 'subtotal' => $invoiceTotal,
-                'discount' => 0,
-                'grand_total' => $invoiceTotal,
+                'discount' => $discount,
+                'grand_total' => $netTotal,
                 'paid_amount' => 0,
-                'due_amount' => $invoiceTotal,
+                'due_amount' => $netTotal,
                 'status' => 'unpaid',
             ]);
 
@@ -154,19 +160,20 @@ class Create extends Component
             }
 
             $retailer = Retailer::whereKey($this->salesOrder->retailer_id)->lockForUpdate()->first();
-            $retailer->increment('current_due', $invoiceTotal);
+            $retailer->increment('current_due', $netTotal);
 
             $retailer->ledgerEntries()->create([
                 'type' => 'invoice',
                 'reference_type' => $invoice->getMorphClass(),
                 'reference_id' => $invoice->getKey(),
-                'debit' => $invoiceTotal,
+                'debit' => $netTotal,
                 'credit' => 0,
                 'balance_after' => $retailer->current_due,
                 'entry_date' => today(),
             ]);
 
-            $deliveryInvoices->createDeliveryInvoice($deliveryNote);
+            $deliveryInvoices->createDeliveryInvoice($deliveryNote, $discount);
+            $smsInvoice = ['number' => $invoice->number, 'amount' => $netTotal, 'due' => (float) $retailer->current_due, 'phone' => $retailer->phone];
 
             $this->salesOrder->refresh();
             $allDelivered = $this->salesOrder->items()->whereColumn('delivered_quantity', '<', 'quantity')->doesntExist();
@@ -176,6 +183,14 @@ class Create extends Component
                 'status' => $allDelivered ? 'completed' : ($anyDelivered ? 'partial' : $this->salesOrder->status),
             ]);
         });
+
+        if ($smsInvoice) {
+            app(\App\Services\SmsService::class)->send(
+                $smsInvoice['phone'],
+                \App\Services\SmsService::brand("Delivered against order {$this->salesOrder->number}. Invoice {$smsInvoice['number']}: Tk ".number_format($smsInvoice['amount'], 2).'. Total due now Tk '.number_format($smsInvoice['due'], 2).'.'),
+                'delivered',
+            );
+        }
 
         $this->redirect(route('sales.orders.show', $this->salesOrder), navigate: false);
     }

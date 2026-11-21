@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\Auditable;
 use Illuminate\Database\Eloquent\Model;
 
 class StockAdjustment extends Model
 {
+    use Auditable;
+
     protected $fillable = [
         'warehouse_id', 'product_id', 'batch_id', 'quantity_change',
         'reason', 'adjusted_by', 'adjustment_date',

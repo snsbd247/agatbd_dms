@@ -4,10 +4,13 @@ namespace App\Models\Delivery;
 
 use App\Models\Sales\SalesOrder;
 use App\Models\User;
+use App\Models\Concerns\Auditable;
 use Illuminate\Database\Eloquent\Model;
 
 class DeliveryNote extends Model
 {
+    use Auditable;
+
     protected $fillable = ['number', 'sales_order_id', 'delivery_type', 'delivered_by', 'delivery_date', 'status'];
 
     protected function casts(): array

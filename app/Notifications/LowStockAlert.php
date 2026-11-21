@@ -3,20 +3,16 @@
 namespace App\Notifications;
 
 use App\Models\Stock;
+use App\Notifications\Concerns\AlsoSendsEmail;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 
 class LowStockAlert extends Notification
 {
-    use Queueable;
+    use AlsoSendsEmail, Queueable;
 
     public function __construct(private Stock $stock)
     {
-    }
-
-    public function via($notifiable): array
-    {
-        return ['database'];
     }
 
     public function toArray($notifiable): array

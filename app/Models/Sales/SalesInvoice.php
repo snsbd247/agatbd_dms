@@ -3,10 +3,13 @@
 namespace App\Models\Sales;
 
 use App\Models\Retailer;
+use App\Models\Concerns\Auditable;
 use Illuminate\Database\Eloquent\Model;
 
 class SalesInvoice extends Model
 {
+    use Auditable;
+
     protected $fillable = [
         'number', 'sales_order_id', 'retailer_id', 'invoice_date',
         'subtotal', 'discount', 'grand_total', 'paid_amount', 'due_amount', 'status',

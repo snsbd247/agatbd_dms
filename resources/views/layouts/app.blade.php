@@ -84,6 +84,7 @@
             ['icon' => 'cog', 'label' => 'Settings', 'permission' => 'settings.manage', 'prefix' => ['settings.'], 'links' => [
                 ['route' => 'settings.company-profile', 'label' => 'Company Profile', 'icon' => 'building-storefront'],
                 ['route' => 'settings.numbering', 'label' => 'Numbering', 'icon' => 'database'],
+                ['route' => 'settings.messaging', 'label' => 'Email & SMS', 'icon' => 'mail'],
                 ['route' => 'settings.warranty-policies', 'label' => 'Warranty Policies', 'icon' => 'shield-check'],
                 ['route' => 'settings.users', 'label' => 'Users', 'icon' => 'user'],
                 ['route' => 'settings.login-history', 'label' => 'Login History', 'icon' => 'clock'],
@@ -284,9 +285,9 @@
                             </div>
                         </div>
                     </div>
-                    <button type="button" class="hidden sm:inline-flex text-slate-500 hover:text-slate-900 p-1.5 rounded-lg hover:bg-slate-100" title="Help (coming soon)">
+                    <a href="{{ route('help') }}" class="hidden sm:inline-flex p-1.5 rounded-lg hover:bg-slate-100 {{ request()->routeIs('help') ? 'text-indigo-600' : 'text-slate-500 hover:text-slate-900' }}" title="Help">
                         <x-icon name="question-mark-circle" class="w-5 h-5" />
-                    </button>
+                    </a>
 
                     <div class="relative pl-0 sm:pl-3 sm:border-l" x-data="{ open: false }" @click.outside="open = false">
                         <button type="button" @click="window.innerWidth >= 1024 ? (open = !open) : (window.location.href = '{{ route('account.profile') }}')" class="flex items-center gap-2">

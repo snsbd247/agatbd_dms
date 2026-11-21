@@ -180,7 +180,7 @@
             <div class="header">
                 <div class="header-top">
                     <div class="company-info">
-                        <h1>{{ $company?->name ?? config('app.name', 'DMS') }}</h1>
+                        @include('pdfs.partials.company')
                         <p><strong>Delivery Invoice</strong></p>
                     </div>
                     <div>
@@ -273,7 +273,8 @@
 
             <!-- Footer -->
             <div class="footer">
-                <p>Generated on: {{ now()->format('d-M-Y H:i:s') }}</p>
+                @include('pdfs.partials.footer-note')
+            <p>Generated on: {{ now()->format('d-M-Y H:i:s') }}</p>
             </div>
         </div>
     @endforeach

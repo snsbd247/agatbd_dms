@@ -62,6 +62,13 @@ class Create extends Component
             $allocator->allocate($retailer, (float) $data['amount'], $collection);
         });
 
+        $retailer->refresh();
+        app(\App\Services\SmsService::class)->send(
+            $retailer->phone,
+            \App\Services\SmsService::brand('Payment received: Tk '.number_format((float) $data['amount'], 2).'. Thank you! Remaining due Tk '.number_format((float) $retailer->current_due, 2).'.'),
+            'payment_received',
+        );
+
         $this->redirect(route('collection.index'), navigate: false);
     }
 

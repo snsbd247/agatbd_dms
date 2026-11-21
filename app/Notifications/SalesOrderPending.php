@@ -3,20 +3,16 @@
 namespace App\Notifications;
 
 use App\Models\Sales\SalesOrder;
+use App\Notifications\Concerns\AlsoSendsEmail;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 
 class SalesOrderPending extends Notification
 {
-    use Queueable;
+    use AlsoSendsEmail, Queueable;
 
     public function __construct(private SalesOrder $order)
     {
-    }
-
-    public function via($notifiable): array
-    {
-        return ['database'];
     }
 
     public function toArray($notifiable): array

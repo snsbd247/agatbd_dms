@@ -23,9 +23,14 @@ class DeliveryInvoiceService
     {
     }
 
-    public function createDeliveryInvoice(DeliveryNote $deliveryNote): DeliveryInvoice
+    /**
+     * @param  float|null  $discount  The discount given on this delivery (the
+     *                                same as on its sales invoice). When null, e.g. for an old delivery
+     *                                invoiced by hand, the order discount is shared in proportion.
+     */
+    public function createDeliveryInvoice(DeliveryNote $deliveryNote, ?float $discount = null): DeliveryInvoice
     {
-        return DB::transaction(function () use ($deliveryNote) {
+        return DB::transaction(function () use ($deliveryNote, $discount) {
             if ($deliveryNote->invoices()->exists()) {
                 throw new \RuntimeException('An invoice already exists for this delivery note.');
             }
@@ -64,10 +69,19 @@ class DeliveryInvoiceService
                 $subtotal += $totalPrice;
             }
 
+            if ($discount === null) {
+                $order = $deliveryNote->salesOrder;
+                $discount = (float) $order->subtotal > 0
+                    ? round((float) $order->discount * $subtotal / (float) $order->subtotal, 2)
+                    : 0.0;
+            }
+
+            $discount = min(max(0.0, $discount), $subtotal);
+
             $invoice->update([
                 'subtotal' => $subtotal,
-                'discount' => 0,
-                'grand_total' => $subtotal,
+                'discount' => $discount,
+                'grand_total' => round($subtotal - $discount, 2),
             ]);
 
             return $invoice;

@@ -21,5 +21,8 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Gate::before(fn ($user, string $ability) => $user->hasRole('Dealer') ? true : null);
+
+        // SMTP settings saved in Settings → Email & SMS override the .env mailer.
+        \App\Services\MailSettings::apply();
     }
 }

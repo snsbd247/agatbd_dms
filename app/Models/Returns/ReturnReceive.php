@@ -4,10 +4,13 @@ namespace App\Models\Returns;
 
 use App\Models\User;
 use App\Models\Warehouse;
+use App\Models\Concerns\Auditable;
 use Illuminate\Database\Eloquent\Model;
 
 class ReturnReceive extends Model
 {
+    use Auditable;
+
     protected $fillable = ['number', 'return_request_id', 'received_by', 'warehouse_id', 'receive_date'];
 
     protected function casts(): array

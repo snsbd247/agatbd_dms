@@ -37,8 +37,32 @@
                 @endphp
                 <span class="px-3 py-1 rounded-full text-sm {{ $badge }}">{{ ucfirst(str_replace('_', ' ', $salesOrder->status)) }}</span>
                 <p class="text-2xl font-bold mt-2">৳ {{ number_format($salesOrder->grand_total, 2) }}</p>
+                @if((float) $salesOrder->discount > 0)
+                    <p class="text-xs text-slate-500 mt-1">৳ {{ number_format($salesOrder->subtotal, 2) }} − discount ৳ {{ number_format($salesOrder->discount, 2) }}</p>
+                @endif
             </div>
         </div>
+
+        @can('sales.approve')
+            @if(in_array($salesOrder->status, ['pending', 'credit_hold']))
+                <div class="mt-5 pt-4 border-t">
+                    <p class="text-sm font-medium text-slate-600 mb-2">Discount</p>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <div class="grid grid-cols-2 gap-1 p-1 bg-slate-100 rounded-lg">
+                            <button type="button" wire:click="$set('discountType', 'amount')" class="px-3 py-1 rounded-md text-sm font-medium {{ $discountType === 'amount' ? 'bg-white shadow text-slate-800' : 'text-slate-500' }}">৳</button>
+                            <button type="button" wire:click="$set('discountType', 'percent')" class="px-3 py-1 rounded-md text-sm font-medium {{ $discountType === 'percent' ? 'bg-white shadow text-slate-800' : 'text-slate-500' }}">%</button>
+                        </div>
+                        <input wire:model="discountValue" type="number" step="0.01" min="0" placeholder="{{ $discountType === 'percent' ? 'e.g. 5' : 'e.g. 500' }}" class="border rounded-lg px-3 py-1.5 text-sm w-32">
+                        <button wire:click="applyDiscount" class="border border-indigo-200 text-indigo-700 hover:bg-indigo-50 px-4 py-1.5 rounded-lg text-sm font-medium">Apply</button>
+                        @if((float) $salesOrder->discount > 0)
+                            <button wire:click="removeDiscount" class="text-xs text-slate-500 hover:text-red-600">Remove discount</button>
+                        @endif
+                    </div>
+                    @error('discountValue') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
+                    <p class="text-xs text-slate-400 mt-1">Shared across the deliveries in proportion to their value. Can be changed until the order is approved.</p>
+                </div>
+            @endif
+        @endcan
 
         <div class="mt-4 flex flex-wrap gap-2">
             @can('sales.approve')

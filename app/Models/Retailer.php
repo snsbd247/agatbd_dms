@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\Auditable;
 use Illuminate\Database\Eloquent\Model;
 
 class Retailer extends Model
 {
+    use Auditable;
+
     protected $fillable = [
         'user_id', 'representative_id', 'area_id', 'code', 'name',
         'shop_name', 'phone', 'address', 'credit_limit', 'current_due', 'active',
