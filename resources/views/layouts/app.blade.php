@@ -7,10 +7,11 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="DMS">
+    <meta name="apple-mobile-web-app-title" content="{{ \App\Support\Brand::name() }}">
     <link rel="manifest" href="{{ asset('manifest.json') }}">
     <link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png') }}">
-    <title>{{ __($title ?? 'DMS') }}</title>
+    <link rel="icon" type="image/png" href="{{ asset('icon-192.png') }}">
+    <title>{{ \App\Support\Brand::title(isset($title) ? __($title) : null) }}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -146,11 +147,11 @@
             }"
         >
             <div class="p-5 border-b border-slate-800 flex items-center gap-3 shrink-0">
-                <div class="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center shrink-0">
-                    <x-icon name="box" class="w-5 h-5 text-white" />
+                <div class="w-10 h-10 rounded-xl bg-white flex items-center justify-center shrink-0 overflow-hidden">
+                    <img src="{{ asset('icon-192.png') }}" alt="" class="w-9 h-9 object-contain">
                 </div>
                 <div x-show="!collapsed" x-cloak>
-                    <p class="text-lg font-bold text-white leading-none">{{ __('DMS') }}</p>
+                    <p class="text-base font-bold text-white leading-tight truncate max-w-[10.5rem]" title="{{ \App\Support\Brand::name() }}">{{ \App\Support\Brand::name() }}</p>
                     <p class="text-[11px] text-slate-500">{{ __('Dealer Management System') }}</p>
                 </div>
             </div>
@@ -245,7 +246,7 @@
                         <x-icon name="menu" class="w-6 h-6" />
                     </button>
                     <div class="min-w-0">
-                        <h1 class="text-base sm:text-xl font-semibold truncate leading-tight">{{ __($title ?? 'DMS') }}</h1>
+                        <h1 class="text-base sm:text-xl font-semibold truncate leading-tight">{{ isset($title) ? __($title) : \App\Support\Brand::name() }}</h1>
                         <p class="text-xs text-slate-400 truncate hidden sm:block">
                             @if($activeGroupLabel)
                                 {{ __($activeGroupLabel) }} <span class="mx-1">&gt;</span> {{ __($title ?? '') }}
