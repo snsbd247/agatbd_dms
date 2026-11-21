@@ -182,6 +182,39 @@ F:\Lovable\xampp\php\php.exe vendor\bin\phpunit   # সব টেস্ট প�
 
 Apache কনফিগ বদলালে: `F:\Lovable\xampp\apache\bin\httpd.exe -t`, তারপর `httpd.exe -k restart -n Apache2.4`।
 
+## লাইভ সার্ভার: https://dms.agatbd.com
+
+একটা cPanel অ্যাকাউন্টে চলে (LiteSpeed, CloudLinux)। একই অ্যাকাউন্টে আরেকটা প্রজেক্টও আছে, agatbd.com (`~/public_html`)। ওটার কোনো ফাইলে, cron লাইনে বা `~/agatbd-deploy` ফোল্ডারে হাত দেওয়া যাবে না।
+
+| কী | কোথায় |
+|---|---|
+| অ্যাপের কোড (git clone) | `~/dms.agatbd.com` |
+| Web root | `~/public_html/dms.agatbd.com/public`। এটা আসলে `~/dms.agatbd.com/public`-এর symlink, কারণ cPanel শুধু `public_html`-এর ভেতরে web root দিতে দেয়। |
+| PHP | `/opt/cpanel/ea-php83/root/usr/bin/php` (CLI-র ডিফল্ট `php` 8.2, ওটা ব্যবহার করবেন না) |
+| ডাটাবেস | `~/dms.agatbd.com/database/database.sqlite` (SQLite 3.26, তাই ব্যাকআপ `VACUUM INTO` ছাড়া লক করে ফাইল কপি করে) |
+| SSL | cPanel AutoSSL (Let's Encrypt), নিজে থেকে নবায়ন হয় |
+| Cron | crontab-এ `# >>> dms.agatbd.com` ব্লক: scheduler, queue, আর প্রতিদিন রাত ২টায় `dms:backup --keep=30` |
+
+সার্ভারে `public/.htaccess`-এর শেষে cPanel একটা `ea-php83` handler লাইন যোগ করেছে। এটা git-এ commit করবেন না, কারণ ওই লাইন XAMPP-এ PHP চলা বন্ধ করে দেয়। git pull করলে লাইনটা থেকে যায়।
+
+সার্ভারে Node নেই, তাই `public/build` এখানে বানিয়ে পাঠাতে হয়। কোড আপডেটের নিয়ম:
+
+```bash
+# লোকালে
+npm run build && git push
+tar -czf build.tgz -C public build && scp build.tgz sabagatbd@169.40.116.146:dms-build.tgz
+
+# সার্ভারে (ssh)
+cd ~/dms.agatbd.com && P=/opt/cpanel/ea-php83/root/usr/bin/php
+git pull
+rm -rf public/build && tar -xzf ~/dms-build.tgz -C public && rm ~/dms-build.tgz
+$P ~/agatbd-deploy/composer.phar install --no-dev --optimize-autoloader   # composer.lock বদলালে
+$P artisan migrate --force
+$P artisan optimize
+```
+
+crontab বদলাতে হলে প্রথমে `crontab -l > file` করে ফাইলটা এডিট করুন, তারপর `crontab file` চালান। `crontab -l | ... | crontab -` পাইপ ব্যবহার করবেন না। এই সার্ভারে একবার এভাবে agatbd.com-এর cron লাইন মুছে গিয়েছিল।
+
 ## নতুন মেশিনে লোকাল ডেভেলপমেন্ট
 
 ```bash
