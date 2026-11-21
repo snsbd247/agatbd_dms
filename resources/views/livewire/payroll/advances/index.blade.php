@@ -44,11 +44,11 @@
                 @forelse($advances as $index => $advance)
                     <tr wire:key="adv-{{ $advance->id }}">
                         <td class="px-4 py-3 text-slate-500 rtable-hide-mobile">{{ $advances->firstItem() + $index }}</td>
-                        <td class="px-4 py-3 font-medium" data-label="Representative">{{ $advance->representative?->name }}</td>
-                        <td class="px-4 py-3 text-slate-500" data-label="Date">{{ $advance->advance_date->format('d M Y') }}</td>
-                        <td class="px-4 py-3" data-label="Amount">৳ {{ number_format($advance->amount, 2) }}</td>
-                        <td class="px-4 py-3 text-slate-500" data-label="Reason">{{ $advance->reason ?? '—' }}</td>
-                        <td class="px-4 py-3" data-label="Status">
+                        <td class="px-4 py-3 font-medium" data-label="{{ __('Representative') }}">{{ $advance->representative?->name }}</td>
+                        <td class="px-4 py-3 text-slate-500" data-label="{{ __('Date') }}">{{ $advance->advance_date->format('d M Y') }}</td>
+                        <td class="px-4 py-3" data-label="{{ __('Amount') }}">৳ {{ number_format($advance->amount, 2) }}</td>
+                        <td class="px-4 py-3 text-slate-500" data-label="{{ __('Reason') }}">{{ $advance->reason ?? '—' }}</td>
+                        <td class="px-4 py-3" data-label="{{ __('Status') }}">
                             <span class="px-2 py-1 rounded-full text-xs {{ $advance->deducted ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700' }}">
                                 {{ $advance->deducted ? 'Deducted' : 'Outstanding' }}
                             </span>

@@ -20,9 +20,14 @@
                 @endforeach
             </select>
         </div>
-        <a href="{{ route('reports.export.sales', request()->query()) }}" class="flex items-center gap-2 px-3 py-2 rounded-lg bg-white border shadow-sm text-sm text-slate-600 hover:text-indigo-600">
-            <x-icon name="download" class="w-4 h-4" /> {{ __('Download CSV') }}
-        </a>
+        <div class="flex items-center gap-2">
+            <a href="{{ route('reports.export.sales') }}" data-base="{{ route('reports.export.sales') }}" onclick="this.href = this.dataset.base + window.location.search" class="flex items-center gap-2 px-3 py-2 rounded-lg bg-white border shadow-sm text-sm text-slate-600 hover:text-indigo-600">
+                <x-icon name="download" class="w-4 h-4" /> {{ __('Download CSV') }}
+            </a>
+            <a href="{{ route('reports.pdf', 'sales') }}" data-base="{{ route('reports.pdf', 'sales') }}" onclick="this.href = this.dataset.base + window.location.search" target="_blank" class="flex items-center gap-2 px-3 py-2 rounded-lg bg-white border shadow-sm text-sm text-slate-600 hover:text-indigo-600">
+                <x-icon name="printer" class="w-4 h-4" /> {{ __('PDF') }}
+            </a>
+        </div>
     </div>
 
     <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-4">
@@ -46,12 +51,12 @@
             <tbody class="divide-y">
                 @forelse($invoices as $invoice)
                     <tr wire:key="inv-{{ $invoice->id }}">
-                        <td class="px-4 py-3 font-medium" data-label="Invoice #">{{ $invoice->number }}</td>
-                        <td class="px-4 py-3 text-slate-500" data-label="Date">{{ $invoice->invoice_date->format('d M Y') }}</td>
-                        <td class="px-4 py-3" data-label="Retailer">{{ $invoice->retailer?->name }}</td>
-                        <td class="px-4 py-3 text-slate-500" data-label="Representative">{{ $invoice->salesOrder?->representative?->name ?? '—' }}</td>
-                        <td class="px-4 py-3" data-label="Amount">৳ {{ number_format($invoice->grand_total, 2) }}</td>
-                        <td class="px-4 py-3" data-label="Status">
+                        <td class="px-4 py-3 font-medium" data-label="{{ __('Invoice #') }}">{{ $invoice->number }}</td>
+                        <td class="px-4 py-3 text-slate-500" data-label="{{ __('Date') }}">{{ $invoice->invoice_date->format('d M Y') }}</td>
+                        <td class="px-4 py-3" data-label="{{ __('Retailer') }}">{{ $invoice->retailer?->name }}</td>
+                        <td class="px-4 py-3 text-slate-500" data-label="{{ __('Representative') }}">{{ $invoice->salesOrder?->representative?->name ?? '—' }}</td>
+                        <td class="px-4 py-3" data-label="{{ __('Amount') }}">৳ {{ number_format($invoice->grand_total, 2) }}</td>
+                        <td class="px-4 py-3" data-label="{{ __('Status') }}">
                             <span class="px-2 py-1 rounded-full text-xs {{ $invoice->status === 'paid' ? 'bg-green-100 text-green-700' : ($invoice->status === 'partial' ? 'bg-amber-100 text-amber-700' : 'bg-slate-100 text-slate-600') }}">
                                 {{ __(ucfirst($invoice->status)) }}
                             </span>

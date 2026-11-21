@@ -1,5 +1,5 @@
 <div>
-    <div class="mb-5 overflow-hidden rounded-2xl bg-gradient-to-r from-indigo-700 to-blue-600 p-5 text-white shadow-lg">
+    <div class="dark-keep mb-5 overflow-hidden rounded-2xl bg-gradient-to-r from-indigo-700 to-blue-600 p-5 text-white shadow-lg">
         <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div><p class="text-sm text-indigo-100">{{ now()->format('l, d F Y') }}</p><h2 class="mt-1 text-xl font-bold">{{ __('Your sales command centre') }}</h2><p class="mt-1 text-sm text-indigo-100">{{ __('Track target progress, collection and orders assigned to you.') }}</p></div>
             <a href="{{ route('sales.orders.create') }}" class="inline-flex items-center gap-2 self-start rounded-lg bg-white px-3.5 py-2.5 text-sm font-semibold text-indigo-700 hover:bg-indigo-50"><x-icon name="shopping-bag" class="h-4 w-4" /> {{ __('New order') }}</a>

@@ -25,15 +25,15 @@
                 @forelse($policies as $index => $policy)
                     <tr wire:key="pol-{{ $policy->id }}">
                         <td class="px-4 py-3 text-slate-500 rtable-hide-mobile">{{ $policies->firstItem() + $index }}</td>
-                        <td class="px-4 py-3 font-medium" data-label="Applies To">
+                        <td class="px-4 py-3 font-medium" data-label="{{ __('Applies To') }}">
                             @if($policy->product)
                                 {{ $policy->product->name }} <span class="text-xs text-slate-400">{{ __('(product)') }}</span>
                             @else
                                 {{ $policy->category?->name }} <span class="text-xs text-slate-400">{{ __('(category)') }}</span>
                             @endif
                         </td>
-                        <td class="px-4 py-3" data-label="Duration">{{ $policy->duration_months }} months</td>
-                        <td class="px-4 py-3 text-slate-500" data-label="Terms">{{ $policy->terms ?? '—' }}</td>
+                        <td class="px-4 py-3" data-label="{{ __('Duration') }}">{{ $policy->duration_months }} months</td>
+                        <td class="px-4 py-3 text-slate-500" data-label="{{ __('Terms') }}">{{ $policy->terms ?? '—' }}</td>
                         <td class="px-4 py-3">
                             <div class="flex items-center justify-end gap-1.5">
                                 <x-icon-action wire:click="edit({{ $policy->id }})" icon="pencil" color="amber" label="Edit" />

@@ -3,11 +3,13 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DeliveryInvoiceController;
+use App\Http\Controllers\DocumentPrintController;
 use App\Http\Controllers\MasterData\CompanyExportController;
 use App\Http\Controllers\MasterData\ProductExportController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\Reports\ExportController as ReportExportController;
+use App\Http\Controllers\Reports\PdfController as ReportPdfController;
 use App\Http\Controllers\Settings\BackupController;
 use App\Livewire\Account\ChangePassword;
 use App\Livewire\Account\NotificationSettings;
@@ -47,7 +49,9 @@ use App\Livewire\Payroll\Advances\Index as PayrollAdvancesIndex;
 use App\Livewire\Portal\OrderCreate as PortalOrderCreate;
 use App\Livewire\Portal\Orders as PortalOrders;
 use App\Livewire\Portal\OrderShow as PortalOrderShow;
+use App\Livewire\Portal\Returns as PortalReturns;
 use App\Livewire\Portal\Statement as PortalStatement;
+use App\Livewire\Portal\Warranty as PortalWarranty;
 use App\Livewire\Payroll\Bonuses\Index as PayrollBonusesIndex;
 use App\Livewire\Payroll\Entries\Create as PayrollEntryCreate;
 use App\Livewire\Payroll\Entries\Index as PayrollEntryIndex;
@@ -130,7 +134,11 @@ Route::middleware('auth')->group(function () {
         Route::get('/orders/new', PortalOrderCreate::class)->name('orders.create');
         Route::get('/orders/{salesOrder}', PortalOrderShow::class)->name('orders.show');
         Route::get('/statement', PortalStatement::class)->name('statement');
+        Route::get('/returns', PortalReturns::class)->name('returns');
+        Route::get('/warranty', PortalWarranty::class)->name('warranty');
         Route::get('/invoices/{deliveryInvoice}/pdf', [DeliveryInvoiceController::class, 'printForRetailer'])->name('invoices.print');
+        Route::get('/sales-invoices/{salesInvoice}/pdf', [DocumentPrintController::class, 'salesInvoiceForRetailer'])->name('sales-invoices.print');
+        Route::get('/receipts/{collection}/pdf', [DocumentPrintController::class, 'moneyReceiptForRetailer'])->name('receipts.print');
     });
 
     Route::get('/business', BusinessIndex::class)->name('business.index');
@@ -177,6 +185,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/orders/create', SalesOrderCreate::class)->name('orders.create');
         Route::get('/orders/{salesOrder}', SalesOrderShow::class)->name('orders.show');
         Route::get('/orders/{salesOrder}/deliver', DeliveryCreate::class)->middleware('can:delivery.manage')->name('orders.deliver');
+        Route::get('/invoices/{salesInvoice}/print', [DocumentPrintController::class, 'salesInvoice'])->name('invoices.print');
     });
 
     Route::middleware('can:delivery.view')->prefix('deliveries')->name('delivery.')->group(function () {
@@ -191,6 +200,7 @@ Route::middleware('auth')->group(function () {
     Route::middleware('can:collection.view')->prefix('collections')->name('collection.')->group(function () {
         Route::get('/', CollectionIndex::class)->name('index');
         Route::get('/create', CollectionCreate::class)->name('create');
+        Route::get('/{collection}/receipt', [DocumentPrintController::class, 'moneyReceipt'])->name('receipt');
     });
 
     Route::middleware('can:retailers.view')->prefix('retailers')->name('retailers.')->group(function () {
@@ -235,6 +245,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/profit', ReportsProfit::class)->name('profit');
         Route::get('/expiry', ReportsExpiry::class)->name('expiry');
         Route::get('/areas', ReportsAreas::class)->name('areas');
+
+        Route::get('/pdf/{report}', [ReportPdfController::class, 'show'])->name('pdf');
 
         Route::prefix('export')->name('export.')->group(function () {
             Route::get('/sales', [ReportExportController::class, 'sales'])->name('sales');

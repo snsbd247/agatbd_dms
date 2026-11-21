@@ -84,12 +84,15 @@
                                 </p>
                             </div>
                         </td>
-                        <td class="px-4 py-3 font-medium rtable-hide-mobile" data-label="Number">{{ $collection->number }}</td>
-                        <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="Retailer">{{ $collection->retailer?->name }}</td>
-                        <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="Date">{{ $collection->collection_date->format('d M Y') }}</td>
-                        <td class="px-4 py-3 text-slate-500 capitalize rtable-hide-mobile" data-label="Method">{{ $collection->method }}</td>
-                        <td class="px-4 py-3 rtable-hide-mobile" data-label="Amount">{{ number_format($collection->amount, 2) }}</td>
-                        <td class="px-4 py-3 text-right">
+                        <td class="px-4 py-3 font-medium rtable-hide-mobile" data-label="{{ __('Number') }}">{{ $collection->number }}</td>
+                        <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="{{ __('Retailer') }}">{{ $collection->retailer?->name }}</td>
+                        <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="{{ __('Date') }}">{{ $collection->collection_date->format('d M Y') }}</td>
+                        <td class="px-4 py-3 text-slate-500 capitalize rtable-hide-mobile" data-label="{{ __('Method') }}">{{ $collection->method }}</td>
+                        <td class="px-4 py-3 rtable-hide-mobile" data-label="{{ __('Amount') }}">{{ number_format($collection->amount, 2) }}</td>
+                        <td class="px-4 py-3 text-right whitespace-nowrap">
+                            <a href="{{ route('collection.receipt', $collection) }}" target="_blank">
+                                <x-icon-action icon="printer" color="amber" label="Money Receipt" />
+                            </a>
                             @can('retailers.view')
                                 @if($collection->retailer)
                                     <a href="{{ route('retailers.ledger', $collection->retailer) }}">

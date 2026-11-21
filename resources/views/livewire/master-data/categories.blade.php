@@ -73,10 +73,10 @@
                                 {{ $category->active ? 'Active' : 'Inactive' }}
                             </span>
                         </td>
-                        <td class="px-4 py-3 font-medium rtable-hide-mobile" data-label="Name">{{ $category->name }}</td>
-                        <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="Code">{{ $category->code }}</td>
-                        <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="Parent">{{ $category->parent?->name ?? '—' }}</td>
-                        <td class="px-4 py-3 rtable-hide-mobile" data-label="Status">
+                        <td class="px-4 py-3 font-medium rtable-hide-mobile" data-label="{{ __('Name') }}">{{ $category->name }}</td>
+                        <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="{{ __('Code') }}">{{ $category->code }}</td>
+                        <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="{{ __('Parent') }}">{{ $category->parent?->name ?? '—' }}</td>
+                        <td class="px-4 py-3 rtable-hide-mobile" data-label="{{ __('Status') }}">
                             <span class="px-2 py-1 rounded-full text-xs {{ $category->active ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }}">
                                 {{ $category->active ? 'Active' : 'Inactive' }}
                             </span>

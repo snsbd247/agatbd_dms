@@ -15,9 +15,14 @@
                 <option value="received">{{ __('Received') }}</option>
             </select>
         </div>
-        <a href="{{ route('reports.export.returns', request()->query()) }}" class="flex items-center gap-2 px-3 py-2 rounded-lg bg-white border shadow-sm text-sm text-slate-600 hover:text-indigo-600">
-            <x-icon name="download" class="w-4 h-4" /> {{ __('Download CSV') }}
-        </a>
+        <div class="flex items-center gap-2">
+            <a href="{{ route('reports.export.returns') }}" data-base="{{ route('reports.export.returns') }}" onclick="this.href = this.dataset.base + window.location.search" class="flex items-center gap-2 px-3 py-2 rounded-lg bg-white border shadow-sm text-sm text-slate-600 hover:text-indigo-600">
+                <x-icon name="download" class="w-4 h-4" /> {{ __('Download CSV') }}
+            </a>
+            <a href="{{ route('reports.pdf', 'returns') }}" data-base="{{ route('reports.pdf', 'returns') }}" onclick="this.href = this.dataset.base + window.location.search" target="_blank" class="flex items-center gap-2 px-3 py-2 rounded-lg bg-white border shadow-sm text-sm text-slate-600 hover:text-indigo-600">
+                <x-icon name="printer" class="w-4 h-4" /> {{ __('PDF') }}
+            </a>
+        </div>
     </div>
 
     <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-4">
@@ -49,11 +54,11 @@
             <tbody class="divide-y">
                 @forelse($requests as $request)
                     <tr wire:key="ret-{{ $request->id }}">
-                        <td class="px-4 py-3 font-medium" data-label="Number">{{ $request->number }}</td>
-                        <td class="px-4 py-3 text-slate-500" data-label="Date">{{ $request->request_date->format('d M Y') }}</td>
-                        <td class="px-4 py-3" data-label="Retailer">{{ $request->retailer?->name }}</td>
-                        <td class="px-4 py-3" data-label="Value">৳ {{ number_format($request->value, 2) }}</td>
-                        <td class="px-4 py-3" data-label="Status">
+                        <td class="px-4 py-3 font-medium" data-label="{{ __('Number') }}">{{ $request->number }}</td>
+                        <td class="px-4 py-3 text-slate-500" data-label="{{ __('Date') }}">{{ $request->request_date->format('d M Y') }}</td>
+                        <td class="px-4 py-3" data-label="{{ __('Retailer') }}">{{ $request->retailer?->name }}</td>
+                        <td class="px-4 py-3" data-label="{{ __('Value') }}">৳ {{ number_format($request->value, 2) }}</td>
+                        <td class="px-4 py-3" data-label="{{ __('Status') }}">
                             <span class="px-2 py-1 rounded-full text-xs {{ $request->status === 'received' ? 'bg-green-100 text-green-700' : ($request->status === 'rejected' ? 'bg-red-100 text-red-700' : 'bg-slate-100 text-slate-600') }}">
                                 {{ __(ucfirst($request->status)) }}
                             </span>

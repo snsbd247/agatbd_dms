@@ -38,10 +38,10 @@
                 @forelse($bonuses as $index => $bonus)
                     <tr wire:key="bon-{{ $bonus->id }}">
                         <td class="px-4 py-3 text-slate-500 rtable-hide-mobile">{{ $bonuses->firstItem() + $index }}</td>
-                        <td class="px-4 py-3 font-medium" data-label="Representative">{{ $bonus->representative?->name }}</td>
-                        <td class="px-4 py-3 text-slate-500" data-label="Date">{{ $bonus->bonus_date->format('d M Y') }}</td>
-                        <td class="px-4 py-3" data-label="Amount">৳ {{ number_format($bonus->amount, 2) }}</td>
-                        <td class="px-4 py-3 text-slate-500" data-label="Reason">{{ $bonus->reason ?? '—' }}</td>
+                        <td class="px-4 py-3 font-medium" data-label="{{ __('Representative') }}">{{ $bonus->representative?->name }}</td>
+                        <td class="px-4 py-3 text-slate-500" data-label="{{ __('Date') }}">{{ $bonus->bonus_date->format('d M Y') }}</td>
+                        <td class="px-4 py-3" data-label="{{ __('Amount') }}">৳ {{ number_format($bonus->amount, 2) }}</td>
+                        <td class="px-4 py-3 text-slate-500" data-label="{{ __('Reason') }}">{{ $bonus->reason ?? '—' }}</td>
                         <td class="px-4 py-3 text-right">
                             @can('payroll.manage')
                                 <x-icon-action wire:click="delete({{ $bonus->id }})" wire:confirm="{{ __('Delete this bonus?') }}" icon="trash" color="red" label="Delete" />

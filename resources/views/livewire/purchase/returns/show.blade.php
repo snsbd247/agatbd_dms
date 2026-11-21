@@ -58,11 +58,11 @@
             <tbody class="divide-y">
                 @foreach($purchaseReturn->items as $item)
                     <tr wire:key="item-{{ $item->id }}">
-                        <td class="px-4 py-3 font-medium" data-label="Product">{{ $item->product?->name }}</td>
-                        <td class="px-4 py-3 text-slate-500" data-label="Batch">{{ $item->batch?->batch_no }}</td>
-                        <td class="px-4 py-3" data-label="Quantity">{{ rtrim(rtrim(number_format($item->quantity, 3), '0'), '.') }}</td>
-                        <td class="px-4 py-3" data-label="Unit Cost">৳ {{ number_format($item->unit_cost, 2) }}</td>
-                        <td class="px-4 py-3" data-label="Line Total">৳ {{ number_format($item->quantity * $item->unit_cost, 2) }}</td>
+                        <td class="px-4 py-3 font-medium" data-label="{{ __('Product') }}">{{ $item->product?->name }}</td>
+                        <td class="px-4 py-3 text-slate-500" data-label="{{ __('Batch') }}">{{ $item->batch?->batch_no }}</td>
+                        <td class="px-4 py-3" data-label="{{ __('Quantity') }}">{{ rtrim(rtrim(number_format($item->quantity, 3), '0'), '.') }}</td>
+                        <td class="px-4 py-3" data-label="{{ __('Unit Cost') }}">৳ {{ number_format($item->unit_cost, 2) }}</td>
+                        <td class="px-4 py-3" data-label="{{ __('Line Total') }}">৳ {{ number_format($item->quantity * $item->unit_cost, 2) }}</td>
                     </tr>
                 @endforeach
             </tbody>

@@ -71,11 +71,11 @@
                                 <p class="text-xs text-slate-400">{{ $entry->period }}</p>
                             </div>
                         </td>
-                        <td class="px-4 py-3 font-medium rtable-hide-mobile" data-label="Number">{{ $entry->number }}</td>
-                        <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="Representative">{{ $entry->representative?->name }}</td>
-                        <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="Period">{{ $entry->period }}</td>
-                        <td class="px-4 py-3 rtable-hide-mobile" data-label="Net Salary">৳ {{ number_format($entry->net_salary, 2) }}</td>
-                        <td class="px-4 py-3 rtable-hide-mobile" data-label="Status">
+                        <td class="px-4 py-3 font-medium rtable-hide-mobile" data-label="{{ __('Number') }}">{{ $entry->number }}</td>
+                        <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="{{ __('Representative') }}">{{ $entry->representative?->name }}</td>
+                        <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="{{ __('Period') }}">{{ $entry->period }}</td>
+                        <td class="px-4 py-3 rtable-hide-mobile" data-label="{{ __('Net Salary') }}">৳ {{ number_format($entry->net_salary, 2) }}</td>
+                        <td class="px-4 py-3 rtable-hide-mobile" data-label="{{ __('Status') }}">
                             <span class="px-2 py-1 rounded-full text-xs {{ $entry->status === 'paid' ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-600' }}">
                                 {{ __(ucfirst($entry->status)) }}
                             </span>

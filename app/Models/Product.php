@@ -62,4 +62,9 @@ class Product extends Model
     {
         return $this->hasMany(Stock::class);
     }
+
+    public function salesInvoiceItems()
+    {
+        return $this->hasMany(\App\Models\Sales\SalesInvoiceItem::class);
+    }
 }

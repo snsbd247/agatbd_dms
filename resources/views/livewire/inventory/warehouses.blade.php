@@ -83,10 +83,10 @@
                                 {{ $warehouse->active ? 'Active' : 'Inactive' }}
                             </span>
                         </td>
-                        <td class="px-4 py-3 font-medium rtable-hide-mobile" data-label="Name">{{ $warehouse->name }}</td>
-                        <td class="px-4 py-3 text-slate-500 capitalize rtable-hide-mobile" data-label="Type">{{ $warehouse->type }}</td>
-                        <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="Address">{{ $warehouse->address ?? '—' }}</td>
-                        <td class="px-4 py-3 rtable-hide-mobile" data-label="Status">
+                        <td class="px-4 py-3 font-medium rtable-hide-mobile" data-label="{{ __('Name') }}">{{ $warehouse->name }}</td>
+                        <td class="px-4 py-3 text-slate-500 capitalize rtable-hide-mobile" data-label="{{ __('Type') }}">{{ $warehouse->type }}</td>
+                        <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="{{ __('Address') }}">{{ $warehouse->address ?? '—' }}</td>
+                        <td class="px-4 py-3 rtable-hide-mobile" data-label="{{ __('Status') }}">
                             <span class="px-2 py-1 rounded-full text-xs {{ $warehouse->active ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }}">
                                 {{ $warehouse->active ? 'Active' : 'Inactive' }}
                             </span>

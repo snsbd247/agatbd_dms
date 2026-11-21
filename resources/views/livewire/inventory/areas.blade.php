@@ -55,10 +55,10 @@
                                 {{ $area->retailers_count }} retailers
                             </span>
                         </td>
-                        <td class="px-4 py-3 font-medium rtable-hide-mobile" data-label="Name">{{ $area->name }}</td>
-                        <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="Code">{{ $area->code }}</td>
-                        <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="Retailers">{{ $area->retailers_count }}</td>
-                        <td class="px-4 py-3 text-slate-500" data-label="Representatives">{{ $area->representatives_count }}</td>
+                        <td class="px-4 py-3 font-medium rtable-hide-mobile" data-label="{{ __('Name') }}">{{ $area->name }}</td>
+                        <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="{{ __('Code') }}">{{ $area->code }}</td>
+                        <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="{{ __('Retailers') }}">{{ $area->retailers_count }}</td>
+                        <td class="px-4 py-3 text-slate-500" data-label="{{ __('Representatives') }}">{{ $area->representatives_count }}</td>
                         <td class="px-4 py-3">
                             <div class="flex items-center justify-end gap-1.5">
                                 <x-icon-action wire:click="view({{ $area->id }})" icon="eye" color="blue" label="View" />

@@ -51,15 +51,15 @@
                 @forelse($adjustments as $a)
                     @php $isAdd = (float) $a->quantity_change > 0; @endphp
                     <tr wire:key="adj-{{ $a->id }}">
-                        <td class="px-4 py-3 text-slate-500" data-label="Date">{{ $a->adjustment_date->format('d M Y') }}</td>
-                        <td class="px-4 py-3 font-medium" data-label="Product">{{ $a->product?->name }}</td>
-                        <td class="px-4 py-3 text-slate-500" data-label="Warehouse">{{ $a->warehouse?->name }}</td>
-                        <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="Batch">{{ $a->batch?->batch_no ?? '—' }}</td>
-                        <td class="px-4 py-3 text-right font-semibold {{ $isAdd ? 'text-green-700' : 'text-red-600' }}" data-label="Change">
+                        <td class="px-4 py-3 text-slate-500" data-label="{{ __('Date') }}">{{ $a->adjustment_date->format('d M Y') }}</td>
+                        <td class="px-4 py-3 font-medium" data-label="{{ __('Product') }}">{{ $a->product?->name }}</td>
+                        <td class="px-4 py-3 text-slate-500" data-label="{{ __('Warehouse') }}">{{ $a->warehouse?->name }}</td>
+                        <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="{{ __('Batch') }}">{{ $a->batch?->batch_no ?? '—' }}</td>
+                        <td class="px-4 py-3 text-right font-semibold {{ $isAdd ? 'text-green-700' : 'text-red-600' }}" data-label="{{ __('Change') }}">
                             {{ $isAdd ? '+' : '−' }}{{ $qty(abs((float) $a->quantity_change)) }} {{ $a->product?->unit?->short_code }}
                         </td>
-                        <td class="px-4 py-3 text-slate-600" data-label="Reason">{{ $a->reason }}</td>
-                        <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="By">{{ $a->adjustedBy?->name ?? '—' }}</td>
+                        <td class="px-4 py-3 text-slate-600" data-label="{{ __('Reason') }}">{{ $a->reason }}</td>
+                        <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="{{ __('By') }}">{{ $a->adjustedBy?->name ?? '—' }}</td>
                     </tr>
                 @empty
                     <tr>

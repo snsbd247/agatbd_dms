@@ -135,6 +135,27 @@
             </div>
         </div>
 
+        <div class="mt-5 border-t pt-4" x-data="{ open: false }">
+            <button type="button" @click="open = !open" class="flex items-center gap-2 text-sm font-medium text-slate-700">
+                <x-icon name="chevron-right" class="w-4 h-4 transition" x-bind:class="open && 'rotate-90'" />
+                {{ __('SMS text') }}
+            </button>
+            <div x-show="open" x-cloak class="mt-3 space-y-4">
+                <p class="text-xs text-slate-500">{{ __('Words in curly brackets are filled in automatically. The name above is added in front of every SMS. Bangla text works, but one Bangla SMS holds only about 70 letters (English about 160), so long Bangla text costs more.') }}</p>
+                @foreach($events as $key => $label)
+                    <div>
+                        <div class="flex items-center justify-between gap-2">
+                            <label class="text-sm text-slate-600 font-medium">{{ __($label) }}</label>
+                            <button type="button" wire:click="resetTemplate('{{ $key }}')" class="text-xs text-indigo-600 hover:underline">{{ __('Use default') }}</button>
+                        </div>
+                        <textarea wire:model="sms_templates.{{ $key }}" rows="2" maxlength="480" class="w-full border rounded-lg p-2 mt-1 text-sm"></textarea>
+                        <p class="text-xs text-slate-400 mt-0.5">{{ __('Can use:') }} <span class="font-mono">{{ implode(' ', $variables[$key]) }}</span></p>
+                        @error("sms_templates.{$key}") <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
+                    </div>
+                @endforeach
+            </div>
+        </div>
+
         <div class="mt-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-t pt-4">
             <div class="flex gap-2">
                 <input wire:model="testSmsTo" type="tel" placeholder="{{ __('01XXXXXXXXX') }}" class="border rounded-lg px-3 py-2 text-sm flex-1 sm:w-44">
@@ -160,10 +181,10 @@
             <tbody class="divide-y">
                 @forelse($logs as $log)
                     <tr>
-                        <td class="px-4 py-3 text-slate-500 whitespace-nowrap" data-label="When">{{ $log->created_at->format('d M H:i') }}</td>
-                        <td class="px-4 py-3" data-label="To">{{ $log->to }}</td>
-                        <td class="px-4 py-3 text-slate-600 rtable-block" data-label="Message">{{ $log->message }}</td>
-                        <td class="px-4 py-3" data-label="Status">
+                        <td class="px-4 py-3 text-slate-500 whitespace-nowrap" data-label="{{ __('When') }}">{{ $log->created_at->format('d M H:i') }}</td>
+                        <td class="px-4 py-3" data-label="{{ __('To') }}">{{ $log->to }}</td>
+                        <td class="px-4 py-3 text-slate-600 rtable-block" data-label="{{ __('Message') }}">{{ $log->message }}</td>
+                        <td class="px-4 py-3" data-label="{{ __('Status') }}">
                             <span class="px-2 py-1 rounded-full text-xs {{ $log->status === 'sent' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }}" title="{{ $log->response }}">{{ __(ucfirst($log->status)) }}</span>
                         </td>
                     </tr>

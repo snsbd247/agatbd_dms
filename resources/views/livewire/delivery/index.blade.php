@@ -57,18 +57,18 @@
                                 <p class="text-xs text-slate-400">{{ $note->delivery_date->format('d M Y') }}</p>
                             </div>
                         </td>
-                        <td class="px-4 py-3 font-medium rtable-hide-mobile" data-label="Number">{{ $note->number }}</td>
-                        <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="Date">{{ $note->delivery_date->format('d M Y') }}</td>
-                        <td class="px-4 py-3 text-slate-500 capitalize rtable-hide-mobile" data-label="Type">{{ $note->delivery_type }}</td>
-                        <td class="px-4 py-3" data-label="Sales Order">
+                        <td class="px-4 py-3 font-medium rtable-hide-mobile" data-label="{{ __('Number') }}">{{ $note->number }}</td>
+                        <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="{{ __('Date') }}">{{ $note->delivery_date->format('d M Y') }}</td>
+                        <td class="px-4 py-3 text-slate-500 capitalize rtable-hide-mobile" data-label="{{ __('Type') }}">{{ $note->delivery_type }}</td>
+                        <td class="px-4 py-3" data-label="{{ __('Sales Order') }}">
                             @if($note->salesOrder)
                                 <a href="{{ route('sales.orders.show', $note->salesOrder) }}" class="text-indigo-600 hover:underline">{{ $note->salesOrder->number }}</a>
                             @else
                                 —
                             @endif
                         </td>
-                        <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="Retailer">{{ $note->salesOrder?->retailer?->name }}</td>
-                        <td class="px-4 py-3 rtable-hide-mobile" data-label="Status">
+                        <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="{{ __('Retailer') }}">{{ $note->salesOrder?->retailer?->name }}</td>
+                        <td class="px-4 py-3 rtable-hide-mobile" data-label="{{ __('Status') }}">
                             <span class="px-2 py-1 rounded-full text-xs bg-green-100 text-green-700">{{ __(ucfirst($note->status)) }}</span>
                         </td>
                     </tr>

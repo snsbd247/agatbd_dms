@@ -68,11 +68,11 @@
                 <tbody class="divide-y">
                     @forelse($products as $product)
                         <tr wire:key="product-{{ $product->id }}">
-                            <td class="px-4 py-3 font-medium" data-label="Name">{{ $product->name }}</td>
-                            <td class="px-4 py-3 text-slate-500" data-label="SKU">{{ $product->sku }}</td>
-                            <td class="px-4 py-3 text-slate-500" data-label="Category">{{ $product->category?->name ?? '—' }}</td>
-                            <td class="px-4 py-3" data-label="Price">৳ {{ number_format($product->sale_price, 2) }}</td>
-                            <td class="px-4 py-3" data-label="Status">
+                            <td class="px-4 py-3 font-medium" data-label="{{ __('Name') }}">{{ $product->name }}</td>
+                            <td class="px-4 py-3 text-slate-500" data-label="{{ __('SKU') }}">{{ $product->sku }}</td>
+                            <td class="px-4 py-3 text-slate-500" data-label="{{ __('Category') }}">{{ $product->category?->name ?? '—' }}</td>
+                            <td class="px-4 py-3" data-label="{{ __('Price') }}">৳ {{ number_format($product->sale_price, 2) }}</td>
+                            <td class="px-4 py-3" data-label="{{ __('Status') }}">
                                 <span class="px-2 py-1 rounded-full text-xs {{ $product->active ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-600' }}">{{ $product->active ? 'Active' : 'Inactive' }}</span>
                             </td>
                         </tr>
@@ -96,10 +96,10 @@
                 <tbody class="divide-y">
                     @forelse($brands as $brand)
                         <tr wire:key="brand-{{ $brand->id }}">
-                            <td class="px-4 py-3 font-medium" data-label="Name">{{ $brand->name }}</td>
-                            <td class="px-4 py-3 text-slate-500" data-label="Code">{{ $brand->code }}</td>
-                            <td class="px-4 py-3" data-label="Products">{{ $brand->products_count }}</td>
-                            <td class="px-4 py-3" data-label="Status">
+                            <td class="px-4 py-3 font-medium" data-label="{{ __('Name') }}">{{ $brand->name }}</td>
+                            <td class="px-4 py-3 text-slate-500" data-label="{{ __('Code') }}">{{ $brand->code }}</td>
+                            <td class="px-4 py-3" data-label="{{ __('Products') }}">{{ $brand->products_count }}</td>
+                            <td class="px-4 py-3" data-label="{{ __('Status') }}">
                                 <span class="px-2 py-1 rounded-full text-xs {{ $brand->active ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-600' }}">{{ $brand->active ? 'Active' : 'Inactive' }}</span>
                             </td>
                         </tr>
@@ -125,11 +125,11 @@
                 <tbody class="divide-y">
                     @forelse($purchaseOrders as $order)
                         <tr wire:key="po-{{ $order->id }}">
-                            <td class="px-4 py-3 font-medium" data-label="Number">{{ $order->number }}</td>
-                            <td class="px-4 py-3 text-slate-500" data-label="Warehouse">{{ $order->warehouse?->name }}</td>
-                            <td class="px-4 py-3 text-slate-500" data-label="Date">{{ $order->order_date->format('d M Y') }}</td>
-                            <td class="px-4 py-3" data-label="Total">৳ {{ number_format($order->total_amount, 2) }}</td>
-                            <td class="px-4 py-3" data-label="Status">
+                            <td class="px-4 py-3 font-medium" data-label="{{ __('Number') }}">{{ $order->number }}</td>
+                            <td class="px-4 py-3 text-slate-500" data-label="{{ __('Warehouse') }}">{{ $order->warehouse?->name }}</td>
+                            <td class="px-4 py-3 text-slate-500" data-label="{{ __('Date') }}">{{ $order->order_date->format('d M Y') }}</td>
+                            <td class="px-4 py-3" data-label="{{ __('Total') }}">৳ {{ number_format($order->total_amount, 2) }}</td>
+                            <td class="px-4 py-3" data-label="{{ __('Status') }}">
                                 <span @class([
                                     'px-2 py-1 rounded-full text-xs',
                                     'bg-slate-100 text-slate-600' => $order->status === 'draft',
@@ -164,17 +164,17 @@
                 <tbody class="divide-y">
                     @forelse($goodsReceipts as $receipt)
                         <tr wire:key="grn-{{ $receipt->id }}">
-                            <td class="px-4 py-3 font-medium" data-label="Number">{{ $receipt->number }}</td>
-                            <td class="px-4 py-3" data-label="Purchase Order">
+                            <td class="px-4 py-3 font-medium" data-label="{{ __('Number') }}">{{ $receipt->number }}</td>
+                            <td class="px-4 py-3" data-label="{{ __('Purchase Order') }}">
                                 @if($receipt->purchaseOrder)
                                     <a href="{{ route('purchase.orders.show', $receipt->purchaseOrder) }}" class="text-indigo-600 hover:underline">{{ $receipt->purchaseOrder->number }}</a>
                                 @else
                                     —
                                 @endif
                             </td>
-                            <td class="px-4 py-3 text-slate-500" data-label="Warehouse">{{ $receipt->warehouse?->name }}</td>
-                            <td class="px-4 py-3 text-slate-500" data-label="Date">{{ $receipt->receipt_date->format('d M Y') }}</td>
-                            <td class="px-4 py-3" data-label="Total">৳ {{ number_format($receipt->total_amount, 2) }}</td>
+                            <td class="px-4 py-3 text-slate-500" data-label="{{ __('Warehouse') }}">{{ $receipt->warehouse?->name }}</td>
+                            <td class="px-4 py-3 text-slate-500" data-label="{{ __('Date') }}">{{ $receipt->receipt_date->format('d M Y') }}</td>
+                            <td class="px-4 py-3" data-label="{{ __('Total') }}">৳ {{ number_format($receipt->total_amount, 2) }}</td>
                         </tr>
                     @empty
                         <tr><td colspan="5" class="px-4 py-8 text-center text-slate-400">{{ __('No goods receipts yet.') }}</td></tr>
@@ -198,11 +198,11 @@
                 <tbody class="divide-y">
                     @forelse($purchaseReturns as $return)
                         <tr wire:key="prt-{{ $return->id }}">
-                            <td class="px-4 py-3 font-medium" data-label="Number">{{ $return->number }}</td>
-                            <td class="px-4 py-3 text-slate-500" data-label="Warehouse">{{ $return->warehouse?->name }}</td>
-                            <td class="px-4 py-3 text-slate-500" data-label="Date">{{ $return->return_date->format('d M Y') }}</td>
-                            <td class="px-4 py-3" data-label="Total">৳ {{ number_format($return->total_amount, 2) }}</td>
-                            <td class="px-4 py-3" data-label="Status">
+                            <td class="px-4 py-3 font-medium" data-label="{{ __('Number') }}">{{ $return->number }}</td>
+                            <td class="px-4 py-3 text-slate-500" data-label="{{ __('Warehouse') }}">{{ $return->warehouse?->name }}</td>
+                            <td class="px-4 py-3 text-slate-500" data-label="{{ __('Date') }}">{{ $return->return_date->format('d M Y') }}</td>
+                            <td class="px-4 py-3" data-label="{{ __('Total') }}">৳ {{ number_format($return->total_amount, 2) }}</td>
+                            <td class="px-4 py-3" data-label="{{ __('Status') }}">
                                 <span @class([
                                     'px-2 py-1 rounded-full text-xs',
                                     'bg-slate-100 text-slate-600' => $return->status === 'draft',

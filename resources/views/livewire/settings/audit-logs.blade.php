@@ -72,11 +72,11 @@
                         $open = $expanded === $log->id;
                     @endphp
                     <tr wire:key="log-{{ $log->id }}" class="align-top">
-                        <td class="px-4 py-3 text-slate-500 whitespace-nowrap" data-label="When">{{ $log->created_at->format('d M Y H:i') }}</td>
-                        <td class="px-4 py-3 font-medium" data-label="User">{{ $log->user?->name ?? 'System' }}</td>
-                        <td class="px-4 py-3" data-label="Action"><span class="px-2 py-1 rounded-full text-xs whitespace-nowrap {{ $color($log->action) }}">{{ $label($log->action) }}</span></td>
-                        <td class="px-4 py-3 text-slate-600" data-label="Record">{{ $ref }}</td>
-                        <td class="px-4 py-3 text-xs rtable-block" data-label="Changes">
+                        <td class="px-4 py-3 text-slate-500 whitespace-nowrap" data-label="{{ __('When') }}">{{ $log->created_at->format('d M Y H:i') }}</td>
+                        <td class="px-4 py-3 font-medium" data-label="{{ __('User') }}">{{ $log->user?->name ?? 'System' }}</td>
+                        <td class="px-4 py-3" data-label="{{ __('Action') }}"><span class="px-2 py-1 rounded-full text-xs whitespace-nowrap {{ $color($log->action) }}">{{ $label($log->action) }}</span></td>
+                        <td class="px-4 py-3 text-slate-600" data-label="{{ __('Record') }}">{{ $ref }}</td>
+                        <td class="px-4 py-3 text-xs rtable-block" data-label="{{ __('Changes') }}">
                             @if($isUpdate)
                                 <div class="space-y-0.5">
                                     @foreach(array_slice($fields, 0, $open ? 100 : 4) as $f)

@@ -38,6 +38,7 @@ class Messaging extends Component
     public string $sms_sender_name = '';
     public string $sms_number_format = '880';
     public array $sms_events = [];
+    public array $sms_templates = [];
 
     public string $testEmailTo = '';
     public string $testSmsTo = '';
@@ -63,6 +64,7 @@ class Messaging extends Component
 
         foreach (array_keys(SmsService::EVENTS) as $event) {
             $this->sms_events[$event] = AppSetting::flag('sms_event_'.$event, true);
+            $this->sms_templates[$event] = SmsService::template($event);
         }
 
         $this->testEmailTo = (string) Auth::user()->email;
@@ -134,11 +136,16 @@ class Messaging extends Component
             'sms_sender_id' => 'nullable|string|max:50',
             'sms_sender_name' => 'nullable|string|max:30',
             'sms_number_format' => 'required|in:880,01',
+            'sms_templates.*' => 'nullable|string|max:480',
         ]);
 
         $events = [];
         foreach (array_keys(SmsService::EVENTS) as $event) {
             $events['sms_event_'.$event] = (bool) ($this->sms_events[$event] ?? false);
+            $text = trim((string) ($this->sms_templates[$event] ?? ''));
+            // Store null when it matches the default so future default improvements still apply.
+            $events['sms_template_'.$event] = ($text === '' || $text === SmsService::TEMPLATES[$event]) ? null : $text;
+            $this->sms_templates[$event] = $text === '' ? SmsService::TEMPLATES[$event] : $text;
         }
 
         AppSetting::put([
@@ -156,6 +163,13 @@ class Messaging extends Component
         $this->sms_api_key = '';
         $this->smsKeySet = filled(AppSetting::get('sms_api_key'));
         $this->smsMessage = 'SMS settings saved.';
+    }
+
+    public function resetTemplate(string $event): void
+    {
+        if (isset(SmsService::TEMPLATES[$event])) {
+            $this->sms_templates[$event] = SmsService::TEMPLATES[$event];
+        }
     }
 
     public function sendTestSms(SmsService $sms): void
@@ -192,6 +206,7 @@ class Messaging extends Component
     {
         return view('livewire.settings.messaging', [
             'events' => SmsService::EVENTS,
+            'variables' => SmsService::VARIABLES,
             'logs' => SmsLog::latest('id')->limit(15)->get(),
         ]);
     }

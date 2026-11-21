@@ -8,7 +8,7 @@
             </td>
         @endif
         <td style="border: none; padding: 0; vertical-align: middle;">
-            <h1 style="margin: 0;">{{ $company?->name ?? config('app.name', 'DMS') }}</h1>
+            <h1>{{ $company?->name ?? config('app.name', 'DMS') }}</h1>
             @php $contact = collect([$company?->address, $company?->phone, $company?->email])->filter()->implode(' · '); @endphp
             @if($contact)
                 <p style="margin: 1mm 0 0; font-size: 10px; color: #555;">{{ $contact }}</p>

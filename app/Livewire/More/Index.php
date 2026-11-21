@@ -13,6 +13,8 @@ class Index extends Component
     public function render()
     {
         $items = collect([
+            ['route' => 'portal.returns', 'permission' => 'portal.access', 'icon' => 'refresh', 'title' => 'My Returns', 'color' => 'orange'],
+            ['route' => 'portal.warranty', 'permission' => 'portal.access', 'icon' => 'shield-check', 'title' => 'My Warranty Claims', 'color' => 'blue'],
             ['route' => 'returns.index', 'permission' => ['returns.view', 'warranty.view'], 'icon' => 'shield-check', 'title' => 'Return & Warranty', 'color' => 'blue'],
             ['route' => 'retailers.index', 'permission' => 'retailers.view', 'icon' => 'building-storefront', 'title' => 'Retailers', 'color' => 'green'],
             ['route' => 'representatives.index', 'permission' => 'representatives.view', 'icon' => 'user-group', 'title' => 'Representatives', 'color' => 'purple'],

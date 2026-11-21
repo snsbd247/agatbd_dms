@@ -14,9 +14,14 @@
                 <option value="">{{ __('All (any expiry date)') }}</option>
             </select>
         </div>
-        <a href="{{ route('reports.export.expiry', request()->query()) }}" class="flex items-center gap-2 px-3 py-2 rounded-lg bg-white border shadow-sm text-sm text-slate-600 hover:text-indigo-600">
-            <x-icon name="download" class="w-4 h-4" /> {{ __('Download CSV') }}
-        </a>
+        <div class="flex items-center gap-2">
+            <a href="{{ route('reports.export.expiry') }}" data-base="{{ route('reports.export.expiry') }}" onclick="this.href = this.dataset.base + window.location.search" class="flex items-center gap-2 px-3 py-2 rounded-lg bg-white border shadow-sm text-sm text-slate-600 hover:text-indigo-600">
+                <x-icon name="download" class="w-4 h-4" /> {{ __('Download CSV') }}
+            </a>
+            <a href="{{ route('reports.pdf', 'expiry') }}" data-base="{{ route('reports.pdf', 'expiry') }}" onclick="this.href = this.dataset.base + window.location.search" target="_blank" class="flex items-center gap-2 px-3 py-2 rounded-lg bg-white border shadow-sm text-sm text-slate-600 hover:text-indigo-600">
+                <x-icon name="printer" class="w-4 h-4" /> {{ __('PDF') }}
+            </a>
+        </div>
     </div>
 
     <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-4">
@@ -41,12 +46,12 @@
                 @forelse($batches as $batch)
                     @php $daysLeft = today()->diffInDays($batch->expiry_date, false); @endphp
                     <tr wire:key="batch-{{ $batch->id }}">
-                        <td class="px-4 py-3 font-medium" data-label="Product">{{ $batch->product?->name }}</td>
-                        <td class="px-4 py-3 text-slate-500" data-label="Batch">{{ $batch->batch_no }}</td>
-                        <td class="px-4 py-3 text-slate-500" data-label="Warehouse">{{ $batch->warehouse?->name }}</td>
-                        <td class="px-4 py-3" data-label="Quantity">{{ rtrim(rtrim(number_format($batch->quantity_available, 3), '0'), '.') }}</td>
-                        <td class="px-4 py-3" data-label="Expiry Date">{{ $batch->expiry_date->format('d M Y') }}</td>
-                        <td class="px-4 py-3" data-label="Days Remaining">
+                        <td class="px-4 py-3 font-medium" data-label="{{ __('Product') }}">{{ $batch->product?->name }}</td>
+                        <td class="px-4 py-3 text-slate-500" data-label="{{ __('Batch') }}">{{ $batch->batch_no }}</td>
+                        <td class="px-4 py-3 text-slate-500" data-label="{{ __('Warehouse') }}">{{ $batch->warehouse?->name }}</td>
+                        <td class="px-4 py-3" data-label="{{ __('Quantity') }}">{{ rtrim(rtrim(number_format($batch->quantity_available, 3), '0'), '.') }}</td>
+                        <td class="px-4 py-3" data-label="{{ __('Expiry Date') }}">{{ $batch->expiry_date->format('d M Y') }}</td>
+                        <td class="px-4 py-3" data-label="{{ __('Days Remaining') }}">
                             @if($daysLeft < 0)
                                 <span class="px-2 py-1 rounded-full text-xs bg-red-100 text-red-700">Expired {{ abs($daysLeft) }}d ago</span>
                             @elseif($daysLeft <= 30)

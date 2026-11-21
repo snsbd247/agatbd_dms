@@ -32,11 +32,11 @@
                 @forelse($histories as $index => $history)
                     <tr wire:key="lh-{{ $history->id }}">
                         <td class="px-4 py-3 text-slate-500 rtable-hide-mobile">{{ $histories->firstItem() + $index }}</td>
-                        <td class="px-4 py-3 font-medium" data-label="User">{{ $history->user?->name ?? 'Unknown' }}</td>
-                        <td class="px-4 py-3 text-slate-500" data-label="IP Address">{{ $history->ip_address }}</td>
-                        <td class="px-4 py-3 text-slate-500" data-label="Login At">{{ $history->login_at?->format('d M Y H:i') }}</td>
-                        <td class="px-4 py-3 text-slate-500" data-label="Logout At">{{ $history->logout_at?->format('d M Y H:i') ?? '—' }}</td>
-                        <td class="px-4 py-3" data-label="Status">
+                        <td class="px-4 py-3 font-medium" data-label="{{ __('User') }}">{{ $history->user?->name ?? 'Unknown' }}</td>
+                        <td class="px-4 py-3 text-slate-500" data-label="{{ __('IP Address') }}">{{ $history->ip_address }}</td>
+                        <td class="px-4 py-3 text-slate-500" data-label="{{ __('Login At') }}">{{ $history->login_at?->format('d M Y H:i') }}</td>
+                        <td class="px-4 py-3 text-slate-500" data-label="{{ __('Logout At') }}">{{ $history->logout_at?->format('d M Y H:i') ?? '—' }}</td>
+                        <td class="px-4 py-3" data-label="{{ __('Status') }}">
                             <span class="px-2 py-1 rounded-full text-xs {{ $history->status === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }}">
                                 {{ __(ucfirst($history->status)) }}
                             </span>

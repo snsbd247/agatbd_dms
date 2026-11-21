@@ -22,9 +22,14 @@
                 <option value="cancelled">{{ __('Cancelled') }}</option>
             </select>
         </div>
-        <a href="{{ route('reports.export.purchase', request()->query()) }}" class="flex items-center gap-2 px-3 py-2 rounded-lg bg-white border shadow-sm text-sm text-slate-600 hover:text-indigo-600">
-            <x-icon name="download" class="w-4 h-4" /> {{ __('Download CSV') }}
-        </a>
+        <div class="flex items-center gap-2">
+            <a href="{{ route('reports.export.purchase') }}" data-base="{{ route('reports.export.purchase') }}" onclick="this.href = this.dataset.base + window.location.search" class="flex items-center gap-2 px-3 py-2 rounded-lg bg-white border shadow-sm text-sm text-slate-600 hover:text-indigo-600">
+                <x-icon name="download" class="w-4 h-4" /> {{ __('Download CSV') }}
+            </a>
+            <a href="{{ route('reports.pdf', 'purchase') }}" data-base="{{ route('reports.pdf', 'purchase') }}" onclick="this.href = this.dataset.base + window.location.search" target="_blank" class="flex items-center gap-2 px-3 py-2 rounded-lg bg-white border shadow-sm text-sm text-slate-600 hover:text-indigo-600">
+                <x-icon name="printer" class="w-4 h-4" /> {{ __('PDF') }}
+            </a>
+        </div>
     </div>
 
     <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-4">
@@ -48,12 +53,12 @@
             <tbody class="divide-y">
                 @forelse($orders as $order)
                     <tr wire:key="po-{{ $order->id }}">
-                        <td class="px-4 py-3 font-medium" data-label="Number">{{ $order->number }}</td>
-                        <td class="px-4 py-3 text-slate-500" data-label="Date">{{ $order->order_date->format('d M Y') }}</td>
-                        <td class="px-4 py-3" data-label="Company">{{ $order->company?->name }}</td>
-                        <td class="px-4 py-3 text-slate-500" data-label="Warehouse">{{ $order->warehouse?->name }}</td>
-                        <td class="px-4 py-3" data-label="Total">৳ {{ number_format($order->total_amount, 2) }}</td>
-                        <td class="px-4 py-3" data-label="Status">
+                        <td class="px-4 py-3 font-medium" data-label="{{ __('Number') }}">{{ $order->number }}</td>
+                        <td class="px-4 py-3 text-slate-500" data-label="{{ __('Date') }}">{{ $order->order_date->format('d M Y') }}</td>
+                        <td class="px-4 py-3" data-label="{{ __('Company') }}">{{ $order->company?->name }}</td>
+                        <td class="px-4 py-3 text-slate-500" data-label="{{ __('Warehouse') }}">{{ $order->warehouse?->name }}</td>
+                        <td class="px-4 py-3" data-label="{{ __('Total') }}">৳ {{ number_format($order->total_amount, 2) }}</td>
+                        <td class="px-4 py-3" data-label="{{ __('Status') }}">
                             <span @class([
                                 'px-2 py-1 rounded-full text-xs',
                                 'bg-slate-100 text-slate-600' => $order->status === 'draft',

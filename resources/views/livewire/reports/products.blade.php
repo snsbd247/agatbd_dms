@@ -6,9 +6,14 @@
             <span class="text-slate-300">&ndash;</span>
             <input type="date" wire:model.live="to" class="text-sm border-0 p-0 focus:ring-0 w-32">
         </div>
-        <a href="{{ route('reports.export.products', request()->query()) }}" class="flex items-center gap-2 px-3 py-2 rounded-lg bg-white border shadow-sm text-sm text-slate-600 hover:text-indigo-600">
-            <x-icon name="download" class="w-4 h-4" /> {{ __('Download CSV') }}
-        </a>
+        <div class="flex items-center gap-2">
+            <a href="{{ route('reports.export.products') }}" data-base="{{ route('reports.export.products') }}" onclick="this.href = this.dataset.base + window.location.search" class="flex items-center gap-2 px-3 py-2 rounded-lg bg-white border shadow-sm text-sm text-slate-600 hover:text-indigo-600">
+                <x-icon name="download" class="w-4 h-4" /> {{ __('Download CSV') }}
+            </a>
+            <a href="{{ route('reports.pdf', 'products') }}" data-base="{{ route('reports.pdf', 'products') }}" onclick="this.href = this.dataset.base + window.location.search" target="_blank" class="flex items-center gap-2 px-3 py-2 rounded-lg bg-white border shadow-sm text-sm text-slate-600 hover:text-indigo-600">
+                <x-icon name="printer" class="w-4 h-4" /> {{ __('PDF') }}
+            </a>
+        </div>
     </div>
 
     <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-4">
@@ -30,10 +35,10 @@
             <tbody class="divide-y">
                 @forelse($rows as $row)
                     <tr wire:key="product-{{ $row['product']->id }}">
-                        <td class="px-4 py-3 font-medium" data-label="Product">{{ $row['product']->name }}</td>
-                        <td class="px-4 py-3" data-label="Quantity Sold">{{ rtrim(rtrim(number_format($row['quantity'], 3), '0'), '.') }}</td>
-                        <td class="px-4 py-3" data-label="Revenue">৳ {{ number_format($row['revenue'], 2) }}</td>
-                        <td class="px-4 py-3 {{ $row['profit'] >= 0 ? 'text-green-700' : 'text-red-600' }}" data-label="Profit">৳ {{ number_format($row['profit'], 2) }}</td>
+                        <td class="px-4 py-3 font-medium" data-label="{{ __('Product') }}">{{ $row['product']->name }}</td>
+                        <td class="px-4 py-3" data-label="{{ __('Quantity Sold') }}">{{ rtrim(rtrim(number_format($row['quantity'], 3), '0'), '.') }}</td>
+                        <td class="px-4 py-3" data-label="{{ __('Revenue') }}">৳ {{ number_format($row['revenue'], 2) }}</td>
+                        <td class="px-4 py-3 {{ $row['profit'] >= 0 ? 'text-green-700' : 'text-red-600' }}" data-label="{{ __('Profit') }}">৳ {{ number_format($row['profit'], 2) }}</td>
                     </tr>
                 @empty
                     <tr>

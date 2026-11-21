@@ -48,8 +48,8 @@
             <tbody class="divide-y">
                 @foreach($companyReturn->items as $item)
                     <tr wire:key="item-{{ $item->id }}">
-                        <td class="px-4 py-3 font-medium" data-label="Product">{{ $item->product?->name }}</td>
-                        <td class="px-4 py-3" data-label="Quantity">{{ rtrim(rtrim(number_format($item->quantity, 3), '0'), '.') }}</td>
+                        <td class="px-4 py-3 font-medium" data-label="{{ __('Product') }}">{{ $item->product?->name }}</td>
+                        <td class="px-4 py-3" data-label="{{ __('Quantity') }}">{{ rtrim(rtrim(number_format($item->quantity, 3), '0'), '.') }}</td>
                     </tr>
                 @endforeach
             </tbody>

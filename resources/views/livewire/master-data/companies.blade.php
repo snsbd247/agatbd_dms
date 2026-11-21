@@ -103,16 +103,16 @@
                                 {{ $company->active ? 'Active' : 'Inactive' }}
                             </span>
                         </td>
-                        <td class="px-4 py-3 font-medium rtable-hide-mobile" data-label="Company Name">{{ $company->name }}</td>
-                        <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="Phone">{{ $company->phone ?? '—' }}</td>
-                        <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="Email">{{ $company->email ?? '—' }}</td>
-                        <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="Territory">{{ $company->address ?? '—' }}</td>
-                        <td class="px-4 py-3 rtable-hide-mobile" data-label="Status">
+                        <td class="px-4 py-3 font-medium rtable-hide-mobile" data-label="{{ __('Company Name') }}">{{ $company->name }}</td>
+                        <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="{{ __('Phone') }}">{{ $company->phone ?? '—' }}</td>
+                        <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="{{ __('Email') }}">{{ $company->email ?? '—' }}</td>
+                        <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="{{ __('Territory') }}">{{ $company->address ?? '—' }}</td>
+                        <td class="px-4 py-3 rtable-hide-mobile" data-label="{{ __('Status') }}">
                             <span class="px-2 py-1 rounded-full text-xs {{ $company->active ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }}">
                                 {{ $company->active ? 'Active' : 'Inactive' }}
                             </span>
                         </td>
-                        <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="Joining Date">{{ $company->created_at->format('d M Y') }}</td>
+                        <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="{{ __('Joining Date') }}">{{ $company->created_at->format('d M Y') }}</td>
                         <td class="px-4 py-3">
                             <div class="flex items-center justify-end gap-1.5">
                                 <a href="{{ route('master-data.companies.show', $company) }}">

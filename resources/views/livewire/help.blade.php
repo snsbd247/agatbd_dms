@@ -1,5 +1,5 @@
 <div class="max-w-4xl" x-data="{ q: '' }">
-    <div class="rounded-2xl bg-gradient-to-r from-slate-800 to-indigo-800 p-6 text-white shadow-lg mb-5">
+    <div class="dark-keep rounded-2xl bg-gradient-to-r from-slate-800 to-indigo-800 p-6 text-white shadow-lg mb-5">
         <h2 class="text-xl font-bold">DMS ব্যবহারের নির্দেশিকা</h2>
         <p class="mt-1 text-sm text-indigo-200">আপনার কাজের অংশগুলো নিচে দেওয়া আছে। কিছু খুঁজতে নিচের বক্সে লিখুন।</p>
         <input x-model="q" type="search" placeholder="যেমন: ডিসকাউন্ট, ব্যাকআপ, stock…" class="mt-4 w-full rounded-lg px-4 py-2.5 text-slate-800 text-sm">
@@ -39,7 +39,7 @@
         @endforeach
     </div>
 
-    <div class="mt-6 bg-slate-900 text-slate-200 rounded-xl p-5 text-sm flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+    <div class="dark-keep mt-6 bg-slate-900 text-slate-200 rounded-xl p-5 text-sm flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <p>আরও সাহায্য লাগলে সাপোর্ট টিমের সাথে যোগাযোগ করুন।</p>
         <a href="mailto:support@syncsolutionbd.com" class="bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg px-4 py-2 text-center font-medium">Contact Support</a>
     </div>

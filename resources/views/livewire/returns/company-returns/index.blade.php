@@ -57,10 +57,10 @@
                             </div>
                             <p class="w-full text-xs text-slate-500 mt-0.5">{{ $companyReturn->company?->name }} &middot; {{ $companyReturn->return_date->format('d M Y') }}</p>
                         </td>
-                        <td class="px-4 py-3 font-medium rtable-hide-mobile" data-label="Number">{{ $companyReturn->number }}</td>
-                        <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="Company">{{ $companyReturn->company?->name }}</td>
-                        <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="Date">{{ $companyReturn->return_date->format('d M Y') }}</td>
-                        <td class="px-4 py-3 rtable-hide-mobile" data-label="Status">
+                        <td class="px-4 py-3 font-medium rtable-hide-mobile" data-label="{{ __('Number') }}">{{ $companyReturn->number }}</td>
+                        <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="{{ __('Company') }}">{{ $companyReturn->company?->name }}</td>
+                        <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="{{ __('Date') }}">{{ $companyReturn->return_date->format('d M Y') }}</td>
+                        <td class="px-4 py-3 rtable-hide-mobile" data-label="{{ __('Status') }}">
                             <span @class([
                                 'px-2 py-1 rounded-full text-xs',
                                 'bg-slate-100 text-slate-600' => $companyReturn->status === 'draft',

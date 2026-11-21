@@ -6,9 +6,14 @@
             <span class="text-slate-300">&ndash;</span>
             <input type="date" wire:model.live="to" class="text-sm border-0 p-0 focus:ring-0 w-32">
         </div>
-        <a href="{{ route('reports.export.profit', request()->query()) }}" class="flex items-center gap-2 px-3 py-2 rounded-lg bg-white border shadow-sm text-sm text-slate-600 hover:text-indigo-600">
-            <x-icon name="download" class="w-4 h-4" /> {{ __('Download CSV') }}
-        </a>
+        <div class="flex items-center gap-2">
+            <a href="{{ route('reports.export.profit') }}" data-base="{{ route('reports.export.profit') }}" onclick="this.href = this.dataset.base + window.location.search" class="flex items-center gap-2 px-3 py-2 rounded-lg bg-white border shadow-sm text-sm text-slate-600 hover:text-indigo-600">
+                <x-icon name="download" class="w-4 h-4" /> {{ __('Download CSV') }}
+            </a>
+            <a href="{{ route('reports.pdf', 'profit') }}" data-base="{{ route('reports.pdf', 'profit') }}" onclick="this.href = this.dataset.base + window.location.search" target="_blank" class="flex items-center gap-2 px-3 py-2 rounded-lg bg-white border shadow-sm text-sm text-slate-600 hover:text-indigo-600">
+                <x-icon name="printer" class="w-4 h-4" /> {{ __('PDF') }}
+            </a>
+        </div>
     </div>
 
     <p class="text-xs text-slate-400 mb-4">{{ __('Approximation: Payroll is the only tracked operating expense in this app — Net Profit doesn\'t account for rent, utilities, or other real-world costs.') }}</p>
@@ -36,12 +41,12 @@
             <tbody class="divide-y">
                 @forelse($months as $month)
                     <tr wire:key="month-{{ __($month['label']) }}">
-                        <td class="px-4 py-3 font-medium" data-label="Month">{{ __($month['label']) }}</td>
-                        <td class="px-4 py-3" data-label="Revenue">৳ {{ number_format($month['revenue'], 2) }}</td>
-                        <td class="px-4 py-3 text-slate-500" data-label="COGS">৳ {{ number_format($month['cogs'], 2) }}</td>
-                        <td class="px-4 py-3" data-label="Gross Profit">৳ {{ number_format($month['gross_profit'], 2) }}</td>
-                        <td class="px-4 py-3 text-slate-500" data-label="Payroll Cost">৳ {{ number_format($month['payroll_cost'], 2) }}</td>
-                        <td class="px-4 py-3 font-medium {{ $month['net_profit'] >= 0 ? 'text-green-700' : 'text-red-600' }}" data-label="Net Profit">৳ {{ number_format($month['net_profit'], 2) }}</td>
+                        <td class="px-4 py-3 font-medium" data-label="{{ __('Month') }}">{{ __($month['label']) }}</td>
+                        <td class="px-4 py-3" data-label="{{ __('Revenue') }}">৳ {{ number_format($month['revenue'], 2) }}</td>
+                        <td class="px-4 py-3 text-slate-500" data-label="{{ __('COGS') }}">৳ {{ number_format($month['cogs'], 2) }}</td>
+                        <td class="px-4 py-3" data-label="{{ __('Gross Profit') }}">৳ {{ number_format($month['gross_profit'], 2) }}</td>
+                        <td class="px-4 py-3 text-slate-500" data-label="{{ __('Payroll Cost') }}">৳ {{ number_format($month['payroll_cost'], 2) }}</td>
+                        <td class="px-4 py-3 font-medium {{ $month['net_profit'] >= 0 ? 'text-green-700' : 'text-red-600' }}" data-label="{{ __('Net Profit') }}">৳ {{ number_format($month['net_profit'], 2) }}</td>
                     </tr>
                 @empty
                     <tr>

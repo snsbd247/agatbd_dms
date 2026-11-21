@@ -36,9 +36,9 @@
                 @forelse($users as $index => $user)
                     <tr wire:key="user-{{ $user->id }}">
                         <td class="px-4 py-3 text-slate-500 rtable-hide-mobile">{{ $users->firstItem() + $index }}</td>
-                        <td class="px-4 py-3 font-medium" data-label="Name">{{ $user->name }}</td>
-                        <td class="px-4 py-3 text-slate-500" data-label="Email">{{ $user->email }}</td>
-                        <td class="px-4 py-3" data-label="Role">
+                        <td class="px-4 py-3 font-medium" data-label="{{ __('Name') }}">{{ $user->name }}</td>
+                        <td class="px-4 py-3 text-slate-500" data-label="{{ __('Email') }}">{{ $user->email }}</td>
+                        <td class="px-4 py-3" data-label="{{ __('Role') }}">
                             <span class="px-2 py-1 rounded-full text-xs bg-indigo-100 text-indigo-700">{{ $user->getRoleNames()->first() }}</span>
                         </td>
                         <td class="px-4 py-3">

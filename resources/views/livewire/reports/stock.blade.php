@@ -6,9 +6,14 @@
                 <option value="{{ $warehouse->id }}">{{ $warehouse->name }}</option>
             @endforeach
         </select>
-        <a href="{{ route('reports.export.stock', request()->query()) }}" class="flex items-center gap-2 px-3 py-2 rounded-lg bg-white border shadow-sm text-sm text-slate-600 hover:text-indigo-600">
-            <x-icon name="download" class="w-4 h-4" /> {{ __('Download CSV') }}
-        </a>
+        <div class="flex items-center gap-2">
+            <a href="{{ route('reports.export.stock') }}" data-base="{{ route('reports.export.stock') }}" onclick="this.href = this.dataset.base + window.location.search" class="flex items-center gap-2 px-3 py-2 rounded-lg bg-white border shadow-sm text-sm text-slate-600 hover:text-indigo-600">
+                <x-icon name="download" class="w-4 h-4" /> {{ __('Download CSV') }}
+            </a>
+            <a href="{{ route('reports.pdf', 'stock') }}" data-base="{{ route('reports.pdf', 'stock') }}" onclick="this.href = this.dataset.base + window.location.search" target="_blank" class="flex items-center gap-2 px-3 py-2 rounded-lg bg-white border shadow-sm text-sm text-slate-600 hover:text-indigo-600">
+                <x-icon name="printer" class="w-4 h-4" /> {{ __('PDF') }}
+            </a>
+        </div>
     </div>
 
     <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-4">
@@ -32,11 +37,11 @@
             <tbody class="divide-y">
                 @forelse($stocks as $stock)
                     <tr wire:key="stock-{{ $stock->id }}">
-                        <td class="px-4 py-3 font-medium" data-label="Product">{{ $stock->product?->name }}</td>
-                        <td class="px-4 py-3 text-slate-500" data-label="Warehouse">{{ $stock->warehouse?->name }}</td>
-                        <td class="px-4 py-3" data-label="Quantity">{{ rtrim(rtrim(number_format($stock->quantity, 3), '0'), '.') }}</td>
-                        <td class="px-4 py-3 text-slate-500" data-label="Reorder Level">{{ rtrim(rtrim(number_format($stock->reorder_level, 3), '0'), '.') }}</td>
-                        <td class="px-4 py-3" data-label="Status">
+                        <td class="px-4 py-3 font-medium" data-label="{{ __('Product') }}">{{ $stock->product?->name }}</td>
+                        <td class="px-4 py-3 text-slate-500" data-label="{{ __('Warehouse') }}">{{ $stock->warehouse?->name }}</td>
+                        <td class="px-4 py-3" data-label="{{ __('Quantity') }}">{{ rtrim(rtrim(number_format($stock->quantity, 3), '0'), '.') }}</td>
+                        <td class="px-4 py-3 text-slate-500" data-label="{{ __('Reorder Level') }}">{{ rtrim(rtrim(number_format($stock->reorder_level, 3), '0'), '.') }}</td>
+                        <td class="px-4 py-3" data-label="{{ __('Status') }}">
                             @if($stock->quantity <= 0)
                                 <span class="px-2 py-1 rounded-full text-xs bg-red-100 text-red-700">{{ __('Out of Stock') }}</span>
                             @elseif($stock->quantity <= $stock->reorder_level)
@@ -70,11 +75,11 @@
             <tbody class="divide-y">
                 @forelse($nearExpiry as $batch)
                     <tr wire:key="batch-{{ $batch->id }}">
-                        <td class="px-4 py-3 font-medium" data-label="Product">{{ $batch->product?->name }}</td>
-                        <td class="px-4 py-3 text-slate-500" data-label="Warehouse">{{ $batch->warehouse?->name }}</td>
-                        <td class="px-4 py-3 text-slate-500" data-label="Batch #">{{ $batch->batch_no }}</td>
-                        <td class="px-4 py-3 text-amber-600" data-label="Expiry Date">{{ $batch->expiry_date->format('d M Y') }}</td>
-                        <td class="px-4 py-3" data-label="Qty Available">{{ rtrim(rtrim(number_format($batch->quantity_available, 3), '0'), '.') }}</td>
+                        <td class="px-4 py-3 font-medium" data-label="{{ __('Product') }}">{{ $batch->product?->name }}</td>
+                        <td class="px-4 py-3 text-slate-500" data-label="{{ __('Warehouse') }}">{{ $batch->warehouse?->name }}</td>
+                        <td class="px-4 py-3 text-slate-500" data-label="{{ __('Batch #') }}">{{ $batch->batch_no }}</td>
+                        <td class="px-4 py-3 text-amber-600" data-label="{{ __('Expiry Date') }}">{{ $batch->expiry_date->format('d M Y') }}</td>
+                        <td class="px-4 py-3" data-label="{{ __('Qty Available') }}">{{ rtrim(rtrim(number_format($batch->quantity_available, 3), '0'), '.') }}</td>
                     </tr>
                 @empty
                     <tr>

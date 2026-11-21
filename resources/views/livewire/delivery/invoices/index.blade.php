@@ -65,19 +65,19 @@
             <tbody class="divide-y">
                 @forelse($invoices as $invoice)
                     <tr wire:key="di-{{ $invoice->id }}">
-                        <td class="px-4 py-3 font-medium" data-label="Invoice No.">
+                        <td class="px-4 py-3 font-medium" data-label="{{ __('Invoice No.') }}">
                             <a href="{{ route('delivery.invoices.show', $invoice) }}" class="text-indigo-600 hover:underline">{{ $invoice->number }}</a>
                         </td>
-                        <td class="px-4 py-3 text-slate-500" data-label="Date">{{ $invoice->invoice_date->format('d M Y') }}</td>
-                        <td class="px-4 py-3" data-label="Retailer">{{ $invoice->retailer?->name }}</td>
-                        <td class="px-4 py-3" data-label="Sales Order">
+                        <td class="px-4 py-3 text-slate-500" data-label="{{ __('Date') }}">{{ $invoice->invoice_date->format('d M Y') }}</td>
+                        <td class="px-4 py-3" data-label="{{ __('Retailer') }}">{{ $invoice->retailer?->name }}</td>
+                        <td class="px-4 py-3" data-label="{{ __('Sales Order') }}">
                             @if($invoice->salesOrder)
                                 <a href="{{ route('sales.orders.show', $invoice->salesOrder) }}" class="text-indigo-600 hover:underline">{{ $invoice->salesOrder->number }}</a>
                             @endif
                         </td>
-                        <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="Delivery">{{ $invoice->deliveryNote?->number }}</td>
-                        <td class="px-4 py-3 text-right font-medium" data-label="Amount">৳ {{ number_format($invoice->grand_total, 2) }}</td>
-                        <td class="px-4 py-3" data-label="Status">
+                        <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="{{ __('Delivery') }}">{{ $invoice->deliveryNote?->number }}</td>
+                        <td class="px-4 py-3 text-right font-medium" data-label="{{ __('Amount') }}">৳ {{ number_format($invoice->grand_total, 2) }}</td>
+                        <td class="px-4 py-3" data-label="{{ __('Status') }}">
                             <span class="px-2 py-1 rounded-full text-xs {{ $badge($invoice->status) }}">{{ __(ucfirst($invoice->status)) }}</span>
                         </td>
                         <td class="px-4 py-3 whitespace-nowrap">

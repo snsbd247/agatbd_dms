@@ -75,7 +75,11 @@ class Show extends Component
 
         app(SmsService::class)->send(
             $this->salesOrder->retailer?->phone,
-            SmsService::brand("Your order {$this->salesOrder->number} (Tk ".number_format($this->salesOrder->grand_total, 2).') has been approved and will be delivered soon.'),
+            SmsService::message('order_approved', [
+                'retailer' => $this->salesOrder->retailer?->name,
+                'order' => $this->salesOrder->number,
+                'amount' => $this->salesOrder->grand_total,
+            ]),
             'order_approved',
         );
     }

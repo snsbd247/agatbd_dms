@@ -86,12 +86,12 @@
                                 {{ $representative->active ? 'Active' : 'Inactive' }}
                             </span>
                         </td>
-                        <td class="px-4 py-3 font-medium rtable-hide-mobile" data-label="Name">{{ $representative->name }}</td>
-                        <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="Employee Code">{{ $representative->employee_code }}</td>
-                        <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="Area">{{ $representative->area?->name ?? '—' }}</td>
-                        <td class="px-4 py-3" data-label="Commission">{{ number_format($representative->commission_rate, 2) }}%</td>
-                        <td class="px-4 py-3" data-label="Target">{{ number_format($representative->target_amount, 2) }}</td>
-                        <td class="px-4 py-3 rtable-hide-mobile" data-label="Status">
+                        <td class="px-4 py-3 font-medium rtable-hide-mobile" data-label="{{ __('Name') }}">{{ $representative->name }}</td>
+                        <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="{{ __('Employee Code') }}">{{ $representative->employee_code }}</td>
+                        <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="{{ __('Area') }}">{{ $representative->area?->name ?? '—' }}</td>
+                        <td class="px-4 py-3" data-label="{{ __('Commission') }}">{{ number_format($representative->commission_rate, 2) }}%</td>
+                        <td class="px-4 py-3" data-label="{{ __('Target') }}">{{ number_format($representative->target_amount, 2) }}</td>
+                        <td class="px-4 py-3 rtable-hide-mobile" data-label="{{ __('Status') }}">
                             <span class="px-2 py-1 rounded-full text-xs {{ $representative->active ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }}">
                                 {{ $representative->active ? 'Active' : 'Inactive' }}
                             </span>

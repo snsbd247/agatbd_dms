@@ -62,11 +62,11 @@
             <tbody class="divide-y">
                 @foreach($returnRequest->items as $item)
                     <tr wire:key="item-{{ $item->id }}">
-                        <td class="px-4 py-3 font-medium" data-label="Product">{{ $item->product?->name }}</td>
-                        <td class="px-4 py-3" data-label="Quantity">{{ rtrim(rtrim(number_format($item->quantity, 3), '0'), '.') }}</td>
-                        <td class="px-4 py-3" data-label="Unit Price">৳ {{ number_format($item->unit_price, 2) }}</td>
-                        <td class="px-4 py-3" data-label="Line Total">৳ {{ number_format($item->quantity * $item->unit_price, 2) }}</td>
-                        <td class="px-4 py-3 text-slate-500" data-label="Reason">{{ $item->reason ?? '—' }}</td>
+                        <td class="px-4 py-3 font-medium" data-label="{{ __('Product') }}">{{ $item->product?->name }}</td>
+                        <td class="px-4 py-3" data-label="{{ __('Quantity') }}">{{ rtrim(rtrim(number_format($item->quantity, 3), '0'), '.') }}</td>
+                        <td class="px-4 py-3" data-label="{{ __('Unit Price') }}">৳ {{ number_format($item->unit_price, 2) }}</td>
+                        <td class="px-4 py-3" data-label="{{ __('Line Total') }}">৳ {{ number_format($item->quantity * $item->unit_price, 2) }}</td>
+                        <td class="px-4 py-3 text-slate-500" data-label="{{ __('Reason') }}">{{ $item->reason ?? '—' }}</td>
                     </tr>
                 @endforeach
             </tbody>

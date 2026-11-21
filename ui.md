@@ -2,7 +2,7 @@
 
 UI বানানো হয়েছে Blade + Livewire 4 + Alpine.js + Tailwind CSS 4 দিয়ে। ডিজাইনটা **mobile-first**: মোবাইলে PWA অ্যাপের মতো চলে, ডেস্কটপে সাইডবার-সহ অ্যাডমিন প্যানেলের মতো দেখায়।
 
-> সর্বশেষ আপডেট: ২০ নভেম্বর ২০২৬
+> সর্বশেষ আপডেট: ২১ নভেম্বর ২০২৬
 
 ---
 
@@ -84,7 +84,8 @@ Stat card-এর আইকনের রং: blue, green, orange, purple, red, in
 | Representative | Representatives (+ details) |
 | Reports | Sales, Purchase, Stock, Expiry, Collections & Due, Return, Warranty, Representative Performance, Retailer, Company, Area, Product Performance, Payroll & Commission, Profit & Loss |
 | Payroll | Payroll Runs, Advances, Bonuses |
-| Settings | Company Profile, Numbering, Warranty Policies, Users, Login History, Audit Log |
+| Settings | Company Profile, Numbering, Warranty Policies, Users, Login History, Audit Log, Email & SMS |
+| My Account (রিটেইলার) | My Orders, New Order, My Statement, My Returns, My Warranty Claims |
 | Account | Profile, Change Password, Notification Settings |
 | More | About, Backup & Restore |
 
@@ -122,9 +123,16 @@ Stat card-এর আইকনের রং: blue, green, orange, purple, red, in
 
 ## ৭. PDF / প্রিন্ট
 
-- `resources/views/pdfs/delivery-invoice.blade.php`: একটা ডেলিভারি ইনভয়েস।
-- `resources/views/pdfs/delivery-invoices-batch.blade.php`: একটা সেলস অর্ডারের সব ইনভয়েস একসাথে।
-- Company profile-এর নাম, লোগো আর `invoice_footer` এখানে ব্যবহার হয়।
+সব PDF তৈরি হয় `App\Services\PdfService` দিয়ে, ইউজারের ভাষায়: ইংরেজি হলে dompdf, বাংলা হলে mPDF আর Hind Siliguri ফন্ট। সব ডকুমেন্ট একই layout-এ: উপরে বামে কোম্পানির লোগো আর নাম, ডানে ডকুমেন্টের নাম, নম্বর আর তারিখ; নিচে স্বাক্ষরের লাইন আর footer। লেআউট শুধু table দিয়ে (flexbox নয়), যাতে দুই ইঞ্জিনেই এক রকম দেখায়।
+
+| ডকুমেন্ট | view | কোথায় বোতাম |
+|---|---|---|
+| Delivery Invoice | `pdfs/delivery-invoice`, batch: `pdfs/delivery-invoices-batch` (body: `partials/delivery-invoice-body`) | Delivery Invoice পেজ, Sales Order পেজ, পোর্টালের অর্ডার |
+| Sales Invoice | `pdfs/sales-invoice` (পরিশোধিত আর বকেয়াসহ) | Sales Order-এর "চালান" অংশ, Retailer-এর Invoices ট্যাব, পোর্টালের হিসাব |
+| Money Receipt | `pdfs/money-receipt` (এক পাতায় দুই কপি) | Collections তালিকা (প্রিন্টার আইকন), পোর্টালের হিসাব |
+| রিপোর্ট | `pdfs/report` (যেকোনো রিপোর্ট; CSV-র সারিগুলোই টেবিল হয়) | প্রতিটা রিপোর্টের উপরে "PDF" বোতাম, "CSV ডাউনলোড"-এর পাশে |
+
+Company profile-এর নাম, লোগো আর `invoice_footer` সব PDF-এ ব্যবহার হয়।
 
 ## ৮. PWA
 
@@ -140,6 +148,14 @@ Stat card-এর আইকনের রং: blue, green, orange, purple, red, in
 - **নতুন পেজ বা বাটন যোগ করলে:** লেখা `{{ __('English text') }}` দিয়ে লিখুন আর `lang/bn.json`-এ বাংলা যোগ করুন। ডাটা-সহ লেখার জন্য `__('Delivered :v', ['v' => $date])`।
 - ইচ্ছা করে ইংরেজি রাখা হয়েছে: ইনভয়েস PDF, তারিখের মাসের নাম, সংখ্যা (০-৯ না, 0-9), SMS, নোটিফিকেশনের ভেতরের বার্তা (শিরোনাম অনুবাদ হয়), আর অল্প কয়েকটা জটিল লাইন। Help পেজ সব ভাষাতেই বাংলা।
 
-## ১০. বাকি UI কাজ
+## ১০. ডার্ক মোড
 
-- ডার্ক মোড (এখনো নেই)।
+- হেডারে চাঁদ/সূর্য বোতাম (`<x-theme-toggle />`)। পছন্দ এই browser-এ মনে থাকে (`localStorage` → `dms_theme`)। প্রথমবার ডিভাইসের সেটিং (`prefers-color-scheme`) মেনে চলে।
+- কীভাবে কাজ করে: `html.dark`-এর নিচে Tailwind-এর রঙগুলো নতুন করে map হয়। হালকা ধূসর গাঢ় হয়, হালকা রঙিন ব্যাকগ্রাউন্ড স্বচ্ছ হয়, গাঢ় লেখা হালকা হয়। তাই নতুন পেজে আলাদা `dark:` class লাগে না, সাধারণ class লিখলেই ডার্ক মোডে চলে।
+- যে অংশ আগে থেকেই গাঢ় (সাইডবার, gradient ব্যানার), তাতে `dark-keep` class দিন, তাহলে রং বদলাবে না।
+- রং বদলাতে [scripts/make-dark-css.php](scripts/make-dark-css.php) এডিট করে চালান, তারপর `npm run build`।
+- লগইন পেজ সবসময় আগের মতো থাকে (এটা আগে থেকেই গাঢ়)।
+
+## ১১. বাকি UI কাজ
+
+- নেই। কোম্পানির নাম আর লোগো Company Profile-এ বসালে PDF আর হেডারে দেখাবে।

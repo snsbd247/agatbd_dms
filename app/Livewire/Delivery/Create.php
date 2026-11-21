@@ -187,7 +187,13 @@ class Create extends Component
         if ($smsInvoice) {
             app(\App\Services\SmsService::class)->send(
                 $smsInvoice['phone'],
-                \App\Services\SmsService::brand("Delivered against order {$this->salesOrder->number}. Invoice {$smsInvoice['number']}: Tk ".number_format($smsInvoice['amount'], 2).'. Total due now Tk '.number_format($smsInvoice['due'], 2).'.'),
+                \App\Services\SmsService::message('delivered', [
+                    'retailer' => $this->salesOrder->retailer?->name,
+                    'order' => $this->salesOrder->number,
+                    'invoice' => $smsInvoice['number'],
+                    'amount' => $smsInvoice['amount'],
+                    'due' => $smsInvoice['due'],
+                ]),
                 'delivered',
             );
         }

@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Delivery\DeliveryInvoice;
 use App\Models\Sales\SalesOrder;
 use App\Models\Settings\CompanyProfile;
-use Barryvdh\DomPDF\Facade\Pdf;
+use App\Services\PdfService;
 
 class DeliveryInvoiceController extends Controller
 {
@@ -15,16 +15,16 @@ class DeliveryInvoiceController extends Controller
     {
         $invoice = $deliveryInvoice->load(self::RELATIONS);
 
-        $pdf = Pdf::loadView('pdfs.delivery-invoice', [
+        $pdf = PdfService::stream('pdfs.delivery-invoice', [
             'invoice' => $invoice,
             'company' => CompanyProfile::first(),
-        ])->setPaper('A4', 'portrait');
+        ], 'delivery-invoice-'.$invoice->number.'.pdf');
 
         if ($invoice->status !== 'printed') {
             $invoice->update(['status' => 'printed']);
         }
 
-        return $pdf->stream('delivery-invoice-'.$invoice->number.'.pdf');
+        return $pdf;
     }
 
     /**
@@ -38,10 +38,10 @@ class DeliveryInvoiceController extends Controller
 
         $invoice = $deliveryInvoice->load(self::RELATIONS);
 
-        return Pdf::loadView('pdfs.delivery-invoice', [
+        return PdfService::stream('pdfs.delivery-invoice', [
             'invoice' => $invoice,
             'company' => CompanyProfile::first(),
-        ])->setPaper('A4', 'portrait')->stream('delivery-invoice-'.$invoice->number.'.pdf');
+        ], 'delivery-invoice-'.$invoice->number.'.pdf');
     }
 
     public function printSalesOrderInvoices(SalesOrder $salesOrder)
@@ -53,18 +53,18 @@ class DeliveryInvoiceController extends Controller
             ->get();
 
         if ($invoices->isEmpty()) {
-            return back()->with('error', 'No invoices found for this sales order.');
+            return back()->with('error', __('No invoices found for this sales order.'));
         }
 
-        $pdf = Pdf::loadView('pdfs.delivery-invoices-batch', [
+        $pdf = PdfService::stream('pdfs.delivery-invoices-batch', [
             'invoices' => $invoices,
             'company' => CompanyProfile::first(),
-        ])->setPaper('A4', 'portrait');
+        ], 'delivery-invoices-'.$salesOrder->number.'.pdf');
 
         DeliveryInvoice::whereIn('id', $invoices->pluck('id'))
             ->where('status', '!=', 'printed')
             ->update(['status' => 'printed']);
 
-        return $pdf->stream('delivery-invoices-'.$salesOrder->number.'.pdf');
+        return $pdf;
     }
 }

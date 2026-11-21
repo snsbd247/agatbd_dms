@@ -17,9 +17,21 @@ class Show extends Component
 
     public string $note = '';
 
+    /** Allowed moves: pending → approved/rejected, approved → replaced/repaired. */
+    private const FROM = [
+        'approved' => 'pending',
+        'rejected' => 'pending',
+        'replaced' => 'approved',
+        'repaired' => 'approved',
+    ];
+
     private function changeStatus(string $status): void
     {
         $this->authorize('warranty.manage');
+
+        if ($this->warrantyClaim->status !== self::FROM[$status]) {
+            return;
+        }
 
         $this->warrantyClaim->update(['status' => $status]);
 

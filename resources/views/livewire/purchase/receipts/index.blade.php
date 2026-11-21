@@ -83,17 +83,17 @@
                                 <p class="text-xs text-slate-400">{{ $receipt->receipt_date->format('d M Y') }}</p>
                             </div>
                         </td>
-                        <td class="px-4 py-3 font-medium rtable-hide-mobile" data-label="Number">{{ $receipt->number }}</td>
-                        <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="Date">{{ $receipt->receipt_date->format('d M Y') }}</td>
-                        <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="Warehouse">{{ $receipt->warehouse?->name }}</td>
-                        <td class="px-4 py-3" data-label="Purchase Order">
+                        <td class="px-4 py-3 font-medium rtable-hide-mobile" data-label="{{ __('Number') }}">{{ $receipt->number }}</td>
+                        <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="{{ __('Date') }}">{{ $receipt->receipt_date->format('d M Y') }}</td>
+                        <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="{{ __('Warehouse') }}">{{ $receipt->warehouse?->name }}</td>
+                        <td class="px-4 py-3" data-label="{{ __('Purchase Order') }}">
                             @if($receipt->purchaseOrder)
                                 <a href="{{ route('purchase.orders.show', $receipt->purchaseOrder) }}" class="text-indigo-600 hover:underline">{{ $receipt->purchaseOrder->number }}</a>
                             @else
                                 —
                             @endif
                         </td>
-                        <td class="px-4 py-3 rtable-hide-mobile" data-label="Total">{{ number_format($receipt->total_amount, 2) }}</td>
+                        <td class="px-4 py-3 rtable-hide-mobile" data-label="{{ __('Total') }}">{{ number_format($receipt->total_amount, 2) }}</td>
                     </tr>
                 @empty
                     <tr>

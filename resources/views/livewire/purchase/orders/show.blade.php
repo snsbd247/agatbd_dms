@@ -62,11 +62,11 @@
             <tbody class="divide-y">
                 @foreach($purchaseOrder->items as $item)
                     <tr wire:key="item-{{ $item->id }}">
-                        <td class="px-4 py-3 font-medium" data-label="Product">{{ $item->product?->name }}</td>
-                        <td class="px-4 py-3" data-label="Ordered">{{ rtrim(rtrim(number_format($item->quantity, 3), '0'), '.') }}</td>
-                        <td class="px-4 py-3" data-label="Received">{{ rtrim(rtrim(number_format($item->received_quantity, 3), '0'), '.') }}</td>
-                        <td class="px-4 py-3" data-label="Remaining">{{ rtrim(rtrim(number_format($item->quantity - $item->received_quantity, 3), '0'), '.') }}</td>
-                        <td class="px-4 py-3" data-label="Unit Price">৳ {{ number_format($item->unit_price, 2) }}</td>
+                        <td class="px-4 py-3 font-medium" data-label="{{ __('Product') }}">{{ $item->product?->name }}</td>
+                        <td class="px-4 py-3" data-label="{{ __('Ordered') }}">{{ rtrim(rtrim(number_format($item->quantity, 3), '0'), '.') }}</td>
+                        <td class="px-4 py-3" data-label="{{ __('Received') }}">{{ rtrim(rtrim(number_format($item->received_quantity, 3), '0'), '.') }}</td>
+                        <td class="px-4 py-3" data-label="{{ __('Remaining') }}">{{ rtrim(rtrim(number_format($item->quantity - $item->received_quantity, 3), '0'), '.') }}</td>
+                        <td class="px-4 py-3" data-label="{{ __('Unit Price') }}">৳ {{ number_format($item->unit_price, 2) }}</td>
                     </tr>
                 @endforeach
             </tbody>

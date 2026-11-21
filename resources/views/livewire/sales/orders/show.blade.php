@@ -93,11 +93,11 @@
             <tbody class="divide-y">
                 @foreach($salesOrder->items as $item)
                     <tr>
-                        <td class="px-4 py-3 font-medium" data-label="Product">{{ $item->product?->name }}</td>
-                        <td class="px-4 py-3" data-label="Ordered">{{ rtrim(rtrim(number_format($item->quantity, 3), '0'), '.') }}</td>
-                        <td class="px-4 py-3" data-label="Delivered">{{ rtrim(rtrim(number_format($item->delivered_quantity, 3), '0'), '.') }}</td>
-                        <td class="px-4 py-3" data-label="Remaining">{{ rtrim(rtrim(number_format($item->quantity - $item->delivered_quantity, 3), '0'), '.') }}</td>
-                        <td class="px-4 py-3" data-label="Unit Price">৳ {{ number_format($item->unit_price, 2) }}</td>
+                        <td class="px-4 py-3 font-medium" data-label="{{ __('Product') }}">{{ $item->product?->name }}</td>
+                        <td class="px-4 py-3" data-label="{{ __('Ordered') }}">{{ rtrim(rtrim(number_format($item->quantity, 3), '0'), '.') }}</td>
+                        <td class="px-4 py-3" data-label="{{ __('Delivered') }}">{{ rtrim(rtrim(number_format($item->delivered_quantity, 3), '0'), '.') }}</td>
+                        <td class="px-4 py-3" data-label="{{ __('Remaining') }}">{{ rtrim(rtrim(number_format($item->quantity - $item->delivered_quantity, 3), '0'), '.') }}</td>
+                        <td class="px-4 py-3" data-label="{{ __('Unit Price') }}">৳ {{ number_format($item->unit_price, 2) }}</td>
                     </tr>
                 @endforeach
             </tbody>
@@ -120,8 +120,11 @@
             <h2 class="font-semibold mb-3 flex items-center gap-2"><x-icon name="credit-card" class="w-5 h-5 text-slate-400" /> {{ __('Invoices') }}</h2>
             @forelse($salesOrder->invoices as $invoice)
                 <div class="flex justify-between py-2 border-b last:border-0">
-                    <span>{{ $invoice->number }}</span>
-                    <span class="font-medium">৳ {{ number_format($invoice->grand_total, 2) }}</span>
+                    <span>{{ $invoice->number }} <span class="text-xs text-slate-400">· {{ __(ucfirst($invoice->status)) }}</span></span>
+                    <span class="flex items-center gap-3">
+                        <span class="font-medium">৳ {{ number_format($invoice->grand_total, 2) }}</span>
+                        <a href="{{ route('sales.invoices.print', $invoice) }}" target="_blank" class="text-indigo-600 hover:text-indigo-500" title="{{ __('Print') }}"><x-icon name="printer" class="w-4 h-4" /></a>
+                    </span>
                 </div>
             @empty
                 <p class="text-slate-400">{{ __('No invoices yet.') }}</p>

@@ -6,9 +6,14 @@
             <span class="text-slate-300">&ndash;</span>
             <input type="date" wire:model.live="to" class="text-sm border-0 p-0 focus:ring-0 w-32">
         </div>
-        <a href="{{ route('reports.export.collections', request()->query()) }}" class="flex items-center gap-2 px-3 py-2 rounded-lg bg-white border shadow-sm text-sm text-slate-600 hover:text-indigo-600">
-            <x-icon name="download" class="w-4 h-4" /> {{ __('Download CSV') }}
-        </a>
+        <div class="flex items-center gap-2">
+            <a href="{{ route('reports.export.collections') }}" data-base="{{ route('reports.export.collections') }}" onclick="this.href = this.dataset.base + window.location.search" class="flex items-center gap-2 px-3 py-2 rounded-lg bg-white border shadow-sm text-sm text-slate-600 hover:text-indigo-600">
+                <x-icon name="download" class="w-4 h-4" /> {{ __('Download CSV') }}
+            </a>
+            <a href="{{ route('reports.pdf', 'collections') }}" data-base="{{ route('reports.pdf', 'collections') }}" onclick="this.href = this.dataset.base + window.location.search" target="_blank" class="flex items-center gap-2 px-3 py-2 rounded-lg bg-white border shadow-sm text-sm text-slate-600 hover:text-indigo-600">
+                <x-icon name="printer" class="w-4 h-4" /> {{ __('PDF') }}
+            </a>
+        </div>
     </div>
 
     <div class="grid grid-cols-2 sm:grid-cols-2 gap-4 mb-4">
@@ -31,11 +36,11 @@
             <tbody class="divide-y">
                 @forelse($collections as $collection)
                     <tr wire:key="col-{{ $collection->id }}">
-                        <td class="px-4 py-3 font-medium" data-label="Number">{{ $collection->number }}</td>
-                        <td class="px-4 py-3 text-slate-500" data-label="Date">{{ $collection->collection_date->format('d M Y') }}</td>
-                        <td class="px-4 py-3" data-label="Retailer">{{ $collection->retailer?->name }}</td>
-                        <td class="px-4 py-3 text-slate-500" data-label="Method">{{ __(ucfirst($collection->method)) }}</td>
-                        <td class="px-4 py-3" data-label="Amount">৳ {{ number_format($collection->amount, 2) }}</td>
+                        <td class="px-4 py-3 font-medium" data-label="{{ __('Number') }}">{{ $collection->number }}</td>
+                        <td class="px-4 py-3 text-slate-500" data-label="{{ __('Date') }}">{{ $collection->collection_date->format('d M Y') }}</td>
+                        <td class="px-4 py-3" data-label="{{ __('Retailer') }}">{{ $collection->retailer?->name }}</td>
+                        <td class="px-4 py-3 text-slate-500" data-label="{{ __('Method') }}">{{ __(ucfirst($collection->method)) }}</td>
+                        <td class="px-4 py-3" data-label="{{ __('Amount') }}">৳ {{ number_format($collection->amount, 2) }}</td>
                     </tr>
                 @empty
                     <tr>
@@ -60,10 +65,10 @@
             <tbody class="divide-y">
                 @forelse($duesRetailers as $retailer)
                     <tr wire:key="due-{{ $retailer->id }}">
-                        <td class="px-4 py-3 font-medium" data-label="Retailer">{{ $retailer->name }}</td>
-                        <td class="px-4 py-3 text-slate-500" data-label="Phone">{{ $retailer->phone }}</td>
-                        <td class="px-4 py-3 text-slate-500" data-label="Credit Limit">৳ {{ number_format($retailer->credit_limit, 2) }}</td>
-                        <td class="px-4 py-3 text-red-600 font-medium" data-label="Current Due">৳ {{ number_format($retailer->current_due, 2) }}</td>
+                        <td class="px-4 py-3 font-medium" data-label="{{ __('Retailer') }}">{{ $retailer->name }}</td>
+                        <td class="px-4 py-3 text-slate-500" data-label="{{ __('Phone') }}">{{ $retailer->phone }}</td>
+                        <td class="px-4 py-3 text-slate-500" data-label="{{ __('Credit Limit') }}">৳ {{ number_format($retailer->credit_limit, 2) }}</td>
+                        <td class="px-4 py-3 text-red-600 font-medium" data-label="{{ __('Current Due') }}">৳ {{ number_format($retailer->current_due, 2) }}</td>
                     </tr>
                 @empty
                     <tr>

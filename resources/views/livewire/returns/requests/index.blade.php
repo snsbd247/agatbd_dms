@@ -72,10 +72,10 @@
                             </div>
                             <p class="w-full text-xs text-slate-500 mt-0.5">{{ $request->retailer?->name }} &middot; {{ $request->request_date->format('d M Y') }}</p>
                         </td>
-                        <td class="px-4 py-3 font-medium rtable-hide-mobile" data-label="Number">{{ $request->number }}</td>
-                        <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="Retailer">{{ $request->retailer?->name }}</td>
-                        <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="Date">{{ $request->request_date->format('d M Y') }}</td>
-                        <td class="px-4 py-3 rtable-hide-mobile" data-label="Status">
+                        <td class="px-4 py-3 font-medium rtable-hide-mobile" data-label="{{ __('Number') }}">{{ $request->number }}</td>
+                        <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="{{ __('Retailer') }}">{{ $request->retailer?->name }}</td>
+                        <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="{{ __('Date') }}">{{ $request->request_date->format('d M Y') }}</td>
+                        <td class="px-4 py-3 rtable-hide-mobile" data-label="{{ __('Status') }}">
                             <span @class([
                                 'px-2 py-1 rounded-full text-xs',
                                 'bg-slate-100 text-slate-600' => $request->status === 'pending',

@@ -38,12 +38,12 @@
             <tbody class="divide-y">
                 @forelse($entries as $entry)
                     <tr wire:key="ledger-{{ $entry->id }}">
-                        <td class="px-4 py-3 text-slate-500" data-label="Date">{{ $entry->entry_date->format('d M Y') }}</td>
-                        <td class="px-4 py-3 capitalize" data-label="Type">{{ $entry->type }}</td>
-                        <td class="px-4 py-3 text-slate-500" data-label="Reference">{{ $entry->reference?->number ?? '—' }}</td>
-                        <td class="px-4 py-3" data-label="Debit">{{ $entry->debit > 0 ? '৳ '.number_format($entry->debit, 2) : '—' }}</td>
-                        <td class="px-4 py-3" data-label="Credit">{{ $entry->credit > 0 ? '৳ '.number_format($entry->credit, 2) : '—' }}</td>
-                        <td class="px-4 py-3 font-medium" data-label="Balance">৳ {{ number_format($entry->balance_after, 2) }}</td>
+                        <td class="px-4 py-3 text-slate-500" data-label="{{ __('Date') }}">{{ $entry->entry_date->format('d M Y') }}</td>
+                        <td class="px-4 py-3 capitalize" data-label="{{ __('Type') }}">{{ __(ucfirst(str_replace('_', ' ', $entry->type))) }}</td>
+                        <td class="px-4 py-3 text-slate-500" data-label="{{ __('Reference') }}">{{ $entry->reference?->number ?? '—' }}</td>
+                        <td class="px-4 py-3" data-label="{{ __('Debit') }}">{{ $entry->debit > 0 ? '৳ '.number_format($entry->debit, 2) : '—' }}</td>
+                        <td class="px-4 py-3" data-label="{{ __('Credit') }}">{{ $entry->credit > 0 ? '৳ '.number_format($entry->credit, 2) : '—' }}</td>
+                        <td class="px-4 py-3 font-medium" data-label="{{ __('Balance') }}">৳ {{ number_format($entry->balance_after, 2) }}</td>
                     </tr>
                 @empty
                     <tr>

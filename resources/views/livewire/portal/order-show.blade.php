@@ -58,11 +58,11 @@
             <tbody class="divide-y">
                 @foreach($order->items as $item)
                     <tr>
-                        <td class="px-4 py-3 font-medium" data-label="Product">{{ $item->product?->name }}</td>
-                        <td class="px-4 py-3 text-right" data-label="Ordered">{{ $fmt($item->quantity) }} {{ $item->product?->unit?->short_code }}</td>
-                        <td class="px-4 py-3 text-right" data-label="Delivered">{{ $fmt($item->delivered_quantity) }}</td>
-                        <td class="px-4 py-3 text-right" data-label="Price">৳ {{ number_format($item->unit_price, 2) }}</td>
-                        <td class="px-4 py-3 text-right font-medium" data-label="Total">৳ {{ number_format($item->quantity * $item->unit_price, 2) }}</td>
+                        <td class="px-4 py-3 font-medium" data-label="{{ __('Product') }}">{{ $item->product?->name }}</td>
+                        <td class="px-4 py-3 text-right" data-label="{{ __('Ordered') }}">{{ $fmt($item->quantity) }} {{ $item->product?->unit?->short_code }}</td>
+                        <td class="px-4 py-3 text-right" data-label="{{ __('Delivered') }}">{{ $fmt($item->delivered_quantity) }}</td>
+                        <td class="px-4 py-3 text-right" data-label="{{ __('Price') }}">৳ {{ number_format($item->unit_price, 2) }}</td>
+                        <td class="px-4 py-3 text-right font-medium" data-label="{{ __('Total') }}">৳ {{ number_format($item->quantity * $item->unit_price, 2) }}</td>
                     </tr>
                 @endforeach
             </tbody>

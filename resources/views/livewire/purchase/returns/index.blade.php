@@ -77,12 +77,12 @@
                                 <p class="text-xs text-slate-400">{{ $purchaseReturn->return_date->format('d M Y') }}</p>
                             </div>
                         </td>
-                        <td class="px-4 py-3 font-medium rtable-hide-mobile" data-label="Number">{{ $purchaseReturn->number }}</td>
-                        <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="Company">{{ $purchaseReturn->company?->name }}</td>
-                        <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="Warehouse">{{ $purchaseReturn->warehouse?->name }}</td>
-                        <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="Return Date">{{ $purchaseReturn->return_date->format('d M Y') }}</td>
-                        <td class="px-4 py-3 rtable-hide-mobile" data-label="Total">{{ number_format($purchaseReturn->total_amount, 2) }}</td>
-                        <td class="px-4 py-3 rtable-hide-mobile" data-label="Status">
+                        <td class="px-4 py-3 font-medium rtable-hide-mobile" data-label="{{ __('Number') }}">{{ $purchaseReturn->number }}</td>
+                        <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="{{ __('Company') }}">{{ $purchaseReturn->company?->name }}</td>
+                        <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="{{ __('Warehouse') }}">{{ $purchaseReturn->warehouse?->name }}</td>
+                        <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="{{ __('Return Date') }}">{{ $purchaseReturn->return_date->format('d M Y') }}</td>
+                        <td class="px-4 py-3 rtable-hide-mobile" data-label="{{ __('Total') }}">{{ number_format($purchaseReturn->total_amount, 2) }}</td>
+                        <td class="px-4 py-3 rtable-hide-mobile" data-label="{{ __('Status') }}">
                             <span @class([
                                 'px-2 py-1 rounded-full text-xs',
                                 'bg-slate-100 text-slate-600' => $purchaseReturn->status === 'draft',

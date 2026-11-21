@@ -128,19 +128,19 @@
                                 <p class="text-xs text-slate-400">Stock: {{ rtrim(rtrim(number_format($stockQty, 3), '0'), '.') ?: '0' }}</p>
                             </div>
                         </td>
-                        <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="Product Code">{{ $product->sku }}</td>
+                        <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="{{ __('Product Code') }}">{{ $product->sku }}</td>
                         <td class="px-4 py-3 rtable-hide-mobile">
                             <div class="w-9 h-9 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center font-semibold text-xs">
                                 {{ strtoupper(substr($product->name, 0, 2)) }}
                             </div>
                         </td>
-                        <td class="px-4 py-3 font-medium rtable-hide-mobile" data-label="Product Name">{{ $product->name }}</td>
-                        <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="Category">{{ $product->category?->name }}</td>
-                        <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="Brand">{{ $product->brand?->name ?? '—' }}</td>
-                        <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="Unit">{{ $product->unit?->short_code }}</td>
-                        <td class="px-4 py-3 rtable-hide-mobile" data-label="Price (৳)">৳ {{ number_format($product->sale_price, 2) }}</td>
-                        <td class="px-4 py-3 rtable-hide-mobile" data-label="Stock Qty">{{ rtrim(rtrim(number_format($stockQty, 3), '0'), '.') ?: '0' }}</td>
-                        <td class="px-4 py-3 rtable-hide-mobile" data-label="Status">
+                        <td class="px-4 py-3 font-medium rtable-hide-mobile" data-label="{{ __('Product Name') }}">{{ $product->name }}</td>
+                        <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="{{ __('Category') }}">{{ $product->category?->name }}</td>
+                        <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="{{ __('Brand') }}">{{ $product->brand?->name ?? '—' }}</td>
+                        <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="{{ __('Unit') }}">{{ $product->unit?->short_code }}</td>
+                        <td class="px-4 py-3 rtable-hide-mobile" data-label="{{ __('Price (৳)') }}">৳ {{ number_format($product->sale_price, 2) }}</td>
+                        <td class="px-4 py-3 rtable-hide-mobile" data-label="{{ __('Stock Qty') }}">{{ rtrim(rtrim(number_format($stockQty, 3), '0'), '.') ?: '0' }}</td>
+                        <td class="px-4 py-3 rtable-hide-mobile" data-label="{{ __('Status') }}">
                             @if($status === 'out')
                                 <span class="px-2 py-1 rounded-full text-xs bg-red-100 text-red-700">{{ __('Out of Stock') }}</span>
                             @elseif($status === 'low')

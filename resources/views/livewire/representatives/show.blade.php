@@ -69,12 +69,12 @@
                 <tbody class="divide-y">
                     @forelse($retailers as $retailer)
                         <tr wire:key="ret-{{ $retailer->id }}">
-                            <td class="px-4 py-3 font-medium" data-label="Name">{{ $retailer->name }}</td>
-                            <td class="px-4 py-3 text-slate-500" data-label="Code">{{ $retailer->code }}</td>
-                            <td class="px-4 py-3 text-slate-500" data-label="Area">{{ $retailer->area?->name ?? '—' }}</td>
-                            <td class="px-4 py-3" data-label="Credit Limit">৳ {{ number_format($retailer->credit_limit, 2) }}</td>
-                            <td class="px-4 py-3 {{ $retailer->current_due > 0 ? 'text-red-600 font-medium' : '' }}" data-label="Current Due">৳ {{ number_format($retailer->current_due, 2) }}</td>
-                            <td class="px-4 py-3" data-label="Status">
+                            <td class="px-4 py-3 font-medium" data-label="{{ __('Name') }}">{{ $retailer->name }}</td>
+                            <td class="px-4 py-3 text-slate-500" data-label="{{ __('Code') }}">{{ $retailer->code }}</td>
+                            <td class="px-4 py-3 text-slate-500" data-label="{{ __('Area') }}">{{ $retailer->area?->name ?? '—' }}</td>
+                            <td class="px-4 py-3" data-label="{{ __('Credit Limit') }}">৳ {{ number_format($retailer->credit_limit, 2) }}</td>
+                            <td class="px-4 py-3 {{ $retailer->current_due > 0 ? 'text-red-600 font-medium' : '' }}" data-label="{{ __('Current Due') }}">৳ {{ number_format($retailer->current_due, 2) }}</td>
+                            <td class="px-4 py-3" data-label="{{ __('Status') }}">
                                 <span class="px-2 py-1 rounded-full text-xs {{ $retailer->active ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }}">
                                     {{ $retailer->active ? 'Active' : 'Inactive' }}
                                 </span>
@@ -105,11 +105,11 @@
                 <tbody class="divide-y">
                     @forelse($orders as $order)
                         <tr wire:key="order-{{ $order->id }}">
-                            <td class="px-4 py-3 font-medium" data-label="Number">{{ $order->number }}</td>
-                            <td class="px-4 py-3 text-slate-500" data-label="Retailer">{{ $order->retailer?->name }}</td>
-                            <td class="px-4 py-3 text-slate-500" data-label="Date">{{ $order->order_date->format('d M Y') }}</td>
-                            <td class="px-4 py-3" data-label="Total">৳ {{ number_format($order->grand_total, 2) }}</td>
-                            <td class="px-4 py-3" data-label="Status">
+                            <td class="px-4 py-3 font-medium" data-label="{{ __('Number') }}">{{ $order->number }}</td>
+                            <td class="px-4 py-3 text-slate-500" data-label="{{ __('Retailer') }}">{{ $order->retailer?->name }}</td>
+                            <td class="px-4 py-3 text-slate-500" data-label="{{ __('Date') }}">{{ $order->order_date->format('d M Y') }}</td>
+                            <td class="px-4 py-3" data-label="{{ __('Total') }}">৳ {{ number_format($order->grand_total, 2) }}</td>
+                            <td class="px-4 py-3" data-label="{{ __('Status') }}">
                                 <span @class([
                                     'px-2 py-1 rounded-full text-xs',
                                     'bg-slate-100 text-slate-600' => $order->status === 'pending',
@@ -171,10 +171,10 @@
                 <tbody class="divide-y">
                     @forelse($payrollEntries as $entry)
                         <tr wire:key="pe-{{ $entry->id }}">
-                            <td class="px-4 py-3 font-medium" data-label="Number">{{ $entry->number }}</td>
-                            <td class="px-4 py-3 text-slate-500" data-label="Period">{{ $entry->period }}</td>
-                            <td class="px-4 py-3" data-label="Net Salary">৳ {{ number_format($entry->net_salary, 2) }}</td>
-                            <td class="px-4 py-3" data-label="Status">
+                            <td class="px-4 py-3 font-medium" data-label="{{ __('Number') }}">{{ $entry->number }}</td>
+                            <td class="px-4 py-3 text-slate-500" data-label="{{ __('Period') }}">{{ $entry->period }}</td>
+                            <td class="px-4 py-3" data-label="{{ __('Net Salary') }}">৳ {{ number_format($entry->net_salary, 2) }}</td>
+                            <td class="px-4 py-3" data-label="{{ __('Status') }}">
                                 <span class="px-2 py-1 rounded-full text-xs {{ $entry->status === 'paid' ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-600' }}">
                                     {{ __(ucfirst($entry->status)) }}
                                 </span>

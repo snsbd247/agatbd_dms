@@ -99,13 +99,13 @@
                                 {{ $retailer->active ? 'Active' : 'Inactive' }}
                             </span>
                         </td>
-                        <td class="px-4 py-3 font-medium rtable-hide-mobile" data-label="Name">{{ $retailer->name }}</td>
-                        <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="Code">{{ $retailer->code }}</td>
-                        <td class="px-4 py-3 text-slate-500" data-label="Area">{{ $retailer->area?->name }}</td>
-                        <td class="px-4 py-3 text-slate-500" data-label="Representative">{{ $retailer->representative?->name ?? '—' }}</td>
-                        <td class="px-4 py-3" data-label="Credit Limit">{{ number_format($retailer->credit_limit, 2) }}</td>
-                        <td class="px-4 py-3 {{ $retailer->current_due > 0 ? 'text-red-600 font-medium' : '' }} rtable-hide-mobile" data-label="Current Due">{{ number_format($retailer->current_due, 2) }}</td>
-                        <td class="px-4 py-3 rtable-hide-mobile" data-label="Status">
+                        <td class="px-4 py-3 font-medium rtable-hide-mobile" data-label="{{ __('Name') }}">{{ $retailer->name }}</td>
+                        <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="{{ __('Code') }}">{{ $retailer->code }}</td>
+                        <td class="px-4 py-3 text-slate-500" data-label="{{ __('Area') }}">{{ $retailer->area?->name }}</td>
+                        <td class="px-4 py-3 text-slate-500" data-label="{{ __('Representative') }}">{{ $retailer->representative?->name ?? '—' }}</td>
+                        <td class="px-4 py-3" data-label="{{ __('Credit Limit') }}">{{ number_format($retailer->credit_limit, 2) }}</td>
+                        <td class="px-4 py-3 {{ $retailer->current_due > 0 ? 'text-red-600 font-medium' : '' }} rtable-hide-mobile" data-label="{{ __('Current Due') }}">{{ number_format($retailer->current_due, 2) }}</td>
+                        <td class="px-4 py-3 rtable-hide-mobile" data-label="{{ __('Status') }}">
                             <span class="px-2 py-1 rounded-full text-xs {{ $retailer->active ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }}">
                                 {{ $retailer->active ? 'Active' : 'Inactive' }}
                             </span>

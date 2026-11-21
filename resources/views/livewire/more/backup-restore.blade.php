@@ -43,9 +43,9 @@
                         $type = str_contains($b['name'], 'pre-restore') ? 'Before restore' : (str_contains($b['name'], 'manual') ? 'Manual' : 'Automatic');
                     @endphp
                     <tr wire:key="bk-{{ $b['name'] }}">
-                        <td class="px-4 py-3" data-label="Taken">{{ \Illuminate\Support\Carbon::createFromTimestamp($b['time'])->format('d M Y, h:i A') }}</td>
-                        <td class="px-4 py-3 text-slate-500" data-label="Type">{{ $type }}</td>
-                        <td class="px-4 py-3 text-right text-slate-500" data-label="Size">{{ number_format($b['size'] / 1024, 0) }} KB</td>
+                        <td class="px-4 py-3" data-label="{{ __('Taken') }}">{{ \Illuminate\Support\Carbon::createFromTimestamp($b['time'])->format('d M Y, h:i A') }}</td>
+                        <td class="px-4 py-3 text-slate-500" data-label="{{ __('Type') }}">{{ $type }}</td>
+                        <td class="px-4 py-3 text-right text-slate-500" data-label="{{ __('Size') }}">{{ number_format($b['size'] / 1024, 0) }} KB</td>
                         <td class="px-4 py-3">
                             <div class="flex items-center justify-end gap-2">
                                 <a href="{{ route('more.backup.stored', $b['name']) }}" class="px-3 py-1.5 rounded-lg border text-slate-600 hover:bg-slate-50 text-xs font-medium">{{ __('Download') }}</a>

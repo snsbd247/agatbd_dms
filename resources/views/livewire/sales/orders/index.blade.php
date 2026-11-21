@@ -78,11 +78,11 @@
                                 <p class="text-xs text-slate-400">{{ $order->order_date->format('d M Y') }}</p>
                             </div>
                         </td>
-                        <td class="px-4 py-3 font-medium rtable-hide-mobile" data-label="Number">{{ $order->number }}</td>
-                        <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="Retailer">{{ $order->retailer?->name }}</td>
-                        <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="Order Date">{{ $order->order_date->format('d M Y') }}</td>
-                        <td class="px-4 py-3 rtable-hide-mobile" data-label="Total">{{ number_format($order->grand_total, 2) }}</td>
-                        <td class="px-4 py-3 rtable-hide-mobile" data-label="Status">
+                        <td class="px-4 py-3 font-medium rtable-hide-mobile" data-label="{{ __('Number') }}">{{ $order->number }}</td>
+                        <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="{{ __('Retailer') }}">{{ $order->retailer?->name }}</td>
+                        <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="{{ __('Order Date') }}">{{ $order->order_date->format('d M Y') }}</td>
+                        <td class="px-4 py-3 rtable-hide-mobile" data-label="{{ __('Total') }}">{{ number_format($order->grand_total, 2) }}</td>
+                        <td class="px-4 py-3 rtable-hide-mobile" data-label="{{ __('Status') }}">
                             <span @class([
                                 'px-2 py-1 rounded-full text-xs',
                                 'bg-slate-100 text-slate-600' => $order->status === 'pending',

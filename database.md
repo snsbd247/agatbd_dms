@@ -591,7 +591,7 @@ erDiagram
 ### app_settings (migration `2026_11_21`)
 | কলাম | টাইপ | নোট |
 |---|---|---|
-| key | string | unique, যেমন `mail_host`, `sms_url`, `sms_event_delivered` |
+| key | string | unique, যেমন `mail_host`, `sms_url`, `sms_event_delivered`, `sms_template_delivered` (বদলানো SMS-এর লেখা; না থাকলে ডিফল্ট) |
 | value | text | nullable; `mail_password` আর `sms_api_key` APP_KEY দিয়ে encrypted |
 
 ### sms_logs (migration `2026_11_21`)

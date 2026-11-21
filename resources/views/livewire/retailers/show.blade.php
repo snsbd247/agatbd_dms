@@ -75,10 +75,10 @@
                 <tbody class="divide-y">
                     @forelse($orders as $order)
                         <tr wire:key="order-{{ $order->id }}">
-                            <td class="px-4 py-3 font-medium" data-label="Number">{{ $order->number }}</td>
-                            <td class="px-4 py-3 text-slate-500" data-label="Date">{{ $order->order_date->format('d M Y') }}</td>
-                            <td class="px-4 py-3" data-label="Total">৳ {{ number_format($order->grand_total, 2) }}</td>
-                            <td class="px-4 py-3" data-label="Status">
+                            <td class="px-4 py-3 font-medium" data-label="{{ __('Number') }}">{{ $order->number }}</td>
+                            <td class="px-4 py-3 text-slate-500" data-label="{{ __('Date') }}">{{ $order->order_date->format('d M Y') }}</td>
+                            <td class="px-4 py-3" data-label="{{ __('Total') }}">৳ {{ number_format($order->grand_total, 2) }}</td>
+                            <td class="px-4 py-3" data-label="{{ __('Status') }}">
                                 <span @class([
                                     'px-2 py-1 rounded-full text-xs',
                                     'bg-slate-100 text-slate-600' => $order->status === 'pending',
@@ -114,12 +114,14 @@
                 <tbody class="divide-y">
                     @forelse($invoices as $invoice)
                         <tr wire:key="invoice-{{ $invoice->id }}">
-                            <td class="px-4 py-3 font-medium" data-label="Number">{{ $invoice->number }}</td>
-                            <td class="px-4 py-3 text-slate-500" data-label="Date">{{ $invoice->invoice_date->format('d M Y') }}</td>
-                            <td class="px-4 py-3" data-label="Total">৳ {{ number_format($invoice->grand_total, 2) }}</td>
-                            <td class="px-4 py-3" data-label="Paid">৳ {{ number_format($invoice->paid_amount, 2) }}</td>
-                            <td class="px-4 py-3 {{ $invoice->due_amount > 0 ? 'text-red-600 font-medium' : '' }}" data-label="Due">৳ {{ number_format($invoice->due_amount, 2) }}</td>
-                            <td class="px-4 py-3" data-label="Status">
+                            <td class="px-4 py-3 font-medium" data-label="{{ __('Number') }}">
+                                <a href="{{ route('sales.invoices.print', $invoice) }}" target="_blank" class="inline-flex items-center gap-1 text-indigo-600 hover:underline" title="{{ __('Print') }}">{{ $invoice->number }} <x-icon name="printer" class="w-3.5 h-3.5" /></a>
+                            </td>
+                            <td class="px-4 py-3 text-slate-500" data-label="{{ __('Date') }}">{{ $invoice->invoice_date->format('d M Y') }}</td>
+                            <td class="px-4 py-3" data-label="{{ __('Total') }}">৳ {{ number_format($invoice->grand_total, 2) }}</td>
+                            <td class="px-4 py-3" data-label="{{ __('Paid') }}">৳ {{ number_format($invoice->paid_amount, 2) }}</td>
+                            <td class="px-4 py-3 {{ $invoice->due_amount > 0 ? 'text-red-600 font-medium' : '' }}" data-label="{{ __('Due') }}">৳ {{ number_format($invoice->due_amount, 2) }}</td>
+                            <td class="px-4 py-3" data-label="{{ __('Status') }}">
                                 <span @class([
                                     'px-2 py-1 rounded-full text-xs',
                                     'bg-green-100 text-green-700' => $invoice->status === 'paid',
@@ -148,10 +150,10 @@
                 <tbody class="divide-y">
                     @forelse($payments as $payment)
                         <tr wire:key="payment-{{ $payment->id }}">
-                            <td class="px-4 py-3 font-medium" data-label="Number">{{ $payment->number }}</td>
-                            <td class="px-4 py-3 text-slate-500" data-label="Date">{{ $payment->collection_date->format('d M Y') }}</td>
-                            <td class="px-4 py-3 text-slate-500 capitalize" data-label="Method">{{ $payment->method }}</td>
-                            <td class="px-4 py-3" data-label="Amount">৳ {{ number_format($payment->amount, 2) }}</td>
+                            <td class="px-4 py-3 font-medium" data-label="{{ __('Number') }}">{{ $payment->number }}</td>
+                            <td class="px-4 py-3 text-slate-500" data-label="{{ __('Date') }}">{{ $payment->collection_date->format('d M Y') }}</td>
+                            <td class="px-4 py-3 text-slate-500 capitalize" data-label="{{ __('Method') }}">{{ $payment->method }}</td>
+                            <td class="px-4 py-3" data-label="{{ __('Amount') }}">৳ {{ number_format($payment->amount, 2) }}</td>
                         </tr>
                     @empty
                         <tr><td colspan="4" class="px-4 py-8 text-center text-slate-400">{{ __('No payments recorded yet.') }}</td></tr>
@@ -173,9 +175,9 @@
                 <tbody class="divide-y">
                     @forelse($returns as $return)
                         <tr wire:key="return-{{ $return->id }}">
-                            <td class="px-4 py-3 font-medium" data-label="Number">{{ $return->number }}</td>
-                            <td class="px-4 py-3 text-slate-500" data-label="Date">{{ $return->request_date->format('d M Y') }}</td>
-                            <td class="px-4 py-3" data-label="Status">
+                            <td class="px-4 py-3 font-medium" data-label="{{ __('Number') }}">{{ $return->number }}</td>
+                            <td class="px-4 py-3 text-slate-500" data-label="{{ __('Date') }}">{{ $return->request_date->format('d M Y') }}</td>
+                            <td class="px-4 py-3" data-label="{{ __('Status') }}">
                                 <span @class([
                                     'px-2 py-1 rounded-full text-xs',
                                     'bg-slate-100 text-slate-600' => $return->status === 'pending',
@@ -209,10 +211,10 @@
                 <tbody class="divide-y">
                     @forelse($warrantyClaims as $claim)
                         <tr wire:key="warranty-{{ $claim->id }}">
-                            <td class="px-4 py-3 font-medium" data-label="Number">{{ $claim->number }}</td>
-                            <td class="px-4 py-3 text-slate-500" data-label="Product">{{ $claim->product?->name }}</td>
-                            <td class="px-4 py-3 text-slate-500" data-label="Date">{{ $claim->claim_date->format('d M Y') }}</td>
-                            <td class="px-4 py-3" data-label="Status">
+                            <td class="px-4 py-3 font-medium" data-label="{{ __('Number') }}">{{ $claim->number }}</td>
+                            <td class="px-4 py-3 text-slate-500" data-label="{{ __('Product') }}">{{ $claim->product?->name }}</td>
+                            <td class="px-4 py-3 text-slate-500" data-label="{{ __('Date') }}">{{ $claim->claim_date->format('d M Y') }}</td>
+                            <td class="px-4 py-3" data-label="{{ __('Status') }}">
                                 <span @class([
                                     'px-2 py-1 rounded-full text-xs',
                                     'bg-slate-100 text-slate-600' => $claim->status === 'pending',

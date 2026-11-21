@@ -24,6 +24,41 @@ class SmsService
         'payment_received' => 'Payment received',
     ];
 
+    /** Default text for each event. The dealer can change these in Settings → Email & SMS. */
+    public const TEMPLATES = [
+        'order_approved' => 'Your order {order} (Tk {amount}) has been approved and will be delivered soon.',
+        'delivered' => 'Delivered against order {order}. Invoice {invoice}: Tk {amount}. Total due now Tk {due}.',
+        'payment_received' => 'Payment received: Tk {amount}. Thank you! Remaining due Tk {due}.',
+    ];
+
+    /** Placeholders each template may use. */
+    public const VARIABLES = [
+        'order_approved' => ['{retailer}', '{order}', '{amount}'],
+        'delivered' => ['{retailer}', '{order}', '{invoice}', '{amount}', '{due}'],
+        'payment_received' => ['{retailer}', '{amount}', '{due}'],
+    ];
+
+    public static function template(string $event): string
+    {
+        return (string) (AppSetting::get('sms_template_'.$event) ?: self::TEMPLATES[$event] ?? '');
+    }
+
+    /**
+     * Build the final text for an event: fill the template's placeholders and
+     * add the company name in front. Money values are formatted here.
+     *
+     * @param  array<string, string|int|float|null>  $values  keys without braces, e.g. ['order' => 'SO-…', 'amount' => 1200]
+     */
+    public static function message(string $event, array $values): string
+    {
+        $map = [];
+        foreach ($values as $key => $value) {
+            $map['{'.$key.'}'] = in_array($key, ['amount', 'due'], true) ? number_format((float) $value, 2) : (string) $value;
+        }
+
+        return self::brand(trim(strtr(self::template($event), $map)));
+    }
+
     public static function enabled(?string $event = null): bool
     {
         if (! AppSetting::flag('sms_enabled') || blank(AppSetting::get('sms_url'))) {

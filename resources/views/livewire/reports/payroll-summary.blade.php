@@ -14,9 +14,14 @@
                 @endforeach
             </select>
         </div>
-        <a href="{{ route('reports.export.payroll', request()->query()) }}" class="flex items-center gap-2 px-3 py-2 rounded-lg bg-white border shadow-sm text-sm text-slate-600 hover:text-indigo-600">
-            <x-icon name="download" class="w-4 h-4" /> {{ __('Download CSV') }}
-        </a>
+        <div class="flex items-center gap-2">
+            <a href="{{ route('reports.export.payroll') }}" data-base="{{ route('reports.export.payroll') }}" onclick="this.href = this.dataset.base + window.location.search" class="flex items-center gap-2 px-3 py-2 rounded-lg bg-white border shadow-sm text-sm text-slate-600 hover:text-indigo-600">
+                <x-icon name="download" class="w-4 h-4" /> {{ __('Download CSV') }}
+            </a>
+            <a href="{{ route('reports.pdf', 'payroll') }}" data-base="{{ route('reports.pdf', 'payroll') }}" onclick="this.href = this.dataset.base + window.location.search" target="_blank" class="flex items-center gap-2 px-3 py-2 rounded-lg bg-white border shadow-sm text-sm text-slate-600 hover:text-indigo-600">
+                <x-icon name="printer" class="w-4 h-4" /> {{ __('PDF') }}
+            </a>
+        </div>
     </div>
 
     <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-4">
@@ -42,14 +47,14 @@
             <tbody class="divide-y">
                 @forelse($entries as $entry)
                     <tr wire:key="pe-{{ $entry->id }}">
-                        <td class="px-4 py-3 font-medium" data-label="Representative">{{ $entry->representative?->name }}</td>
-                        <td class="px-4 py-3 text-slate-500" data-label="Period">{{ $entry->period }}</td>
-                        <td class="px-4 py-3" data-label="Base">৳ {{ number_format($entry->base_salary, 2) }}</td>
-                        <td class="px-4 py-3 text-green-700" data-label="Commission">৳ {{ number_format($entry->commission_amount, 2) }}</td>
-                        <td class="px-4 py-3 text-green-700" data-label="Bonus">৳ {{ number_format($entry->bonus_amount, 2) }}</td>
-                        <td class="px-4 py-3 text-red-600" data-label="Deductions">৳ {{ number_format($entry->advance_deduction + $entry->other_deduction, 2) }}</td>
-                        <td class="px-4 py-3 font-medium" data-label="Net Salary">৳ {{ number_format($entry->net_salary, 2) }}</td>
-                        <td class="px-4 py-3" data-label="Status">
+                        <td class="px-4 py-3 font-medium" data-label="{{ __('Representative') }}">{{ $entry->representative?->name }}</td>
+                        <td class="px-4 py-3 text-slate-500" data-label="{{ __('Period') }}">{{ $entry->period }}</td>
+                        <td class="px-4 py-3" data-label="{{ __('Base') }}">৳ {{ number_format($entry->base_salary, 2) }}</td>
+                        <td class="px-4 py-3 text-green-700" data-label="{{ __('Commission') }}">৳ {{ number_format($entry->commission_amount, 2) }}</td>
+                        <td class="px-4 py-3 text-green-700" data-label="{{ __('Bonus') }}">৳ {{ number_format($entry->bonus_amount, 2) }}</td>
+                        <td class="px-4 py-3 text-red-600" data-label="{{ __('Deductions') }}">৳ {{ number_format($entry->advance_deduction + $entry->other_deduction, 2) }}</td>
+                        <td class="px-4 py-3 font-medium" data-label="{{ __('Net Salary') }}">৳ {{ number_format($entry->net_salary, 2) }}</td>
+                        <td class="px-4 py-3" data-label="{{ __('Status') }}">
                             <span class="px-2 py-1 rounded-full text-xs {{ $entry->status === 'paid' ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-600' }}">{{ __(ucfirst($entry->status)) }}</span>
                         </td>
                     </tr>

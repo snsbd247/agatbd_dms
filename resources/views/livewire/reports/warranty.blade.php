@@ -16,9 +16,14 @@
                 <option value="repaired">{{ __('Repaired') }}</option>
             </select>
         </div>
-        <a href="{{ route('reports.export.warranty', request()->query()) }}" class="flex items-center gap-2 px-3 py-2 rounded-lg bg-white border shadow-sm text-sm text-slate-600 hover:text-indigo-600">
-            <x-icon name="download" class="w-4 h-4" /> {{ __('Download CSV') }}
-        </a>
+        <div class="flex items-center gap-2">
+            <a href="{{ route('reports.export.warranty') }}" data-base="{{ route('reports.export.warranty') }}" onclick="this.href = this.dataset.base + window.location.search" class="flex items-center gap-2 px-3 py-2 rounded-lg bg-white border shadow-sm text-sm text-slate-600 hover:text-indigo-600">
+                <x-icon name="download" class="w-4 h-4" /> {{ __('Download CSV') }}
+            </a>
+            <a href="{{ route('reports.pdf', 'warranty') }}" data-base="{{ route('reports.pdf', 'warranty') }}" onclick="this.href = this.dataset.base + window.location.search" target="_blank" class="flex items-center gap-2 px-3 py-2 rounded-lg bg-white border shadow-sm text-sm text-slate-600 hover:text-indigo-600">
+                <x-icon name="printer" class="w-4 h-4" /> {{ __('PDF') }}
+            </a>
+        </div>
     </div>
 
     <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-4">
@@ -41,11 +46,11 @@
             <tbody class="divide-y">
                 @forelse($claims as $claim)
                     <tr wire:key="wc-{{ $claim->id }}">
-                        <td class="px-4 py-3 font-medium" data-label="Number">{{ $claim->number }}</td>
-                        <td class="px-4 py-3 text-slate-500" data-label="Date">{{ $claim->claim_date->format('d M Y') }}</td>
-                        <td class="px-4 py-3" data-label="Retailer">{{ $claim->retailer?->name }}</td>
-                        <td class="px-4 py-3" data-label="Product">{{ $claim->product?->name }}</td>
-                        <td class="px-4 py-3" data-label="Status">
+                        <td class="px-4 py-3 font-medium" data-label="{{ __('Number') }}">{{ $claim->number }}</td>
+                        <td class="px-4 py-3 text-slate-500" data-label="{{ __('Date') }}">{{ $claim->claim_date->format('d M Y') }}</td>
+                        <td class="px-4 py-3" data-label="{{ __('Retailer') }}">{{ $claim->retailer?->name }}</td>
+                        <td class="px-4 py-3" data-label="{{ __('Product') }}">{{ $claim->product?->name }}</td>
+                        <td class="px-4 py-3" data-label="{{ __('Status') }}">
                             <span @class([
                                 'px-2 py-1 rounded-full text-xs',
                                 'bg-slate-100 text-slate-600' => $claim->status === 'pending',

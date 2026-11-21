@@ -65,7 +65,7 @@ class Create extends Component
         $retailer->refresh();
         app(\App\Services\SmsService::class)->send(
             $retailer->phone,
-            \App\Services\SmsService::brand('Payment received: Tk '.number_format((float) $data['amount'], 2).'. Thank you! Remaining due Tk '.number_format((float) $retailer->current_due, 2).'.'),
+            \App\Services\SmsService::message('payment_received', ['retailer' => $retailer->name, 'amount' => $data['amount'], 'due' => $retailer->current_due]),
             'payment_received',
         );
 

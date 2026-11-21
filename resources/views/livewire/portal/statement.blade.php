@@ -21,12 +21,21 @@
             <tbody class="divide-y">
                 @forelse($entries as $entry)
                     <tr wire:key="le-{{ $entry->id }}">
-                        <td class="px-4 py-3 text-slate-500" data-label="Date">{{ $entry->entry_date->format('d M Y') }}</td>
-                        <td class="px-4 py-3 capitalize" data-label="Type">{{ str_replace('_', ' ', $entry->type) }}</td>
-                        <td class="px-4 py-3 text-slate-500" data-label="Reference">{{ $referenceNumbers[$entry->reference_type.'#'.$entry->reference_id] ?? '—' }}</td>
-                        <td class="px-4 py-3 text-right" data-label="Charged">{{ $entry->debit > 0 ? '৳ '.number_format($entry->debit, 2) : '—' }}</td>
-                        <td class="px-4 py-3 text-right text-green-700" data-label="Paid / Credit">{{ $entry->credit > 0 ? '৳ '.number_format($entry->credit, 2) : '—' }}</td>
-                        <td class="px-4 py-3 text-right font-semibold" data-label="Balance">৳ {{ number_format($entry->balance_after, 2) }}</td>
+                        <td class="px-4 py-3 text-slate-500" data-label="{{ __('Date') }}">{{ $entry->entry_date->format('d M Y') }}</td>
+                        <td class="px-4 py-3 capitalize" data-label="{{ __('Type') }}">{{ __(ucfirst(str_replace('_', ' ', $entry->type))) }}</td>
+                        <td class="px-4 py-3 text-slate-500" data-label="{{ __('Reference') }}">
+                            @php $ref = $referenceNumbers[$entry->reference_type.'#'.$entry->reference_id] ?? null; @endphp
+                            @if($ref && $entry->reference_type === \App\Models\Sales\SalesInvoice::class)
+                                <a href="{{ route('portal.sales-invoices.print', $entry->reference_id) }}" target="_blank" class="inline-flex items-center gap-1 text-indigo-600 hover:underline">{{ $ref }} <x-icon name="printer" class="w-3.5 h-3.5" /></a>
+                            @elseif($ref && $entry->reference_type === \App\Models\PaymentCollection::class)
+                                <a href="{{ route('portal.receipts.print', $entry->reference_id) }}" target="_blank" class="inline-flex items-center gap-1 text-indigo-600 hover:underline">{{ $ref }} <x-icon name="printer" class="w-3.5 h-3.5" /></a>
+                            @else
+                                {{ $ref ?? '—' }}
+                            @endif
+                        </td>
+                        <td class="px-4 py-3 text-right" data-label="{{ __('Charged') }}">{{ $entry->debit > 0 ? '৳ '.number_format($entry->debit, 2) : '—' }}</td>
+                        <td class="px-4 py-3 text-right text-green-700" data-label="{{ __('Paid / Credit') }}">{{ $entry->credit > 0 ? '৳ '.number_format($entry->credit, 2) : '—' }}</td>
+                        <td class="px-4 py-3 text-right font-semibold" data-label="{{ __('Balance') }}">৳ {{ number_format($entry->balance_after, 2) }}</td>
                     </tr>
                 @empty
                     <tr><td colspan="6" class="px-4 py-10 text-center text-slate-400">{{ __('No transactions yet.') }}</td></tr>

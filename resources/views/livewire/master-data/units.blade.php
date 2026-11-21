@@ -54,9 +54,9 @@
                                 {{ $unit->products_count }} products
                             </span>
                         </td>
-                        <td class="px-4 py-3 font-medium rtable-hide-mobile" data-label="Name">{{ $unit->name }}</td>
-                        <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="Short Code">{{ $unit->short_code }}</td>
-                        <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="Products Using">{{ $unit->products_count }}</td>
+                        <td class="px-4 py-3 font-medium rtable-hide-mobile" data-label="{{ __('Name') }}">{{ $unit->name }}</td>
+                        <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="{{ __('Short Code') }}">{{ $unit->short_code }}</td>
+                        <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="{{ __('Products Using') }}">{{ $unit->products_count }}</td>
                         <td class="px-4 py-3">
                             <div class="flex items-center justify-end gap-1.5">
                                 <x-icon-action wire:click="view({{ $unit->id }})" icon="eye" color="blue" label="View" />

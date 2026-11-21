@@ -39,11 +39,11 @@
                 @foreach($deliveryNote->items as $item)
                     @php $price = (float) ($item->salesOrderItem?->unit_price ?? 0); @endphp
                     <tr>
-                        <td class="px-4 py-3 font-medium" data-label="Product">{{ $item->product?->name }}</td>
-                        <td class="px-4 py-3 text-slate-500" data-label="Batch">{{ $item->batch?->batch_no ?? '—' }}</td>
-                        <td class="px-4 py-3 text-right" data-label="Quantity">{{ $qty($item->quantity) }}</td>
-                        <td class="px-4 py-3 text-right" data-label="Unit Price">৳ {{ number_format($price, 2) }}</td>
-                        <td class="px-4 py-3 text-right font-medium" data-label="Total">৳ {{ number_format($item->quantity * $price, 2) }}</td>
+                        <td class="px-4 py-3 font-medium" data-label="{{ __('Product') }}">{{ $item->product?->name }}</td>
+                        <td class="px-4 py-3 text-slate-500" data-label="{{ __('Batch') }}">{{ $item->batch?->batch_no ?? '—' }}</td>
+                        <td class="px-4 py-3 text-right" data-label="{{ __('Quantity') }}">{{ $qty($item->quantity) }}</td>
+                        <td class="px-4 py-3 text-right" data-label="{{ __('Unit Price') }}">৳ {{ number_format($price, 2) }}</td>
+                        <td class="px-4 py-3 text-right font-medium" data-label="{{ __('Total') }}">৳ {{ number_format($item->quantity * $price, 2) }}</td>
                     </tr>
                 @endforeach
             </tbody>

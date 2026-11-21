@@ -14,6 +14,16 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        // Apply the saved theme before the page paints, so there is no white flash.
+        (function () {
+            try {
+                var t = localStorage.getItem('dms_theme');
+                var dark = t === 'dark' || (t !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+                document.documentElement.classList.toggle('dark', dark);
+            } catch (e) {}
+        })();
+    </script>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
 </head>
@@ -24,6 +34,8 @@
                 ['route' => 'portal.orders', 'label' => 'My Orders', 'icon' => 'shopping-bag'],
                 ['route' => 'portal.orders.create', 'label' => 'New Order', 'icon' => 'shopping-cart'],
                 ['route' => 'portal.statement', 'label' => 'My Statement', 'icon' => 'book-open'],
+                ['route' => 'portal.returns', 'label' => 'My Returns', 'icon' => 'refresh'],
+                ['route' => 'portal.warranty', 'label' => 'My Warranty Claims', 'icon' => 'shield-check'],
             ]],
             ['icon' => 'database', 'label' => 'Master Data', 'permission' => 'master-data.view', 'prefix' => ['master-data.'], 'links' => [
                 ['route' => 'master-data.companies', 'label' => 'Companies', 'icon' => 'building-storefront'],
@@ -120,14 +132,14 @@
             || request()->routeIs('reports.stock') || request()->routeIs('business.*');
         $reportsTabActive = request()->routeIs('reports.*') && ! request()->routeIs('reports.stock');
         $portalTabVisible = auth()->user()->hasRole('Retailer');
-        $portalTabActive = request()->routeIs('portal.*');
+        $portalTabActive = request()->routeIs('portal.orders*', 'portal.statement');
         $moreTabActive = ! $dashboardActive && ! $masterTabActive && ! $businessTabActive && ! $reportsTabActive && ! $portalTabActive;
     @endphp
 
     <div class="min-h-screen flex" x-data="{ collapsed: localStorage.getItem('dms_sidebar_collapsed') === '1' }" x-init="$watch('collapsed', value => localStorage.setItem('dms_sidebar_collapsed', value ? '1' : '0'))">
 
         <aside
-            class="hidden lg:flex lg:flex-col bg-slate-950 text-slate-200 lg:shrink-0 lg:transition-all"
+            class="dark-keep hidden lg:flex lg:flex-col bg-slate-950 text-slate-200 lg:shrink-0 lg:transition-all"
             :class="{
                 'lg:w-20': collapsed,
                 'lg:w-64': !collapsed,
@@ -256,6 +268,8 @@
                     {{ $headerActions ?? '' }}
 
                     <x-locale-switch class="hidden sm:inline-flex" />
+
+                    <x-theme-toggle />
 
                     <button type="button" onclick="window.location.reload()" class="hidden sm:inline-flex text-slate-500 hover:text-slate-900 p-1.5 rounded-lg hover:bg-slate-100" title="{{ __('Refresh') }}">
                         <x-icon name="refresh" class="w-5 h-5" />

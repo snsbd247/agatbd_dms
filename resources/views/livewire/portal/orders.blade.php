@@ -43,13 +43,13 @@
             <tbody class="divide-y">
                 @forelse($orders as $order)
                     <tr wire:key="po-{{ $order->id }}">
-                        <td class="px-4 py-3 font-medium" data-label="Order">
+                        <td class="px-4 py-3 font-medium" data-label="{{ __('Order') }}">
                             <a href="{{ route('portal.orders.show', $order) }}" class="text-indigo-600 hover:underline">{{ $order->number }}</a>
                         </td>
-                        <td class="px-4 py-3 text-slate-500" data-label="Date">{{ $order->order_date->format('d M Y') }}</td>
-                        <td class="px-4 py-3 text-slate-500" data-label="Items">{{ $order->items_count }}</td>
-                        <td class="px-4 py-3 text-right font-medium" data-label="Amount">৳ {{ number_format($order->grand_total, 2) }}</td>
-                        <td class="px-4 py-3" data-label="Status"><span class="px-2 py-1 rounded-full text-xs {{ $badge($order->status) }}">{{ $label($order->status) }}</span></td>
+                        <td class="px-4 py-3 text-slate-500" data-label="{{ __('Date') }}">{{ $order->order_date->format('d M Y') }}</td>
+                        <td class="px-4 py-3 text-slate-500" data-label="{{ __('Items') }}">{{ $order->items_count }}</td>
+                        <td class="px-4 py-3 text-right font-medium" data-label="{{ __('Amount') }}">৳ {{ number_format($order->grand_total, 2) }}</td>
+                        <td class="px-4 py-3" data-label="{{ __('Status') }}"><span class="px-2 py-1 rounded-full text-xs {{ $badge($order->status) }}">{{ $label($order->status) }}</span></td>
                     </tr>
                 @empty
                     <tr><td colspan="5" class="px-4 py-10 text-center text-slate-400">{{ __('No orders yet.') }} <a href="{{ route('portal.orders.create') }}" class="text-indigo-600 hover:underline">{{ __('Place your first order') }}</a>.</td></tr>

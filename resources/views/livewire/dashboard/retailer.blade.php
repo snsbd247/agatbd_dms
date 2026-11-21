@@ -1,5 +1,5 @@
 <div>
-    <div class="mb-5 overflow-hidden rounded-2xl bg-gradient-to-r from-slate-800 to-indigo-800 p-5 text-white shadow-lg">
+    <div class="dark-keep mb-5 overflow-hidden rounded-2xl bg-gradient-to-r from-slate-800 to-indigo-800 p-5 text-white shadow-lg">
         <p class="text-sm text-indigo-200">{{ now()->format('l, d F Y') }}</p>
         <h2 class="mt-1 text-xl font-bold">{{ __('Your account at a glance') }}</h2>
         <p class="mt-1 text-sm text-indigo-200">{{ __('See your orders, invoices, current due and credit usage in one place.') }}</p>
