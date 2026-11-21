@@ -62,6 +62,8 @@ class ChartOfAccountsSeeder extends Seeder
         ['5210', 'Salaries & Wages', 'expense', '5200', 'salary', []],
         ['5220', 'Sales Commission', 'expense', '5200', 'commission', []],
         ['5230', 'Bonus', 'expense', '5200', 'bonus', []],
+        ['5235', 'Gratuity & Leave Encashment', 'expense', '5200', 'gratuity', []],
+        ['5236', 'Overtime', 'expense', '5200', 'overtime', []],
         ['5240', 'Rent', 'expense', '5200', null, []],
         ['5250', 'Utilities (Electricity, Water, Gas)', 'expense', '5200', null, []],
         ['5260', 'Transport & Delivery', 'expense', '5200', null, []],

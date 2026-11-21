@@ -41,42 +41,23 @@ class Create extends Component
 
         $existingRepIds = PayrollEntry::where('period', $this->period)->pluck('representative_id');
 
+        // Representatives who are HR employees are paid on the HR salary sheet instead.
+        $onHrSheet = \App\Models\Hr\Employee::whereNotNull('representative_id')->pluck('representative_id');
+
         $representatives = Representative::where('active', true)
             ->whereNotIn('id', $existingRepIds)
+            ->whereNotIn('id', $onHrSheet)
             ->get();
 
         if ($representatives->isEmpty()) {
-            $this->addError('period', 'Every active representative already has a payroll entry for this period.');
+            $this->addError('period', __('Every active representative already has a payroll entry for this period, or is paid on the HR salary sheet.'));
 
             return;
         }
 
         DB::transaction(function () use ($representatives, $start, $end, $numbers) {
             foreach ($representatives as $rep) {
-                $deliveredAmount = (float) SalesInvoice::whereHas('salesOrder', fn ($q) => $q->where('representative_id', $rep->id))
-                    ->whereBetween('invoice_date', [$start, $end])
-                    ->sum('grand_total');
-
-                $retailerIds = Retailer::where('representative_id', $rep->id)->pluck('id');
-
-                $returnAdjustment = (float) ReturnRequestItem::whereHas('returnRequest', fn ($q) => $q->where('status', 'received')
-                    ->whereIn('retailer_id', $retailerIds)
-                    ->whereBetween('request_date', [$start, $end]))
-                    ->get()
-                    ->sum(fn ($item) => (float) $item->quantity * (float) $item->unit_price);
-
-                $commissionBase = max(0, $deliveredAmount - $returnAdjustment);
-                $commissionAmount = round($commissionBase * (float) $rep->commission_rate / 100, 2);
-
-                Commission::create([
-                    'representative_id' => $rep->id,
-                    'sales_invoice_id' => null,
-                    'period' => $this->period,
-                    'delivered_amount' => $deliveredAmount,
-                    'commission_rate' => $rep->commission_rate,
-                    'commission_amount' => $commissionAmount,
-                    'return_adjustment' => $returnAdjustment,
-                ]);
+                $commissionAmount = (float) app(\App\Services\Hr\CommissionService::class)->forPeriod($rep, $this->period)->commission_amount;
 
                 $bonusAmount = (float) Bonus::where('representative_id', $rep->id)
                     ->whereBetween('bonus_date', [$start, $end])
@@ -102,10 +83,6 @@ class Create extends Component
                     'status' => 'pending',
                 ]);
 
-                RepresentativeTarget::updateOrCreate(
-                    ['representative_id' => $rep->id, 'period' => $this->period],
-                    ['target_amount' => $rep->target_amount, 'achieved_amount' => $deliveredAmount]
-                );
             }
         });
 

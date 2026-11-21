@@ -40,6 +40,8 @@ class AccessTest extends TestCase
             'vouchers' => ['accounts.vouchers.index',        200,   200,   200,   403, 403],
             'new voucher' => ['accounts.vouchers.create',    200,   403,   200,   403, 403],
             'supplier payments' => ['accounts.supplier-payments', 200, 200, 403, 403, 403],
+            'employees' => ['hr.employees.index',            200,   200,   403,   403, 403],
+            'salary sheets' => ['hr.payroll.index',          200,   200,   403,   403, 403],
             'purchase orders' => ['purchase.orders.index',   200,   200,   403,   403, 403],
             'dealers' => ['dealers.index',                   200,   200,   403,   403, 403],
             'sales orders' => ['sales.orders.index',         200,   200,   200,   200, 403],

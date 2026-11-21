@@ -82,7 +82,7 @@ class Create extends Component
             }
 
             $partyType = $this->partyTypeFor($account);
-            if (in_array($partyType, ['retailer', 'company', 'representative'], true) && blank($line['party_id'])) {
+            if (in_array($partyType, ['retailer', 'company', 'representative', 'employee'], true) && blank($line['party_id'])) {
                 $this->addError("lines.$i.party_id", __('Choose who this is with.'));
 
                 return;

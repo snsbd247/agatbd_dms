@@ -28,6 +28,8 @@ class NumberGeneratorService
         'opening_voucher' => 'OB',
         'auto_journal' => 'AJ',
         'closing_voucher' => 'YC',
+        'salary_sheet' => 'SAL',
+        'final_settlement' => 'FS',
     ];
 
     public function generate(string $type): string

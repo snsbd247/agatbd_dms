@@ -6,7 +6,7 @@
 
 FK-এর পাশের চিহ্ন: **null** = parent মুছলে NULL হয়, **cascade** = parent মুছলে row-ও মোছে, কিছু না লেখা থাকলে restrict।
 
-> সর্বশেষ আপডেট: ২২ নভেম্বর ২০২৬ (সর্বশেষ migration: `2026_11_22_000004_create_accounting_tables`)
+> সর্বশেষ আপডেট: ২২ নভেম্বর ২০২৬ (সর্বশেষ migration: `2026_11_22_000005_create_hr_tables`)
 
 ---
 
@@ -700,3 +700,22 @@ erDiagram
 
 ### fiscal_year_closings
 `dealer_id`, `label` (যেমন 2025-26), `start_date`, `end_date`, `journal_entry_id` (সমাপনী ভাউচার), `closed_by`। বন্ধ বছরের তারিখে হাতে লেখা ভাউচার নেওয়া হয় না।
+
+## ১৫. HR (migration `2026_11_22_000005`)
+
+| টেবিল | মূল কলাম | নোট |
+|---|---|---|
+| departments | name, code | ডিফল্ট: প্রশাসন, হিসাব, উৎপাদন, বিক্রয় ও মার্কেটিং, স্টোর |
+| designations | name, department_id | |
+| shifts | name, start_time, end_time, grace_minutes, weekly_off | ডিফল্ট: সকাল ৯টা–সন্ধ্যা ৬টা, ১০ মিনিট ছাড়, শুক্রবার ছুটি |
+| holidays | date (unique), name | সরকারি ছুটি |
+| employees | dealer_id, employee_code (unique), name, father_name, phone, email, nid, address, date_of_birth, gender, join_date, exit_date, status (`active`/`resigned`/`terminated`), category (`office`/`factory`/`marketing`), department_id, designation_id, factory_id, shift_id, user_id, representative_id (unique; মার্কেটিং কর্মীর প্রতিনিধি প্রোফাইল), device_user_id (unique; ZKTeco), track_attendance, overtime_eligible, payment_method, bank_name, bank_account_no, basic, house_rent, medical, conveyance, other_allowance | migration হেড অফিসের প্রতিনিধিদের কর্মচারী বানায় |
+| attendances | employee_id, date, in_time, out_time, status (`present`/`late`/`half_day`/`absent`/`leave`/`holiday`/`weekly_off`), overtime_minutes, source (`manual`/`csv`/`device`), note | (employee_id, date) unique |
+| leave_types | name, code (unique), days_per_year, paid, active | ডিফল্ট: CL ১০, SL ১৪, EL ১৮, ML ১১২, LWP (বিনা বেতনে) |
+| leave_applications | employee_id, leave_type_id, from_date, to_date, days, reason, status (`pending`/`approved`/`rejected`), decided_by, decided_at | |
+| employee_loans | employee_id, type (`advance`/`loan`), amount, issue_date, installment, recovered, status (`open`/`closed`), paid_from, note | |
+| payroll_runs | dealer_id, number (SAL-…), period (YYYY-MM), status (`draft`/`approved`/`paid`), approved_by/at, paid_at, paid_from | মাসে একটি |
+| payslips | payroll_run_id, employee_id, month_days, payable_days, working_days, present_days, paid_leave_days, unpaid_leave_days, absent_days, basic … other_allowance, overtime_hours/amount, commission, bonus, gross, absent_deduction, advance_deduction, loan_deduction, other_deduction, net, note | |
+| final_settlements | number (FS-…), employee_id (unique), exit_date, reason, salary_days/amount, leave_days, leave_encashment, service_years, gratuity, other_payable, loan_deduction, other_deduction, net, status (`draft`/`paid`), paid_from, paid_at, note | |
+
+নতুন হিসাব: `5235 Gratuity & Leave Encashment` (`gratuity`), `5236 Overtime` (`overtime`)। ভাউচার লাইনের নতুন পক্ষ: `employee`।

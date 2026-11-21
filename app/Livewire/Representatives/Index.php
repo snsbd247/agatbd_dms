@@ -117,6 +117,26 @@ class Index extends Component
             if ($userId) {
                 $representative->update(['user_id' => $userId]);
             }
+
+            // A new head office representative is also an employee, paid on the HR salary sheet.
+            if (! $this->editingId && $representative->dealer_id === null
+                && ! \App\Models\Hr\Employee::where('representative_id', $representative->id)->exists()) {
+                $code = \App\Models\Hr\Employee::where('employee_code', $representative->employee_code)->exists()
+                    ? 'EMP-R'.$representative->id
+                    : $representative->employee_code;
+                \App\Models\Hr\Employee::create([
+                    'employee_code' => $code,
+                    'name' => $representative->name,
+                    'phone' => $representative->phone,
+                    'join_date' => today(),
+                    'category' => 'marketing',
+                    'department_id' => \App\Models\Hr\Department::where('code', 'MKT')->value('id'),
+                    'user_id' => $representative->user_id,
+                    'representative_id' => $representative->id,
+                    'track_attendance' => false,
+                    'basic' => $representative->salary_base,
+                ]);
+            }
         });
 
         $this->showModal = false;

@@ -16,7 +16,7 @@ trait PicksParties
         return match ($account?->system_key) {
             'ar' => 'retailer',
             'ap' => auth()->user()->dealer_id ? 'head_office' : 'company',
-            'employee_advance' => 'representative',
+            'employee_advance' => 'employee',
             default => null,
         };
     }
@@ -28,6 +28,7 @@ trait PicksParties
             'retailer' => Retailer::orderBy('name')->pluck('name', 'id')->all(),
             'company' => Company::orderBy('name')->pluck('name', 'id')->all(),
             'representative' => Representative::orderBy('name')->pluck('name', 'id')->all(),
+            'employee' => \App\Models\Hr\Employee::orderBy('name')->pluck('name', 'id')->all(),
             'head_office' => ['' => __('Agro Tech (head office)')],
         ];
     }

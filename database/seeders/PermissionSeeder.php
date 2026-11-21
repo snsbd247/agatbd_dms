@@ -22,6 +22,7 @@ class PermissionSeeder extends Seeder
         'reports.view',
         'dealers.view', 'dealers.manage',
         'accounts.view', 'accounts.manage', 'accounts.approve',
+        'hr.view', 'hr.manage', 'hr.payroll',
         'settings.manage',
         'portal.access',
     ];

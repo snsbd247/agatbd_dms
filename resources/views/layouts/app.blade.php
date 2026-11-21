@@ -80,6 +80,14 @@
             ['icon' => 'user-group', 'label' => 'Representative', 'permission' => 'representatives.view', 'prefix' => ['representatives.'], 'links' => [
                 ['route' => 'representatives.index', 'label' => 'Representatives', 'icon' => 'user-group'],
             ]],
+            ['icon' => 'user-group', 'label' => 'HR', 'permission' => 'hr.view', 'prefix' => ['hr.'], 'links' => [
+                ['route' => 'hr.employees.index', 'label' => 'Employees', 'icon' => 'user-group', 'headOffice' => true],
+                ['route' => 'hr.attendance', 'label' => 'Attendance', 'icon' => 'clock', 'headOffice' => true],
+                ['route' => 'hr.leaves', 'label' => 'Leave', 'icon' => 'calendar', 'headOffice' => true],
+                ['route' => 'hr.loans', 'label' => 'Advances & Loans', 'icon' => 'credit-card', 'headOffice' => true],
+                ['route' => 'hr.payroll.index', 'label' => 'Salary Sheets', 'icon' => 'wallet', 'headOffice' => true],
+                ['route' => 'hr.setup', 'label' => 'HR Setup', 'icon' => 'cog', 'headOffice' => true],
+            ]],
             ['icon' => 'book-open', 'label' => 'Accounts', 'permission' => 'accounts.view', 'prefix' => ['accounts.'], 'links' => [
                 ['route' => 'accounts.vouchers.index', 'label' => 'Vouchers', 'icon' => 'document-text'],
                 ['route' => 'accounts.expenses', 'label' => 'Expenses', 'icon' => 'banknotes'],

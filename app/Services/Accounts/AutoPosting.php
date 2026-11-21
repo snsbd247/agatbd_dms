@@ -236,6 +236,78 @@ class AutoPosting
         ]);
     }
 
+    /** Money lent or advanced to an employee. */
+    public function loanIssued(\App\Models\Hr\EmployeeLoan $loan): void
+    {
+        $employee = Tenant::bypass(fn () => $loan->employee()->first());
+
+        $this->once($loan, 'loan_issued', fn () => [
+            ['type' => 'auto', 'entry_date' => $loan->issue_date, 'dealer_id' => $employee?->dealer_id,
+                'narration' => __(':type to :name', ['type' => __($loan->type === 'loan' ? 'Loan' : 'Advance'), 'name' => $employee?->name])],
+            [
+                ['account' => 'employee_advance', 'debit' => (float) $loan->amount, 'party_type' => 'employee', 'party_id' => $loan->employee_id],
+                ['account' => $this->moneyAccount($loan->paid_from), 'credit' => (float) $loan->amount],
+            ],
+        ]);
+    }
+
+    /**
+     * A paid salary sheet in one voucher: salaries (after absence), overtime,
+     * commission and bonus as expenses; advances and loans taken back per
+     * employee; other deductions as other income; the net paid out.
+     */
+    public function salarySheet(\App\Models\Hr\PayrollRun $run): void
+    {
+        if ($run->status !== 'paid') {
+            return;
+        }
+
+        $slips = $run->payslips;
+        $sum = fn (string $f) => round((float) $slips->sum(fn ($s) => (float) $s->{$f}), 2);
+
+        $lines = [
+            ['account' => 'salary', 'debit' => round($sum('basic') + $sum('house_rent') + $sum('medical') + $sum('conveyance') + $sum('other_allowance') - $sum('absent_deduction'), 2)],
+            ['account' => 'overtime', 'debit' => $sum('overtime_amount')],
+            ['account' => 'commission', 'debit' => $sum('commission')],
+            ['account' => 'bonus', 'debit' => $sum('bonus')],
+        ];
+        foreach ($slips as $s) {
+            $recovered = round((float) $s->advance_deduction + (float) $s->loan_deduction, 2);
+            if ($recovered > 0) {
+                $lines[] = ['account' => 'employee_advance', 'credit' => $recovered, 'party_type' => 'employee', 'party_id' => $s->employee_id];
+            }
+        }
+        $lines[] = ['account' => 'other_income', 'credit' => $sum('other_deduction')];
+        $lines[] = ['account' => $this->moneyAccount($run->paid_from), 'credit' => $sum('net')];
+
+        $this->once($run, 'salary_paid', fn () => [
+            ['type' => 'auto', 'entry_date' => $run->paid_at ?? now(), 'dealer_id' => $run->dealer_id,
+                'narration' => __('Salary sheet :n (:p)', ['n' => $run->number, 'p' => $run->period])],
+            $lines,
+        ]);
+    }
+
+    /** Final settlement paid to someone who left. */
+    public function finalSettlement(\App\Models\Hr\FinalSettlement $s): void
+    {
+        if ($s->status !== 'paid') {
+            return;
+        }
+        $employee = Tenant::bypass(fn () => $s->employee()->first());
+
+        $this->once($s, 'settlement_paid', fn () => [
+            ['type' => 'auto', 'entry_date' => $s->paid_at ?? now(), 'dealer_id' => $employee?->dealer_id,
+                'narration' => __('Final settlement :n — :name', ['n' => $s->number, 'name' => $employee?->name])],
+            [
+                ['account' => 'salary', 'debit' => round((float) $s->salary_amount + (float) $s->other_payable, 2)],
+                ['account' => 'gratuity', 'debit' => round((float) $s->leave_encashment + (float) $s->gratuity, 2)],
+                ['account' => 'employee_advance', 'credit' => (float) $s->loan_deduction, 'party_type' => 'employee', 'party_id' => $s->employee_id],
+                ['account' => 'other_income', 'credit' => (float) $s->other_deduction],
+                ['account' => $this->moneyAccount($s->paid_from), 'credit' => (float) $s->net],
+            ],
+        ]);
+    }
+
     /** Cash, bank or mobile money account for a payment method. */
     public function moneyAccount(?string $method): string
     {

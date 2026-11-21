@@ -19,7 +19,8 @@ class JournalLine extends Model
         'retailer' => 'Customer',
         'company' => 'Supplier',
         'head_office' => 'Agro Tech (head office)',
-        'representative' => 'Employee',
+        'representative' => 'Representative',
+        'employee' => 'Employee',
     ];
 
     protected $fillable = ['journal_entry_id', 'account_id', 'debit', 'credit', 'party_type', 'party_id', 'narration', 'cleared_at'];
@@ -51,6 +52,7 @@ class JournalLine extends Model
             'company' => Company::find($id)?->name,
             'head_office' => __('Agro Tech (head office)'),
             'representative' => \App\Support\Tenant::bypass(fn () => Representative::find($id)?->name),
+            'employee' => \App\Support\Tenant::bypass(fn () => \App\Models\Hr\Employee::find($id)?->name),
             default => null,
         };
     }

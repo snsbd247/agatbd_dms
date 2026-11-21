@@ -27,12 +27,18 @@ class RoleSeeder extends Seeder
             'warranty.view', 'warranty.manage',
             'dealers.view', 'dealers.manage',
             'accounts.view',
+            'hr.view',
+            'reports.view',
+        ],
+        'HR Manager' => [
+            'hr.view', 'hr.manage', 'hr.payroll',
             'reports.view',
         ],
         'Accountant' => [
             'master-data.view',
             'purchase.view', 'inventory.view', 'sales.view', 'collection.view', 'returns.view',
             'accounts.view', 'accounts.manage', 'accounts.approve',
+            'hr.view', 'hr.payroll',
             'reports.view',
         ],
         'Dealer' => [

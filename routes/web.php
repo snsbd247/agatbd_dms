@@ -183,6 +183,21 @@ Route::middleware('auth')->group(function () {
         Route::get('/reports/{report}/pdf', [\App\Http\Controllers\AccountsPdfController::class, 'report'])->name('reports.pdf');
     });
 
+    Route::middleware(['can:hr.view', 'head.office'])->prefix('hr')->name('hr.')->group(function () {
+        Route::get('/employees', \App\Livewire\Hr\Employees\Index::class)->name('employees.index');
+        Route::get('/employees/{employee}', \App\Livewire\Hr\Employees\Show::class)->name('employees.show');
+        Route::get('/attendance', \App\Livewire\Hr\Attendance::class)->name('attendance');
+        Route::get('/leave', \App\Livewire\Hr\Leaves::class)->name('leaves');
+        Route::get('/advances-loans', \App\Livewire\Hr\Loans::class)->name('loans');
+        Route::get('/salary', \App\Livewire\Hr\Payroll\Index::class)->name('payroll.index');
+        Route::get('/salary/{run}', \App\Livewire\Hr\Payroll\Show::class)->name('payroll.show');
+        Route::get('/salary/{run}/sheet.pdf', [\App\Http\Controllers\HrPdfController::class, 'sheet'])->name('payroll.pdf');
+        Route::get('/salary/{run}/payslips.pdf', [\App\Http\Controllers\HrPdfController::class, 'payslips'])->name('payslips.pdf');
+        Route::get('/payslips/{payslip}.pdf', [\App\Http\Controllers\HrPdfController::class, 'payslip'])->name('payslip.pdf');
+        Route::get('/settlements/{settlement}.pdf', [\App\Http\Controllers\HrPdfController::class, 'settlement'])->name('settlement.pdf');
+        Route::get('/setup', \App\Livewire\Hr\Setup::class)->name('setup');
+    });
+
     Route::middleware('can:dealers.view')->prefix('dealers')->name('dealers.')->group(function () {
         Route::get('/', DealersIndex::class)->name('index');
         Route::get('/{dealer}', DealersShow::class)->name('show');
