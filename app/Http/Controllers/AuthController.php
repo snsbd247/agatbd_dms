@@ -9,7 +9,18 @@ use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
-    public function showLogin(){return view('auth.login');}
+    public function showLogin()
+    {
+        return view('auth.login');
+    }
+
+    /**
+     * Site root: dashboard for logged-in users, login page for everyone else.
+     */
+    public function home()
+    {
+        return Auth::check() ? redirect()->route('dashboard') : redirect()->route('login');
+    }
 
     public function login(Request $request)
     {
@@ -50,6 +61,6 @@ class AuthController extends Controller
         Auth::logout();
         $request->session()->invalidate();
 
-        return redirect('/');
+        return redirect()->route('login');
     }
 }

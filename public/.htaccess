@@ -21,6 +21,10 @@
     RewriteCond %{HTTP:x-xsrf-token} .
     RewriteRule .* - [E=HTTP_X_XSRF_TOKEN:%{HTTP:X-XSRF-Token}]
 
+    # The app root ("/dms/") goes straight to the login page. Laravel's route
+    # cache cannot match a sub-folder root that ends in "/", so it never sees it.
+    RewriteRule ^$ %{REQUEST_URI}login [R=302,L]
+
     # Redirect Trailing Slashes If Not A Folder...
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_URI} (.+)/$

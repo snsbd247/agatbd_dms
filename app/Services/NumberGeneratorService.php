@@ -26,7 +26,7 @@ class NumberGeneratorService
     public function generate(string $type): string
     {
         $prefix = self::PREFIXES[$type] ?? throw new \InvalidArgumentException("Unknown numbering type [{$type}]");
-        $year = (int) date('Y');
+        $year = (int) now()->year;
 
         $next = DB::transaction(function () use ($type, $year) {
             $sequence = NumberingSequence::query()

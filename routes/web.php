@@ -95,7 +95,7 @@ use App\Livewire\Warranty\Claims\Show as WarrantyClaimShow;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
-    Route::get('/', [AuthController::class, 'showLogin'])->name('login');
+    Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:10,1')->name('login.attempt');
 
     Route::get('/forgot-password', [PasswordResetController::class, 'showRequest'])->name('password.request');
@@ -103,6 +103,10 @@ Route::middleware('guest')->group(function () {
     Route::get('/reset-password/{token}', [PasswordResetController::class, 'showReset'])->name('password.reset');
     Route::post('/reset-password', [PasswordResetController::class, 'reset'])->middleware('throttle:5,1')->name('password.update');
 });
+
+// Site root: logged-in users go to their dashboard, everyone else to the login page.
+// (public/.htaccess also sends a bare "/dms/" to /login so route caching works under a sub-folder.)
+Route::get('/', [AuthController::class, 'home'])->name('home');
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', DashboardController::class)->name('dashboard');
