@@ -6,15 +6,19 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Schema;
 use Spatie\Permission\PermissionRegistrar;
 
 /**
  * Creates and restores DMS backups.
  *
- * A backup is a zip holding `database.sqlite` (a consistent VACUUM INTO copy)
- * and `env.txt`. Restore copies the data of every table back into the live
- * database inside one transaction, so the running app never sees a half
- * restored database and the database file itself is never swapped out
+ * A backup is a zip holding `database.sqlite` and `env.txt`, whatever the
+ * live database is: on SQLite it is a consistent VACUUM INTO copy, on
+ * MySQL/MariaDB the data is exported into a fresh SQLite file built by the
+ * normal migrations. So one backup format works for both, and an old SQLite
+ * backup can be restored into MySQL. Restore copies the data of every table
+ * back into the live database inside one transaction, so the running app
+ * never sees a half restored database and no database file is swapped out
  * (which Windows would refuse while Apache has it open).
  */
 class BackupService
@@ -38,8 +42,6 @@ class BackupService
      */
     public function create(string $label = ''): string
     {
-        $this->ensureSqlite();
-
         $stamp = now()->format('Ymd-His');
         $name = 'dms-'.$stamp.($label !== '' ? '-'.$label : '');
         $sqliteCopy = $this->directory().DIRECTORY_SEPARATOR.$name.'.sqlite';
@@ -74,6 +76,12 @@ class BackupService
      */
     private function snapshot(string $target): void
     {
+        if (DB::getDriverName() !== 'sqlite') {
+            $this->exportToSqlite($target);
+
+            return;
+        }
+
         $pdo = DB::connection()->getPdo();
 
         if (version_compare($pdo->query('select sqlite_version()')->fetchColumn(), '3.27.0', '>=')) {
@@ -89,6 +97,98 @@ class BackupService
         } finally {
             $pdo->exec('ROLLBACK');
         }
+    }
+
+    /**
+     * MySQL/MariaDB: build an empty SQLite database with the migrations, then
+     * copy every business table into it. The reads run inside one
+     * REPEATABLE READ transaction, so InnoDB gives a consistent snapshot even
+     * while people keep working.
+     */
+    private function exportToSqlite(string $target): void
+    {
+        File::put($target, '');
+        config(['database.connections.backup_export' => [
+            'driver' => 'sqlite', 'database' => $target, 'prefix' => '', 'foreign_key_constraints' => false,
+        ]]);
+        DB::purge('backup_export');
+
+        try {
+            Artisan::call('migrate', ['--database' => 'backup_export', '--force' => true]);
+
+            $live = DB::connection();
+            $export = DB::connection('backup_export');
+            $exportTables = $this->tableNames('backup_export');
+
+            if ($live->transactionLevel() === 0) {   // MySQL refuses this inside an open transaction
+                $live->statement('SET TRANSACTION ISOLATION LEVEL REPEATABLE READ');
+            }
+            $live->beginTransaction();
+
+            try {
+                $export->transaction(function () use ($live, $export, $exportTables) {
+                    foreach ($this->tableNames() as $table) {
+                        if (in_array($table, self::SKIP_TABLES, true) || ! in_array($table, $exportTables, true)) {
+                            continue;
+                        }
+
+                        $export->table($table)->delete();
+                        $cols = array_values(array_intersect(
+                            Schema::getColumnListing($table),
+                            Schema::connection('backup_export')->getColumnListing($table),
+                        ));
+                        $this->copyRows($live->table($table)->select($cols)->cursor(), $export, $table, count($cols));
+                    }
+                });
+            } finally {
+                $live->commit();
+            }
+        } finally {
+            DB::disconnect('backup_export');
+        }
+    }
+
+    /** Insert rows in batches small enough for SQLite's bound-variable limit. */
+    private function copyRows(iterable $rows, \Illuminate\Database\Connection $to, string $table, int $columns): int
+    {
+        $size = max(1, intdiv(900, max(1, $columns)));
+        $batch = [];
+        $count = 0;
+
+        foreach ($rows as $row) {
+            $batch[] = (array) $row;
+
+            if (count($batch) >= $size) {
+                $to->table($table)->insert($batch);
+                $count += count($batch);
+                $batch = [];
+            }
+        }
+
+        if ($batch !== []) {
+            $to->table($table)->insert($batch);
+            $count += count($batch);
+        }
+
+        return $count;
+    }
+
+    /**
+     * Tables of a connection's own database. (Laravel 12 lists every schema on
+     * a MySQL server unless told which one.)
+     *
+     * @return array<int, string>
+     */
+    private function tableNames(?string $connection = null): array
+    {
+        $conn = DB::connection($connection);
+        $schema = $conn->getDriverName() === 'sqlite' ? null : $conn->getDatabaseName();
+
+        return collect(Schema::connection($connection)->getTables($schema))
+            ->pluck('name')
+            ->reject(fn ($t) => str_starts_with($t, 'sqlite_'))
+            ->values()
+            ->all();
     }
 
     /**
@@ -144,8 +244,6 @@ class BackupService
      */
     public function restore(string $file): array
     {
-        $this->ensureSqlite();
-
         $source = $this->extractDatabase($file);
 
         try {
@@ -163,13 +261,6 @@ class BackupService
         Artisan::call('migrate', ['--force' => true]);
 
         return $result + ['safety_backup' => basename($safety)];
-    }
-
-    private function ensureSqlite(): void
-    {
-        if (DB::getDriverName() !== 'sqlite') {
-            throw new \RuntimeException('Backup and restore only support the SQLite database.');
-        }
     }
 
     private function extractDatabase(string $file): string
@@ -223,6 +314,10 @@ class BackupService
             }
         }
 
+        if ($pdo->query('PRAGMA foreign_key_check')->fetchAll() !== []) {
+            throw new \RuntimeException('The backup has broken links between records. Nothing was changed.');
+        }
+
         $backupMigrations = $pdo->query('SELECT migration FROM migrations')->fetchAll(\PDO::FETCH_COLUMN);
         $currentMigrations = DB::table('migrations')->pluck('migration')->all();
         $newer = array_diff($backupMigrations, $currentMigrations);
@@ -235,54 +330,52 @@ class BackupService
     }
 
     /**
+     * Replace the data of every live table with the backup's rows. Works the
+     * same on SQLite and MySQL/MariaDB: the backup file is read with its own
+     * PDO connection and the rows are inserted through the live connection.
+     *
      * @return array{tables: int, rows: int}
      */
     private function copyData(string $source): array
     {
+        $src = new \PDO('sqlite:'.$source, null, null, [\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION]);
+        $srcTables = $src->query("SELECT name FROM sqlite_master WHERE type = 'table'")->fetchAll(\PDO::FETCH_COLUMN);
         $conn = DB::connection();
         $tables = 0;
         $rows = 0;
 
-        $conn->statement('PRAGMA foreign_keys = OFF');
-        $conn->statement('ATTACH DATABASE ? AS restore_src', [$source]);
+        Schema::disableForeignKeyConstraints();   // must happen outside the transaction on SQLite
 
         try {
-            $srcTables = collect($conn->select("SELECT name FROM restore_src.sqlite_master WHERE type = 'table'"))->pluck('name')->all();
-            $liveTables = collect($conn->select("SELECT name FROM main.sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%'"))->pluck('name')->all();
-
-            $conn->transaction(function () use ($conn, $srcTables, $liveTables, &$tables, &$rows) {
-                foreach ($liveTables as $table) {
+            $conn->transaction(function () use ($conn, $src, $srcTables, &$tables, &$rows) {
+                foreach ($this->tableNames() as $table) {
                     if (in_array($table, self::SKIP_TABLES, true)) {
                         continue;
                     }
 
-                    $quoted = '"'.str_replace('"', '""', $table).'"';
-                    $conn->statement("DELETE FROM main.{$quoted}");
+                    $conn->table($table)->delete();
 
                     if (! in_array($table, $srcTables, true)) {
                         continue;
                     }
 
-                    $liveCols = collect($conn->select("PRAGMA main.table_info({$quoted})"))->pluck('name');
-                    $srcCols = collect($conn->select("PRAGMA restore_src.table_info({$quoted})"))->pluck('name');
-                    $cols = $liveCols->intersect($srcCols)
-                        ->map(fn ($c) => '"'.str_replace('"', '""', $c).'"')
-                        ->implode(', ');
+                    $quoted = '"'.str_replace('"', '""', $table).'"';
+                    $srcCols = array_column($src->query("PRAGMA table_info({$quoted})")->fetchAll(\PDO::FETCH_ASSOC), 'name');
+                    $cols = array_values(array_intersect(Schema::getColumnListing($table), $srcCols));
 
-                    $conn->statement("INSERT INTO main.{$quoted} ({$cols}) SELECT {$cols} FROM restore_src.{$quoted}");
-                    $rows += (int) $conn->selectOne("SELECT COUNT(*) AS c FROM main.{$quoted}")->c;
+                    if ($cols === []) {
+                        continue;
+                    }
+
+                    $select = implode(', ', array_map(fn ($c) => '"'.str_replace('"', '""', $c).'"', $cols));
+                    $stmt = $src->query("SELECT {$select} FROM {$quoted}", \PDO::FETCH_ASSOC);
+                    $rows += $this->copyRows($stmt, $conn, $table, count($cols));
                     $tables++;
-                }
-
-                $violations = $conn->select('PRAGMA main.foreign_key_check');
-
-                if ($violations !== []) {
-                    throw new \RuntimeException('The backup has broken links between records ('.count($violations).' found). Nothing was changed.');
                 }
             });
         } finally {
-            $conn->statement('DETACH DATABASE restore_src');
-            $conn->statement('PRAGMA foreign_keys = ON');
+            Schema::enableForeignKeyConstraints();
+            $src = null;
         }
 
         return ['tables' => $tables, 'rows' => $rows];

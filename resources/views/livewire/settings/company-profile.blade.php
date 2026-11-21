@@ -32,6 +32,16 @@
                 <textarea wire:model="invoice_footer" rows="3" placeholder="{{ __('e.g. Goods once sold are not returnable without a valid reason. Payment due within 15 days.') }}" class="w-full border rounded-lg p-2 mt-1"></textarea>
                 <p class="text-xs text-slate-400 mt-1">{{ __('Printed at the bottom of every delivery invoice PDF.') }}</p>
             </div>
+            <div>
+                <label class="text-sm text-slate-500">{{ __('Fiscal year starts in') }}</label>
+                <select wire:model="fiscal_year_start_month" class="w-full sm:w-64 border rounded-lg p-2 mt-1">
+                    @foreach (range(1, 12) as $m)
+                        <option value="{{ $m }}">{{ \Illuminate\Support\Carbon::create(2000, $m, 1)->locale(app()->getLocale())->translatedFormat('F') }}</option>
+                    @endforeach
+                </select>
+                @error('fiscal_year_start_month') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
+                <p class="text-xs text-slate-400 mt-1">{{ __('Bangladesh: July (July–June). Accounts reports and year closing follow this.') }} {{ __('Current year:') }} {{ \App\Support\FiscalYear::current()['label'] }}</p>
+            </div>
         </div>
 
         <div class="mt-6 flex justify-end">

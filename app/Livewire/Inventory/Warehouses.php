@@ -22,11 +22,14 @@ class Warehouses extends Component
     public string $name = '';
     public string $type = 'branch';
     public string $address = '';
+    public ?int $factory_id = null;
+    public string $purpose = 'general';
     public bool $active = true;
 
     public string $search = '';
     public string $filter_status = '';
     public string $filter_type = '';
+    public string $filter_purpose = '';
 
     public function applyFilters(): void
     {
@@ -35,7 +38,7 @@ class Warehouses extends Component
 
     public function resetFilters(): void
     {
-        $this->reset(['search', 'filter_status', 'filter_type']);
+        $this->reset(['search', 'filter_status', 'filter_type', 'filter_purpose']);
         $this->resetPage();
     }
 
@@ -60,6 +63,8 @@ class Warehouses extends Component
         $this->name = $warehouse->name;
         $this->type = $warehouse->type;
         $this->address = (string) $warehouse->address;
+        $this->factory_id = $warehouse->factory_id;
+        $this->purpose = $warehouse->purpose ?? 'general';
         $this->active = $warehouse->active;
         $this->showModal = true;
     }
@@ -71,6 +76,8 @@ class Warehouses extends Component
         $data = $this->validate([
             'name' => 'required|string|max:255',
             'type' => 'required|in:central,branch',
+            'factory_id' => 'nullable|exists:factories,id',
+            'purpose' => 'required|in:'.implode(',', array_keys(Warehouse::PURPOSES)),
             'address' => 'nullable|string|max:255',
             'active' => 'boolean',
         ]);
@@ -89,7 +96,8 @@ class Warehouses extends Component
 
     public function resetForm(): void
     {
-        $this->reset(['editingId', 'name', 'address']);
+        $this->reset(['editingId', 'name', 'address', 'factory_id']);
+        $this->purpose = 'general';
         $this->type = 'branch';
         $this->active = true;
         $this->resetErrorBag();
@@ -101,6 +109,8 @@ class Warehouses extends Component
             ->when($this->search, fn ($q) => $q->where('name', 'like', "%{$this->search}%"))
             ->when($this->filter_status !== '', fn ($q) => $q->where('active', $this->filter_status === 'active'))
             ->when($this->filter_type, fn ($q) => $q->where('type', $this->filter_type))
+            ->when($this->filter_purpose, fn ($q) => $q->where('purpose', $this->filter_purpose))
+            ->with('factory')
             ->orderBy('name')
             ->paginate(10);
 
@@ -114,7 +124,8 @@ class Warehouses extends Component
         return view('livewire.inventory.warehouses', [
             'warehouses' => $warehouses,
             'summary' => $summary,
-            'viewingWarehouse' => $this->viewingId ? Warehouse::find($this->viewingId) : null,
+            'viewingWarehouse' => $this->viewingId ? Warehouse::with('factory')->find($this->viewingId) : null,
+            'factories' => \App\Models\Factory::orderBy('name')->get(['id', 'name']),
         ]);
     }
 }

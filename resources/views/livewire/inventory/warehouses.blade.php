@@ -46,6 +46,10 @@
                 <option value="central">{{ __('Central') }}</option>
                 <option value="branch">{{ __('Branch') }}</option>
             </select>
+            <select wire:model="filter_purpose" class="border rounded-lg px-3 py-2 text-sm bg-white w-full sm:w-auto">
+                <option value="">{{ __('All purposes') }}</option>
+                @foreach(\App\Models\Warehouse::PURPOSES as $key => $label)<option value="{{ $key }}">{{ __($label) }}</option>@endforeach
+            </select>
             <input wire:model="search" type="text" placeholder="{{ __('Search warehouses...') }}" class="border rounded-lg px-3 py-2 text-sm w-full sm:w-auto sm:min-w-[200px]">
             <button wire:click="resetFilters" class="border rounded-lg px-4 py-2 text-sm text-slate-600 bg-white">{{ __('Reset') }}</button>
             <button wire:click="applyFilters" class="bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg px-4 py-2 text-sm font-medium">{{ __('Apply') }}</button>
@@ -62,6 +66,8 @@
                     <th class="px-4 py-3 rtable-hide-mobile">#</th>
                     <th class="px-4 py-3">{{ __('Name') }}</th>
                     <th class="px-4 py-3">{{ __('Type') }}</th>
+                    <th class="px-4 py-3">{{ __('Purpose') }}</th>
+                    <th class="px-4 py-3">{{ __('Factory') }}</th>
                     <th class="px-4 py-3">{{ __('Address') }}</th>
                     <th class="px-4 py-3">{{ __('Status') }}</th>
                     <th class="px-4 py-3 text-right">{{ __('Action') }}</th>
@@ -77,14 +83,16 @@
                             </div>
                             <div class="min-w-0 flex-1">
                                 <p class="font-semibold truncate">{{ $warehouse->name }}</p>
-                                <p class="text-xs text-slate-500 truncate capitalize">{{ $warehouse->type }} &middot; {{ $warehouse->address ?? '—' }}</p>
+                                <p class="text-xs text-slate-500 truncate">{{ __(ucfirst($warehouse->type)) }} &middot; {{ $warehouse->purposeLabel() }}{{ $warehouse->factory ? ' · '.$warehouse->factory->name : '' }}</p>
                             </div>
                             <span class="px-2 py-1 rounded-full text-xs shrink-0 {{ $warehouse->active ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }}">
-                                {{ $warehouse->active ? 'Active' : 'Inactive' }}
+                                {{ $warehouse->active ? __('Active') : __('Inactive') }}
                             </span>
                         </td>
                         <td class="px-4 py-3 font-medium rtable-hide-mobile" data-label="{{ __('Name') }}">{{ $warehouse->name }}</td>
-                        <td class="px-4 py-3 text-slate-500 capitalize rtable-hide-mobile" data-label="{{ __('Type') }}">{{ $warehouse->type }}</td>
+                        <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="{{ __('Type') }}">{{ __(ucfirst($warehouse->type)) }}</td>
+                        <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="{{ __('Purpose') }}">{{ $warehouse->purposeLabel() }}</td>
+                        <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="{{ __('Factory') }}">{{ $warehouse->factory?->name ?? '—' }}</td>
                         <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="{{ __('Address') }}">{{ $warehouse->address ?? '—' }}</td>
                         <td class="px-4 py-3 rtable-hide-mobile" data-label="{{ __('Status') }}">
                             <span class="px-2 py-1 rounded-full text-xs {{ $warehouse->active ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }}">
@@ -103,7 +111,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6" class="px-4 py-8 text-center text-slate-400">{{ __('No warehouses found.') }}</td>
+                        <td colspan="8" class="px-4 py-8 text-center text-slate-400">{{ __('No warehouses found.') }}</td>
                     </tr>
                 @endforelse
             </tbody>
@@ -117,9 +125,11 @@
             <div class="bg-white rounded-t-2xl sm:rounded-2xl p-6 w-full max-w-md shadow-2xl max-h-[90vh] overflow-y-auto">
                 <h2 class="text-lg font-semibold mb-4">{{ $viewingWarehouse->name }}</h2>
                 <div class="space-y-2 text-sm">
-                    <div class="flex justify-between py-1.5 border-b"><span class="text-slate-500">{{ __('Type') }}</span><span class="font-medium capitalize">{{ $viewingWarehouse->type }}</span></div>
+                    <div class="flex justify-between py-1.5 border-b"><span class="text-slate-500">{{ __('Type') }}</span><span class="font-medium">{{ __(ucfirst($viewingWarehouse->type)) }}</span></div>
+                    <div class="flex justify-between py-1.5 border-b"><span class="text-slate-500">{{ __('Purpose') }}</span><span class="font-medium">{{ $viewingWarehouse->purposeLabel() }}</span></div>
+                    <div class="flex justify-between py-1.5 border-b"><span class="text-slate-500">{{ __('Factory') }}</span><span class="font-medium">{{ $viewingWarehouse->factory?->name ?? '—' }}</span></div>
                     <div class="flex justify-between py-1.5 border-b"><span class="text-slate-500">{{ __('Address') }}</span><span class="font-medium">{{ $viewingWarehouse->address ?? '—' }}</span></div>
-                    <div class="flex justify-between py-1.5"><span class="text-slate-500">{{ __('Status') }}</span><span class="font-medium">{{ $viewingWarehouse->active ? 'Active' : 'Inactive' }}</span></div>
+                    <div class="flex justify-between py-1.5"><span class="text-slate-500">{{ __('Status') }}</span><span class="font-medium">{{ $viewingWarehouse->active ? __('Active') : __('Inactive') }}</span></div>
                 </div>
                 <div class="mt-6 flex justify-end">
                     <button wire:click="$set('showViewModal', false)" class="px-4 py-2 rounded-lg text-slate-600">{{ __('Close') }}</button>
@@ -131,7 +141,7 @@
     @if($showModal)
         <div class="fixed inset-0 bg-black/40 flex items-end sm:items-center justify-center z-50">
             <div class="bg-white rounded-t-2xl sm:rounded-2xl p-6 w-full max-w-lg shadow-2xl max-h-[90vh] overflow-y-auto">
-                <h2 class="text-lg font-semibold mb-4">{{ $editingId ? 'Edit Warehouse' : 'New Warehouse' }}</h2>
+                <h2 class="text-lg font-semibold mb-4">{{ $editingId ? __('Edit Warehouse') : __('New Warehouse') }}</h2>
 
                 <div class="space-y-3">
                     <div>
@@ -145,6 +155,23 @@
                             <option value="central">{{ __('Central') }}</option>
                             <option value="branch">{{ __('Branch') }}</option>
                         </select>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="text-sm text-slate-500">{{ __('Purpose') }}</label>
+                            <select wire:model="purpose" class="w-full border rounded-lg p-2 mt-1">
+                                @foreach(\App\Models\Warehouse::PURPOSES as $key => $label)<option value="{{ $key }}">{{ __($label) }}</option>@endforeach
+                            </select>
+                            @error('purpose') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
+                        </div>
+                        <div>
+                            <label class="text-sm text-slate-500">{{ __('Factory') }}</label>
+                            <select wire:model="factory_id" class="w-full border rounded-lg p-2 mt-1">
+                                <option value="">{{ __('None (not at a factory)') }}</option>
+                                @foreach($factories as $f)<option value="{{ $f->id }}">{{ $f->name }}</option>@endforeach
+                            </select>
+                            @error('factory_id') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
+                        </div>
                     </div>
                     <div>
                         <label class="text-sm text-slate-500">{{ __('Address') }}</label>

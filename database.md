@@ -6,7 +6,7 @@
 
 FK-এর পাশের চিহ্ন: **null** = parent মুছলে NULL হয়, **cascade** = parent মুছলে row-ও মোছে, কিছু না লেখা থাকলে restrict।
 
-> সর্বশেষ আপডেট: ২১ নভেম্বর ২০২৬ (সর্বশেষ migration: `2026_11_21_000001_create_app_settings_and_sms_logs_tables`)
+> সর্বশেষ আপডেট: ২২ নভেম্বর ২০২৬ (সর্বশেষ migration: `2026_11_22_000001_add_manufacturing_foundation`)
 
 ---
 
@@ -122,6 +122,13 @@ Unique: (`key`, `year`)
 |---|---|---|
 | name | string | |
 | short_code | string | unique |
+| kind | string(10) | `weight`, `volume`, `count`, `length`, default `count`। শুধু একই ধরনের ইউনিটের মধ্যে রূপান্তর হয় |
+
+### unit_conversions (সাধারণ রূপান্তর)
+| কলাম | টাইপ | নোট |
+|---|---|---|
+| from_unit_id, to_unit_id | FK units | cascade, জোড়াটা unique |
+| factor | decimal(18,6) | ১ from = factor × to (যেমন ১ টন = ১০০০ কেজি)। দুই দিকেই ব্যবহার হয় (`App\Services\UnitConverter`) |
 
 ### products
 | কলাম | টাইপ | নোট |
@@ -129,7 +136,8 @@ Unique: (`key`, `year`)
 | company_id | FK companies | |
 | brand_id | FK brands | nullable, null |
 | category_id | FK categories | |
-| unit_id | FK units | |
+| unit_id | FK units | মূল ইউনিট; মজুদ সবসময় এই ইউনিটে |
+| type | string(20) | `raw_material`, `packaging`, `semi_finished`, `finished_good`, `trading` (default)। বিক্রির অর্ডারে শুধু `finished_good`/`trading`, ক্রয়ের অর্ডারে শুধু `raw_material`/`packaging`/`trading` |
 | sku | string | unique |
 | barcode | string | nullable |
 | name | string | |
@@ -137,7 +145,16 @@ Unique: (`key`, `year`)
 | image_path | string | nullable |
 | purchase_price, sale_price | decimal(14,2) | default 0 |
 | reorder_level | decimal(14,3) | default 0 |
+| shelf_life_days | unsigned int | nullable; কারখানায় তৈরি ব্যাচের সাধারণ মেয়াদ |
 | active | boolean | default true |
+
+### product_units (পণ্যের নিজস্ব প্যাক)
+| কলাম | টাইপ | নোট |
+|---|---|---|
+| product_id | FK products | cascade |
+| unit_id | FK units | (product_id, unit_id) unique; মূল ইউনিট হতে পারে না |
+| factor | decimal(18,6) | ১ এই ইউনিট = factor × মূল ইউনিট (যেমন ১ বস্তা = ৫০ কেজি) |
+| barcode | string | nullable |
 
 ### product_prices (দামের হিস্টোরি)
 | কলাম | টাইপ | নোট |
@@ -149,11 +166,23 @@ Unique: (`key`, `year`)
 
 ## ৫. Inventory
 
+### factories (কারখানা)
+| কলাম | টাইপ | নোট |
+|---|---|---|
+| code | string(20) | unique, বড় হাতের অক্ষরে |
+| name | string | |
+| address | string | nullable |
+| phone | string(30) | nullable |
+| manager_user_id | FK users | nullable, null |
+| active | boolean | default true |
+
 ### warehouses
 | কলাম | টাইপ | নোট |
 |---|---|---|
 | name | string | |
 | type | enum | `central`, `branch` |
+| factory_id | FK factories | nullable, null; কারখানার স্টোর হলে |
+| purpose | string(20) | `general` (default), `raw_material`, `production`, `finished_goods`, `damage` |
 | address | string | nullable |
 | active | boolean | default true |
 
@@ -591,7 +620,7 @@ erDiagram
 ### app_settings (migration `2026_11_21`)
 | কলাম | টাইপ | নোট |
 |---|---|---|
-| key | string | unique, যেমন `mail_host`, `sms_url`, `sms_event_delivered`, `sms_template_delivered` (বদলানো SMS-এর লেখা; না থাকলে ডিফল্ট) |
+| key | string | unique, যেমন `mail_host`, `sms_url`, `sms_event_delivered`, `sms_template_delivered` (বদলানো SMS-এর লেখা; না থাকলে ডিফল্ট), `fiscal_year_start_month` (১–১২, না থাকলে ৭ = জুলাই) |
 | value | text | nullable; `mail_password` আর `sms_api_key` APP_KEY দিয়ে encrypted |
 
 ### sms_logs (migration `2026_11_21`)

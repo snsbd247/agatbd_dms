@@ -16,6 +16,7 @@ class Index extends Component
             ['route' => 'purchase.orders.index', 'permission' => 'purchase.view', 'icon' => 'shopping-cart', 'color' => 'blue', 'title' => 'Purchase Orders', 'description' => 'Orders placed to companies'],
             ['route' => 'purchase.receipts.index', 'permission' => 'purchase.view', 'icon' => 'download', 'color' => 'green', 'title' => 'Goods Receipts', 'description' => 'Stock received against orders'],
             ['route' => 'purchase.returns.index', 'permission' => 'purchase.view', 'icon' => 'refresh', 'color' => 'orange', 'title' => 'Purchase Returns', 'description' => 'Stock returned to companies'],
+            ['route' => 'inventory.factories', 'permission' => 'inventory.view', 'icon' => 'factory', 'color' => 'green', 'title' => 'Factories', 'description' => 'Production sites and their stores'],
             ['route' => 'inventory.warehouses', 'permission' => 'inventory.view', 'icon' => 'archive-box', 'color' => 'purple', 'title' => 'Warehouses', 'description' => 'Manage storage locations'],
             ['route' => 'inventory.areas', 'permission' => 'inventory.view', 'icon' => 'map-pin', 'color' => 'red', 'title' => 'Areas', 'description' => 'Manage coverage areas'],
             ['route' => 'inventory.adjustments', 'permission' => 'inventory.view', 'icon' => 'refresh', 'color' => 'orange', 'title' => 'Stock Adjustments', 'description' => 'Damage, loss and count corrections'],

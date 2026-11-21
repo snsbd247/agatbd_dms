@@ -54,7 +54,7 @@ class Create extends Component
             'order_date' => 'required|date',
             'expected_date' => 'nullable|date',
             'items' => 'required|array|min:1',
-            'items.*.product_id' => 'required|exists:products,id',
+            'items.*.product_id' => ['required', \Illuminate\Validation\Rule::exists('products', 'id')->whereIn('type', Product::PURCHASABLE_TYPES)],
             'items.*.quantity' => 'required|numeric|min:0.001',
             'items.*.unit_price' => 'required|numeric|min:0',
         ]);
@@ -93,7 +93,7 @@ class Create extends Component
         return view('livewire.purchase.orders.create', [
             'companies' => Company::orderBy('name')->get(),
             'warehouses' => Warehouse::orderBy('name')->get(),
-            'products' => Product::orderBy('name')->get(),
+            'products' => Product::purchasable()->orderBy('name')->get(),
         ]);
     }
 }

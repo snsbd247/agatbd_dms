@@ -26,6 +26,7 @@ use App\Livewire\Delivery\Invoices\Index as DeliveryInvoiceIndex;
 use App\Livewire\Delivery\Invoices\Create as DeliveryInvoiceCreate;
 use App\Livewire\Delivery\Invoices\Show as DeliveryInvoiceShow;
 use App\Livewire\Inventory\Areas;
+use App\Livewire\Inventory\Factories;
 use App\Livewire\Inventory\StockAdjustments;
 use App\Livewire\Inventory\Warehouses;
 use App\Livewire\MasterData\Brands;
@@ -164,6 +165,7 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::middleware('can:inventory.view')->prefix('inventory')->name('inventory.')->group(function () {
+        Route::get('/factories', Factories::class)->name('factories');
         Route::get('/warehouses', Warehouses::class)->name('warehouses');
         Route::get('/areas', Areas::class)->name('areas');
         Route::get('/adjustments', StockAdjustments::class)->name('adjustments');

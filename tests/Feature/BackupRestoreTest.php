@@ -36,7 +36,13 @@ class BackupRestoreTest extends TestCase
         $this->assertDatabaseMissing('products', ['name' => 'Added after backup']);
         $this->assertGreaterThan(0, $result['rows']);
         $this->assertFileExists($svc->directory().DIRECTORY_SEPARATOR.$result['safety_backup']);
-        $this->assertSame([], DB::select('PRAGMA foreign_key_check'));
+        if (DB::getDriverName() === 'sqlite') {
+            $this->assertSame([], DB::select('PRAGMA foreign_key_check'));
+        } else {
+            // MySQL has no foreign_key_check: verify the links that matter by hand.
+            $this->assertSame(0, DB::table('products')->whereNotIn('category_id', DB::table('categories')->select('id'))->count());
+            $this->assertSame(0, DB::table('products')->whereNotIn('unit_id', DB::table('units')->select('id'))->count());
+        }
     }
 
     public function test_garbage_file_is_rejected_and_nothing_changes(): void

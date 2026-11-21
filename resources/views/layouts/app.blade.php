@@ -51,6 +51,7 @@
                 ['route' => 'purchase.returns.index', 'label' => 'Purchase Returns', 'icon' => 'refresh'],
             ]],
             ['icon' => 'archive-box', 'label' => 'Inventory', 'permission' => 'inventory.view', 'prefix' => ['inventory.'], 'links' => [
+                ['route' => 'inventory.factories', 'label' => 'Factories', 'icon' => 'factory'],
                 ['route' => 'inventory.warehouses', 'label' => 'Warehouses', 'icon' => 'archive-box'],
                 ['route' => 'inventory.areas', 'label' => 'Areas', 'icon' => 'map-pin'],
                 ['route' => 'inventory.adjustments', 'label' => 'Stock Adjustments', 'icon' => 'refresh'],

@@ -40,7 +40,7 @@ class Create extends Component
     {
         $this->authorize('sales.create');
 
-        $product = Product::whereKey($productId)->where('active', true)->firstOrFail();
+        $product = Product::whereKey($productId)->where('active', true)->sellable()->firstOrFail();
         $index = collect($this->items)->search(fn ($item) => (int) $item['product_id'] === $product->id);
 
         if ($index !== false) {
@@ -101,7 +101,7 @@ class Create extends Component
 
             $total = 0;
             foreach ($data['items'] as $index => $item) {
-                $product = Product::whereKey($item['product_id'])->where('active', true)->firstOrFail();
+                $product = Product::whereKey($item['product_id'])->where('active', true)->sellable()->firstOrFail();
                 $this->items[$index]['unit_price'] = (string) $product->sale_price;
                 $total += $item['quantity'] * (float) $product->sale_price;
             }
@@ -152,6 +152,7 @@ class Create extends Component
 
         $products = Product::query()
             ->where('active', true)
+            ->sellable()
             ->when($this->categoryId, fn ($query) => $query->where('category_id', $this->categoryId))
             ->when($this->productSearch, fn ($query) => $query->where(fn ($search) => $search
                 ->where('name', 'like', '%'.$this->productSearch.'%')

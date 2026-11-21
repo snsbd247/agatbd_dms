@@ -47,7 +47,7 @@ class OrderCreate extends Component
 
     public function addProduct(int $productId): void
     {
-        $product = Product::whereKey($productId)->where('active', true)->firstOrFail();
+        $product = Product::whereKey($productId)->where('active', true)->sellable()->firstOrFail();
         $index = collect($this->items)->search(fn ($item) => (int) $item['product_id'] === $product->id);
 
         if ($index !== false) {
@@ -107,7 +107,7 @@ class OrderCreate extends Component
             $total = 0;
 
             foreach ($this->items as $item) {
-                $product = Product::whereKey($item['product_id'])->where('active', true)->firstOrFail();
+                $product = Product::whereKey($item['product_id'])->where('active', true)->sellable()->firstOrFail();
                 $quantity = (float) $item['quantity'];
                 $lines[] = ['product_id' => $product->id, 'quantity' => $quantity, 'unit_price' => (float) $product->sale_price];
                 $total += $quantity * (float) $product->sale_price;
@@ -150,6 +150,7 @@ class OrderCreate extends Component
         $products = Product::query()
             ->with('unit')
             ->where('active', true)
+            ->sellable()
             ->when($this->categoryId, fn ($q) => $q->where('category_id', $this->categoryId))
             ->when($this->productSearch, fn ($q) => $q->where(fn ($s) => $s
                 ->where('name', 'like', "%{$this->productSearch}%")

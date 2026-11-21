@@ -29,7 +29,8 @@ abstract class TestCase extends BaseTestCase
     {
         $app = require Application::inferBasePath().'/bootstrap/app.php';
 
-        $storage = sys_get_temp_dir().DIRECTORY_SEPARATOR.'dms-test-storage';
+        // One folder per database driver, so the SQLite and MySQL suites can run side by side.
+        $storage = sys_get_temp_dir().DIRECTORY_SEPARATOR.'dms-test-storage'.(getenv('DB_CONNECTION') === 'mysql' ? '-mysql' : '');
         foreach (['app/public', 'app/private', 'framework/views', 'framework/cache/data', 'framework/sessions', 'logs', 'backups'] as $dir) {
             $path = $storage.DIRECTORY_SEPARATOR.$dir;
             is_dir($path) || mkdir($path, 0777, true);   // facades are not available yet
@@ -41,8 +42,13 @@ abstract class TestCase extends BaseTestCase
         $default = $app['config']->get('database.default');
         $database = $app['config']->get("database.connections.{$default}.database");
 
-        if ($default !== 'sqlite' || $database !== ':memory:') {
-            fwrite(STDERR, "\nREFUSING TO RUN TESTS: database is [{$default}] {$database}, expected sqlite :memory:.\n"
+        // Allowed: in-memory SQLite (phpunit.xml), or a MySQL/MariaDB database
+        // whose name ends in "_test" (phpunit.mysql.xml). Never the live "dms".
+        $memory = $default === 'sqlite' && $database === ':memory:';
+        $mysqlTest = in_array($default, ['mysql', 'mariadb'], true) && is_string($database) && str_ends_with($database, '_test');
+
+        if (! $memory && ! $mysqlTest) {
+            fwrite(STDERR, "\nREFUSING TO RUN TESTS: database is [{$default}] {$database}, expected sqlite :memory: or a *_test MySQL database.\n"
                 ."Run `php artisan config:clear` and check phpunit.xml.\n");
             exit(1);
         }

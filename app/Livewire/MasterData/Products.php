@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\Company;
 use App\Models\Product;
 use App\Models\ProductPrice;
+use App\Models\ProductUnit;
 use App\Models\Stock;
 use App\Models\Unit;
 use Illuminate\Support\Facades\Auth;
@@ -38,13 +39,19 @@ class Products extends Component
     public string $purchase_price = '0';
     public string $sale_price = '0';
     public string $reorder_level = '0';
+    public string $type = 'trading';
+    public string $shelf_life_days = '';
     public bool $active = true;
+
+    /** Extra packs: [['unit_id' => int|null, 'factor' => string], …] */
+    public array $packs = [];
 
     #[Url(except: '')]
     public string $search = '';
     public string $filter_category_id = '';
     public string $filter_brand_id = '';
     public string $filter_company_id = '';
+    public string $filter_type = '';
 
     public function applyFilters(): void
     {
@@ -53,7 +60,7 @@ class Products extends Component
 
     public function resetFilters(): void
     {
-        $this->reset(['search', 'filter_category_id', 'filter_brand_id', 'filter_company_id']);
+        $this->reset(['search', 'filter_category_id', 'filter_brand_id', 'filter_company_id', 'filter_type']);
         $this->resetPage();
     }
 
@@ -86,7 +93,13 @@ class Products extends Component
         $this->purchase_price = (string) $product->purchase_price;
         $this->sale_price = (string) $product->sale_price;
         $this->reorder_level = (string) $product->reorder_level;
+        $this->type = $product->type ?? 'trading';
+        $this->shelf_life_days = (string) ($product->shelf_life_days ?? '');
         $this->active = $product->active;
+        $this->packs = $product->units()->get()
+            ->map(fn (ProductUnit $u) => ['unit_id' => $u->unit_id, 'factor' => rtrim(rtrim(number_format((float) $u->factor, 6, '.', ''), '0'), '.')])
+            ->all();
+        $this->resetErrorBag();
         $this->showModal = true;
     }
 
@@ -106,7 +119,18 @@ class Products extends Component
             'purchase_price' => 'required|numeric|min:0',
             'sale_price' => 'required|numeric|min:0',
             'reorder_level' => 'required|numeric|min:0',
+            'type' => 'required|in:'.implode(',', array_keys(Product::TYPES)),
+            'shelf_life_days' => 'nullable|integer|min:1|max:3650',
             'active' => 'boolean',
+            'packs' => 'array',
+            'packs.*.unit_id' => 'required|distinct|exists:units,id|different:form_unit_id',
+            'packs.*.factor' => 'required|numeric|gt:0',
+        ], [
+            'packs.*.unit_id.different' => __('A pack cannot use the product\'s own base unit.'),
+            'packs.*.unit_id.distinct' => __('Each pack unit can be used once.'),
+        ], [
+            'packs.*.unit_id' => __('pack unit'),
+            'packs.*.factor' => __('pack size'),
         ]);
 
         $productData = [
@@ -121,6 +145,8 @@ class Products extends Component
             'purchase_price' => $data['purchase_price'],
             'sale_price' => $data['sale_price'],
             'reorder_level' => $data['reorder_level'],
+            'type' => $data['type'],
+            'shelf_life_days' => $data['shelf_life_days'] !== '' ? (int) $data['shelf_life_days'] : null,
             'active' => $data['active'],
         ];
 
@@ -130,6 +156,17 @@ class Products extends Component
             || bccomp((string) $existing->sale_price, (string) $productData['sale_price'], 2) !== 0;
 
         $product = Product::updateOrCreate(['id' => $this->editingId], $productData);
+
+        // Sync packs: keep, update or remove rows so the audit log shows real changes.
+        $wanted = collect($data['packs'])->keyBy('unit_id');
+        foreach ($product->units()->get() as $existingPack) {
+            if (! $wanted->has($existingPack->unit_id)) {
+                $existingPack->delete();
+            }
+        }
+        foreach ($wanted as $unitId => $pack) {
+            ProductUnit::updateOrCreate(['product_id' => $product->id, 'unit_id' => $unitId], ['factor' => $pack['factor']]);
+        }
 
         if ($priceChanged) {
             ProductPrice::create([
@@ -160,16 +197,31 @@ class Products extends Component
         $this->purchase_price = '0';
         $this->sale_price = '0';
         $this->reorder_level = '0';
+        $this->type = 'trading';
+        $this->shelf_life_days = '';
+        $this->packs = [];
         $this->active = true;
         $this->resetErrorBag();
+    }
+
+    public function addPack(): void
+    {
+        $this->packs[] = ['unit_id' => null, 'factor' => ''];
+    }
+
+    public function removePack(int $index): void
+    {
+        unset($this->packs[$index]);
+        $this->packs = array_values($this->packs);
     }
 
     private function filteredQuery()
     {
         return Product::query()
-            ->when($this->search, fn ($q) => $q->where('name', 'like', "%{$this->search}%")
+            ->when($this->search, fn ($q) => $q->where(fn ($w) => $w->where('name', 'like', "%{$this->search}%")
                 ->orWhere('sku', 'like', "%{$this->search}%")
-                ->orWhere('barcode', 'like', "%{$this->search}%"))
+                ->orWhere('barcode', 'like', "%{$this->search}%")))
+            ->when($this->filter_type, fn ($q) => $q->where('type', $this->filter_type))
             ->when($this->filter_category_id, fn ($q) => $q->where('category_id', $this->filter_category_id))
             ->when($this->filter_brand_id, fn ($q) => $q->where('brand_id', $this->filter_brand_id))
             ->when($this->filter_company_id, fn ($q) => $q->where('company_id', $this->filter_company_id));
@@ -202,7 +254,7 @@ class Products extends Component
             'categories' => Category::orderBy('name')->get(),
             'units' => Unit::orderBy('name')->get(),
             'summary' => $summary,
-            'viewingProduct' => $this->viewingId ? Product::with(['company', 'brand', 'category', 'unit'])->find($this->viewingId) : null,
+            'viewingProduct' => $this->viewingId ? Product::with(['company', 'brand', 'category', 'unit', 'units.unit'])->find($this->viewingId) : null,
         ]);
     }
 }

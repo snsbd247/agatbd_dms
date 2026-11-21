@@ -24,6 +24,7 @@ class CompanyProfile extends Component
     public string $phone = '';
     public string $email = '';
     public string $invoice_footer = '';
+    public int $fiscal_year_start_month = 7;
 
     public bool $saved = false;
 
@@ -38,6 +39,8 @@ class CompanyProfile extends Component
             $this->email = (string) $profile->email;
             $this->invoice_footer = (string) $profile->invoice_footer;
         }
+
+        $this->fiscal_year_start_month = \App\Support\FiscalYear::startMonth();
     }
 
     public function save(): void
@@ -51,6 +54,8 @@ class CompanyProfile extends Component
             'email' => 'nullable|email|max:255',
             'invoice_footer' => 'nullable|string|max:1000',
         ]);
+        $this->validate(['fiscal_year_start_month' => 'required|integer|between:1,12']);
+        \App\Models\Settings\AppSetting::put([\App\Support\FiscalYear::SETTING => (string) $this->fiscal_year_start_month]);
 
         $profile = CompanyProfileModel::first();
 

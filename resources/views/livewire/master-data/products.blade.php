@@ -65,6 +65,10 @@
                     <option value="{{ $company->id }}">{{ $company->name }}</option>
                 @endforeach
             </select>
+            <select wire:model="filter_type" class="border rounded-lg px-3 py-2 text-sm bg-white w-full sm:w-auto">
+                <option value="">{{ __('All product types') }}</option>
+                @foreach(\App\Models\Product::TYPES as $key => $label)<option value="{{ $key }}">{{ __($label) }}</option>@endforeach
+            </select>
             <input wire:model="search" type="text" placeholder="{{ __('Search by product name / code...') }}" class="border rounded-lg px-3 py-2 text-sm w-full sm:w-auto sm:min-w-[200px]">
             <button wire:click="resetFilters" class="border rounded-lg px-4 py-2 text-sm text-slate-600 bg-white">{{ __('Reset') }}</button>
             <button wire:click="applyFilters" class="bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg px-4 py-2 text-sm font-medium">{{ __('Apply') }}</button>
@@ -134,7 +138,7 @@
                                 {{ strtoupper(substr($product->name, 0, 2)) }}
                             </div>
                         </td>
-                        <td class="px-4 py-3 font-medium rtable-hide-mobile" data-label="{{ __('Product Name') }}">{{ $product->name }}</td>
+                        <td class="px-4 py-3 font-medium rtable-hide-mobile" data-label="{{ __('Product Name') }}">{{ $product->name }}<span class="block text-xs font-normal text-slate-400">{{ $product->typeLabel() }}</span></td>
                         <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="{{ __('Category') }}">{{ $product->category?->name }}</td>
                         <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="{{ __('Brand') }}">{{ $product->brand?->name ?? '—' }}</td>
                         <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="{{ __('Unit') }}">{{ $product->unit?->short_code }}</td>
@@ -181,11 +185,18 @@
                     <div class="flex justify-between py-1.5 border-b"><span class="text-slate-500">{{ __('Company') }}</span><span class="font-medium">{{ $viewingProduct->company?->name }}</span></div>
                     <div class="flex justify-between py-1.5 border-b"><span class="text-slate-500">{{ __('Brand') }}</span><span class="font-medium">{{ $viewingProduct->brand?->name ?? '—' }}</span></div>
                     <div class="flex justify-between py-1.5 border-b"><span class="text-slate-500">{{ __('Category') }}</span><span class="font-medium">{{ $viewingProduct->category?->name }}</span></div>
+                    <div class="flex justify-between py-1.5 border-b"><span class="text-slate-500">{{ __('Product type') }}</span><span class="font-medium">{{ $viewingProduct->typeLabel() }}</span></div>
                     <div class="flex justify-between py-1.5 border-b"><span class="text-slate-500">{{ __('Unit') }}</span><span class="font-medium">{{ $viewingProduct->unit?->name }}</span></div>
+                    @foreach($viewingProduct->units as $pack)
+                        <div class="flex justify-between py-1.5 border-b"><span class="text-slate-500">{{ __('Pack') }}</span><span class="font-medium">1 {{ $pack->unit?->name }} = {{ rtrim(rtrim(number_format((float) $pack->factor, 6, '.', ''), '0'), '.') }} {{ $viewingProduct->unit?->short_code }}</span></div>
+                    @endforeach
+                    @if($viewingProduct->shelf_life_days)
+                        <div class="flex justify-between py-1.5 border-b"><span class="text-slate-500">{{ __('Shelf life') }}</span><span class="font-medium">{{ __(':n days', ['n' => $viewingProduct->shelf_life_days]) }}</span></div>
+                    @endif
                     <div class="flex justify-between py-1.5 border-b"><span class="text-slate-500">{{ __('Purchase Price') }}</span><span class="font-medium">৳ {{ number_format($viewingProduct->purchase_price, 2) }}</span></div>
                     <div class="flex justify-between py-1.5 border-b"><span class="text-slate-500">{{ __('Sale Price') }}</span><span class="font-medium">৳ {{ number_format($viewingProduct->sale_price, 2) }}</span></div>
                     <div class="flex justify-between py-1.5 border-b"><span class="text-slate-500">{{ __('Reorder Level') }}</span><span class="font-medium">{{ rtrim(rtrim(number_format($viewingProduct->reorder_level, 3), '0'), '.') }}</span></div>
-                    <div class="flex justify-between py-1.5"><span class="text-slate-500">{{ __('Status') }}</span><span class="font-medium">{{ $viewingProduct->active ? 'Active' : 'Inactive' }}</span></div>
+                    <div class="flex justify-between py-1.5"><span class="text-slate-500">{{ __('Status') }}</span><span class="font-medium">{{ $viewingProduct->active ? __('Active') : __('Inactive') }}</span></div>
                 </div>
                 <div class="mt-6 flex justify-end">
                     <button wire:click="$set('showViewModal', false)" class="px-4 py-2 rounded-lg text-slate-600">{{ __('Close') }}</button>
@@ -231,13 +242,26 @@
                     </div>
                     <div>
                         <label class="text-sm text-slate-500">{{ __('Unit') }}</label>
-                        <select wire:model="form_unit_id" class="w-full border rounded-lg p-2 mt-1">
+                        <select wire:model.live="form_unit_id" class="w-full border rounded-lg p-2 mt-1">
                             <option value="">{{ __('— Select —') }}</option>
                             @foreach($units as $unit)
                                 <option value="{{ $unit->id }}">{{ $unit->name }}</option>
                             @endforeach
                         </select>
                         @error('form_unit_id') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
+                    </div>
+                    <div>
+                        <label class="text-sm text-slate-500">{{ __('Product type') }}</label>
+                        <select wire:model="type" class="w-full border rounded-lg p-2 mt-1">
+                            @foreach(\App\Models\Product::TYPES as $key => $label)<option value="{{ $key }}">{{ __($label) }}</option>@endforeach
+                        </select>
+                        @error('type') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
+                    </div>
+                    <div>
+                        <label class="text-sm text-slate-500">{{ __('Shelf life (days)') }}</label>
+                        <input wire:model="shelf_life_days" type="number" min="1" step="1" placeholder="{{ __('e.g. 365') }}" class="w-full border rounded-lg p-2 mt-1">
+                        @error('shelf_life_days') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
+                        <p class="text-xs text-slate-400 mt-1">{{ __('Default expiry of a batch made in the factory.') }}</p>
                     </div>
                     <div>
                         <label class="text-sm text-slate-500">{{ __('SKU') }}</label>
@@ -271,7 +295,33 @@
                         <label class="text-sm text-slate-500">{{ __('Reorder Level') }}</label>
                         <input wire:model="reorder_level" type="number" step="0.001" class="w-full border rounded-lg p-2 mt-1">
                     </div>
-                    <label class="flex items-center gap-2 text-sm mt-6">
+                    <div class="col-span-2 border rounded-lg p-3">
+                        <div class="flex items-center justify-between mb-2">
+                            <p class="text-sm font-medium">{{ __('Packs') }}</p>
+                            <button type="button" wire:click="addPack" class="text-sm text-indigo-600 hover:underline">{{ __('+ Add pack') }}</button>
+                        </div>
+                        <p class="text-xs text-slate-400 mb-2">{{ __('Other units this product is bought or sold in, e.g. 1 bag = 50 kg. Stock is always kept in the base unit.') }}</p>
+                        @foreach($packs as $i => $pack)
+                            <div class="flex items-start gap-2 mb-2" wire:key="pack-{{ $i }}">
+                                <span class="pt-2 text-sm">1</span>
+                                <div class="flex-1">
+                                    <select wire:model="packs.{{ $i }}.unit_id" class="w-full border rounded-lg p-2 text-sm">
+                                        <option value="">{{ __('— Select —') }}</option>
+                                        @foreach($units as $unit)<option value="{{ $unit->id }}">{{ $unit->name }}</option>@endforeach
+                                    </select>
+                                    @error("packs.$i.unit_id") <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
+                                </div>
+                                <span class="pt-2 text-sm">=</span>
+                                <div class="w-28">
+                                    <input wire:model="packs.{{ $i }}.factor" type="number" step="any" min="0" class="w-full border rounded-lg p-2 text-sm">
+                                    @error("packs.$i.factor") <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
+                                </div>
+                                <span class="pt-2 text-sm text-slate-500 w-10">{{ $units->firstWhere('id', $form_unit_id)?->short_code ?? '' }}</span>
+                                <button type="button" wire:click="removePack({{ $i }})" class="pt-2 text-red-500" title="{{ __('Remove') }}"><x-icon name="trash" class="w-4 h-4" /></button>
+                            </div>
+                        @endforeach
+                    </div>
+                    <label class="flex items-center gap-2 text-sm mt-2">
                         <input wire:model="active" type="checkbox" class="rounded"> {{ __('Active') }}
                     </label>
                 </div>
