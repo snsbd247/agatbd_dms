@@ -13,7 +13,7 @@
 
 <div class="max-w-4xl">
     <a href="{{ route('portal.orders') }}" class="flex items-center gap-1.5 text-sm text-slate-500 hover:text-indigo-600 mb-4">
-        <x-icon name="chevron-left" class="w-4 h-4" /> Back to My Orders
+        <x-icon name="chevron-left" class="w-4 h-4" /> {{ __('Back to My Orders') }}
     </a>
 
     @if(session('status'))
@@ -27,7 +27,7 @@
         <div class="flex justify-between items-start gap-4">
             <div class="min-w-0">
                 <h2 class="text-2xl font-bold">{{ $order->number }}</h2>
-                <p class="text-slate-500 mt-1">Ordered {{ $order->order_date->format('d M Y') }}</p>
+                <p class="text-slate-500 mt-1">{{ __('Ordered :v', ['v' => $order->order_date->format('d M Y')]) }}</p>
             </div>
             <div class="text-right shrink-0">
                 <span class="px-3 py-1 rounded-full text-sm {{ $badge }}">{{ $statusText }}</span>
@@ -39,7 +39,7 @@
         </div>
         @if(in_array($order->status, ['pending', 'credit_hold'], true))
             <div class="mt-4">
-                <button wire:click="cancel" wire:confirm="Cancel order {{ $order->number }}?" class="text-red-600 hover:bg-red-50 border border-red-200 px-4 py-2 rounded-lg font-medium text-sm">Cancel order</button>
+                <button wire:click="cancel" wire:confirm="Cancel order {{ $order->number }}?" class="text-red-600 hover:bg-red-50 border border-red-200 px-4 py-2 rounded-lg font-medium text-sm">{{ __('Cancel order') }}</button>
             </div>
         @endif
     </div>
@@ -48,11 +48,11 @@
         <table class="w-full text-sm rtable">
             <thead class="bg-slate-50 text-slate-500 text-left">
                 <tr>
-                    <th class="px-4 py-3">Product</th>
-                    <th class="px-4 py-3 text-right">Ordered</th>
-                    <th class="px-4 py-3 text-right">Delivered</th>
-                    <th class="px-4 py-3 text-right">Price</th>
-                    <th class="px-4 py-3 text-right">Total</th>
+                    <th class="px-4 py-3">{{ __('Product') }}</th>
+                    <th class="px-4 py-3 text-right">{{ __('Ordered') }}</th>
+                    <th class="px-4 py-3 text-right">{{ __('Delivered') }}</th>
+                    <th class="px-4 py-3 text-right">{{ __('Price') }}</th>
+                    <th class="px-4 py-3 text-right">{{ __('Total') }}</th>
                 </tr>
             </thead>
             <tbody class="divide-y">
@@ -70,7 +70,7 @@
     </div>
 
     <div class="bg-white rounded-xl shadow p-6">
-        <h2 class="font-semibold mb-3 flex items-center gap-2"><x-icon name="document-text" class="w-5 h-5 text-slate-400" /> Delivery Invoices</h2>
+        <h2 class="font-semibold mb-3 flex items-center gap-2"><x-icon name="document-text" class="w-5 h-5 text-slate-400" /> {{ __('Delivery Invoices') }}</h2>
         @forelse($order->deliveryInvoices as $inv)
             <div class="flex items-center justify-between gap-3 py-2 border-b last:border-0 text-sm">
                 <div>
@@ -79,11 +79,11 @@
                 </div>
                 <div class="flex items-center gap-3">
                     <span class="font-medium">৳ {{ number_format($inv->grand_total, 2) }}</span>
-                    <a href="{{ route('portal.invoices.print', $inv) }}" target="_blank" class="inline-flex items-center gap-1 text-indigo-600 hover:underline text-xs font-medium"><x-icon name="printer" class="w-4 h-4" /> PDF</a>
+                    <a href="{{ route('portal.invoices.print', $inv) }}" target="_blank" class="inline-flex items-center gap-1 text-indigo-600 hover:underline text-xs font-medium"><x-icon name="printer" class="w-4 h-4" /> {{ __('PDF') }}</a>
                 </div>
             </div>
         @empty
-            <p class="text-slate-400 text-sm">Nothing delivered yet.</p>
+            <p class="text-slate-400 text-sm">{{ __('Nothing delivered yet.') }}</p>
         @endforelse
     </div>
 </div>

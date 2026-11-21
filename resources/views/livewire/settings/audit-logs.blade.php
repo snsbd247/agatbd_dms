@@ -23,42 +23,42 @@
     </div>
 
     <div class="bg-white rounded-xl shadow p-4 mb-4 grid grid-cols-2 lg:grid-cols-6 gap-2">
-        <input wire:model.live.debounce.400ms="search" type="search" placeholder="Search (number, name, value)..." class="border rounded-lg px-3 py-2 text-sm col-span-2">
+        <input wire:model.live.debounce.400ms="search" type="search" placeholder="{{ __('Search (number, name, value)...') }}" class="border rounded-lg px-3 py-2 text-sm col-span-2">
         <select wire:model.live="module" class="border rounded-lg px-3 py-2 text-sm bg-white">
-            <option value="">All modules</option>
+            <option value="">{{ __('All modules') }}</option>
             @foreach($modules as $m)
-                <option value="{{ $m }}">{{ ucwords(str_replace('_', ' ', $m)) }}</option>
+                <option value="{{ $m }}">{{ __(ucwords(str_replace('_', ' ', $m))) }}</option>
             @endforeach
         </select>
         <select wire:model.live="event" class="border rounded-lg px-3 py-2 text-sm bg-white">
-            <option value="">All actions</option>
-            <option value="created">Created</option>
-            <option value="updated">Updated</option>
-            <option value="deleted">Deleted</option>
+            <option value="">{{ __('All actions') }}</option>
+            <option value="created">{{ __('Created') }}</option>
+            <option value="updated">{{ __('Updated') }}</option>
+            <option value="deleted">{{ __('Deleted') }}</option>
         </select>
         <select wire:model.live="userId" class="border rounded-lg px-3 py-2 text-sm bg-white">
-            <option value="">All users</option>
+            <option value="">{{ __('All users') }}</option>
             @foreach($users as $u)
                 <option value="{{ $u->id }}">{{ $u->name }}</option>
             @endforeach
-            <option value="system">System</option>
+            <option value="system">{{ __('System') }}</option>
         </select>
         <div class="flex gap-2 col-span-2 lg:col-span-1">
-            <input wire:model.live="from" type="date" class="border rounded-lg px-2 py-2 text-sm w-full" title="From">
-            <input wire:model.live="to" type="date" class="border rounded-lg px-2 py-2 text-sm w-full" title="To">
+            <input wire:model.live="from" type="date" class="border rounded-lg px-2 py-2 text-sm w-full" title="{{ __('From') }}">
+            <input wire:model.live="to" type="date" class="border rounded-lg px-2 py-2 text-sm w-full" title="{{ __('To') }}">
         </div>
-        <button wire:click="resetFilters" class="lg:col-start-6 border rounded-lg px-4 py-2 text-sm text-slate-600 bg-white col-span-2 lg:col-span-1">Reset</button>
+        <button wire:click="resetFilters" class="lg:col-start-6 border rounded-lg px-4 py-2 text-sm text-slate-600 bg-white col-span-2 lg:col-span-1">{{ __('Reset') }}</button>
     </div>
 
     <div class="bg-white rounded-xl shadow overflow-hidden overflow-x-auto">
         <table class="w-full text-sm rtable">
             <thead class="bg-slate-50 text-slate-500 text-left">
                 <tr>
-                    <th class="px-4 py-3">When</th>
-                    <th class="px-4 py-3">User</th>
-                    <th class="px-4 py-3">Action</th>
-                    <th class="px-4 py-3">Record</th>
-                    <th class="px-4 py-3">Changes</th>
+                    <th class="px-4 py-3">{{ __('When') }}</th>
+                    <th class="px-4 py-3">{{ __('User') }}</th>
+                    <th class="px-4 py-3">{{ __('Action') }}</th>
+                    <th class="px-4 py-3">{{ __('Record') }}</th>
+                    <th class="px-4 py-3">{{ __('Changes') }}</th>
                 </tr>
             </thead>
             <tbody class="divide-y">
@@ -102,7 +102,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="5" class="px-4 py-8 text-center text-slate-400">No audit log entries match.</td>
+                        <td colspan="5" class="px-4 py-8 text-center text-slate-400">{{ __('No audit log entries match.') }}</td>
                     </tr>
                 @endforelse
             </tbody>

@@ -14,8 +14,8 @@
                     <x-icon :name="$item['icon']" class="w-5 h-5" />
                 </div>
                 <div class="min-w-0 flex-1">
-                    <p class="font-medium truncate">{{ $item['title'] }}</p>
-                    <p class="text-sm text-slate-500 truncate">{{ $item['description'] }}</p>
+                    <p class="font-medium truncate">{{ __($item['title']) }}</p>
+                    <p class="text-sm text-slate-500 truncate">{{ __($item['description']) }}</p>
                 </div>
                 <x-icon name="chevron-right" class="w-5 h-5 text-slate-300 shrink-0" />
             </a>

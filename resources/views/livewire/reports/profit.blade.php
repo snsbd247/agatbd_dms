@@ -7,11 +7,11 @@
             <input type="date" wire:model.live="to" class="text-sm border-0 p-0 focus:ring-0 w-32">
         </div>
         <a href="{{ route('reports.export.profit', request()->query()) }}" class="flex items-center gap-2 px-3 py-2 rounded-lg bg-white border shadow-sm text-sm text-slate-600 hover:text-indigo-600">
-            <x-icon name="download" class="w-4 h-4" /> Download CSV
+            <x-icon name="download" class="w-4 h-4" /> {{ __('Download CSV') }}
         </a>
     </div>
 
-    <p class="text-xs text-slate-400 mb-4">Approximation: Payroll is the only tracked operating expense in this app — Net Profit doesn't account for rent, utilities, or other real-world costs.</p>
+    <p class="text-xs text-slate-400 mb-4">{{ __('Approximation: Payroll is the only tracked operating expense in this app — Net Profit doesn\'t account for rent, utilities, or other real-world costs.') }}</p>
 
     <div class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 gap-4 mb-6">
         <x-stat-card icon="banknotes" color="blue" label="Revenue" :value="'৳ '.number_format($summary['revenue'], 2)" />
@@ -25,18 +25,18 @@
         <table class="w-full text-sm rtable">
             <thead class="bg-slate-50 text-slate-500 text-left">
                 <tr>
-                    <th class="px-4 py-3">Month</th>
-                    <th class="px-4 py-3">Revenue</th>
-                    <th class="px-4 py-3">COGS</th>
-                    <th class="px-4 py-3">Gross Profit</th>
-                    <th class="px-4 py-3">Payroll Cost</th>
-                    <th class="px-4 py-3">Net Profit</th>
+                    <th class="px-4 py-3">{{ __('Month') }}</th>
+                    <th class="px-4 py-3">{{ __('Revenue') }}</th>
+                    <th class="px-4 py-3">{{ __('COGS') }}</th>
+                    <th class="px-4 py-3">{{ __('Gross Profit') }}</th>
+                    <th class="px-4 py-3">{{ __('Payroll Cost') }}</th>
+                    <th class="px-4 py-3">{{ __('Net Profit') }}</th>
                 </tr>
             </thead>
             <tbody class="divide-y">
                 @forelse($months as $month)
-                    <tr wire:key="month-{{ $month['label'] }}">
-                        <td class="px-4 py-3 font-medium" data-label="Month">{{ $month['label'] }}</td>
+                    <tr wire:key="month-{{ __($month['label']) }}">
+                        <td class="px-4 py-3 font-medium" data-label="Month">{{ __($month['label']) }}</td>
                         <td class="px-4 py-3" data-label="Revenue">৳ {{ number_format($month['revenue'], 2) }}</td>
                         <td class="px-4 py-3 text-slate-500" data-label="COGS">৳ {{ number_format($month['cogs'], 2) }}</td>
                         <td class="px-4 py-3" data-label="Gross Profit">৳ {{ number_format($month['gross_profit'], 2) }}</td>
@@ -45,7 +45,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6" class="px-4 py-8 text-center text-slate-400">No data in this range.</td>
+                        <td colspan="6" class="px-4 py-8 text-center text-slate-400">{{ __('No data in this range.') }}</td>
                     </tr>
                 @endforelse
             </tbody>

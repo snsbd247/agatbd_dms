@@ -1,13 +1,13 @@
 <div>
     <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
         <select wire:model.live="warehouse_id" class="border rounded-lg p-2 text-sm bg-white shadow-sm">
-            <option value="">All Warehouses</option>
+            <option value="">{{ __('All Warehouses') }}</option>
             @foreach($warehouses as $warehouse)
                 <option value="{{ $warehouse->id }}">{{ $warehouse->name }}</option>
             @endforeach
         </select>
         <a href="{{ route('reports.export.stock', request()->query()) }}" class="flex items-center gap-2 px-3 py-2 rounded-lg bg-white border shadow-sm text-sm text-slate-600 hover:text-indigo-600">
-            <x-icon name="download" class="w-4 h-4" /> Download CSV
+            <x-icon name="download" class="w-4 h-4" /> {{ __('Download CSV') }}
         </a>
     </div>
 
@@ -18,15 +18,15 @@
     </div>
 
     <div class="bg-white rounded-xl shadow overflow-hidden mb-6">
-        <div class="px-4 py-3 border-b font-semibold text-sm">Current Stock</div>
+        <div class="px-4 py-3 border-b font-semibold text-sm">{{ __('Current Stock') }}</div>
         <table class="w-full text-sm rtable">
             <thead class="bg-slate-50 text-slate-500 text-left">
                 <tr>
-                    <th class="px-4 py-3">Product</th>
-                    <th class="px-4 py-3">Warehouse</th>
-                    <th class="px-4 py-3">Quantity</th>
-                    <th class="px-4 py-3">Reorder Level</th>
-                    <th class="px-4 py-3">Status</th>
+                    <th class="px-4 py-3">{{ __('Product') }}</th>
+                    <th class="px-4 py-3">{{ __('Warehouse') }}</th>
+                    <th class="px-4 py-3">{{ __('Quantity') }}</th>
+                    <th class="px-4 py-3">{{ __('Reorder Level') }}</th>
+                    <th class="px-4 py-3">{{ __('Status') }}</th>
                 </tr>
             </thead>
             <tbody class="divide-y">
@@ -38,17 +38,17 @@
                         <td class="px-4 py-3 text-slate-500" data-label="Reorder Level">{{ rtrim(rtrim(number_format($stock->reorder_level, 3), '0'), '.') }}</td>
                         <td class="px-4 py-3" data-label="Status">
                             @if($stock->quantity <= 0)
-                                <span class="px-2 py-1 rounded-full text-xs bg-red-100 text-red-700">Out of Stock</span>
+                                <span class="px-2 py-1 rounded-full text-xs bg-red-100 text-red-700">{{ __('Out of Stock') }}</span>
                             @elseif($stock->quantity <= $stock->reorder_level)
-                                <span class="px-2 py-1 rounded-full text-xs bg-amber-100 text-amber-700">Low Stock</span>
+                                <span class="px-2 py-1 rounded-full text-xs bg-amber-100 text-amber-700">{{ __('Low Stock') }}</span>
                             @else
-                                <span class="px-2 py-1 rounded-full text-xs bg-green-100 text-green-700">OK</span>
+                                <span class="px-2 py-1 rounded-full text-xs bg-green-100 text-green-700">{{ __('OK') }}</span>
                             @endif
                         </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="5" class="px-4 py-8 text-center text-slate-400">No stock records.</td>
+                        <td colspan="5" class="px-4 py-8 text-center text-slate-400">{{ __('No stock records.') }}</td>
                     </tr>
                 @endforelse
             </tbody>
@@ -56,15 +56,15 @@
     </div>
 
     <div class="bg-white rounded-xl shadow overflow-hidden">
-        <div class="px-4 py-3 border-b font-semibold text-sm">Near-Expiry Batches (next 30 days)</div>
+        <div class="px-4 py-3 border-b font-semibold text-sm">{{ __('Near-Expiry Batches (next 30 days)') }}</div>
         <table class="w-full text-sm rtable">
             <thead class="bg-slate-50 text-slate-500 text-left">
                 <tr>
-                    <th class="px-4 py-3">Product</th>
-                    <th class="px-4 py-3">Warehouse</th>
-                    <th class="px-4 py-3">Batch #</th>
-                    <th class="px-4 py-3">Expiry Date</th>
-                    <th class="px-4 py-3">Qty Available</th>
+                    <th class="px-4 py-3">{{ __('Product') }}</th>
+                    <th class="px-4 py-3">{{ __('Warehouse') }}</th>
+                    <th class="px-4 py-3">{{ __('Batch #') }}</th>
+                    <th class="px-4 py-3">{{ __('Expiry Date') }}</th>
+                    <th class="px-4 py-3">{{ __('Qty Available') }}</th>
                 </tr>
             </thead>
             <tbody class="divide-y">
@@ -78,7 +78,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="5" class="px-4 py-8 text-center text-slate-400">No batches expiring soon.</td>
+                        <td colspan="5" class="px-4 py-8 text-center text-slate-400">{{ __('No batches expiring soon.') }}</td>
                     </tr>
                 @endforelse
             </tbody>

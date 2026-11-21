@@ -2,9 +2,9 @@
     <div class="bg-white rounded-xl shadow p-6 max-w-2xl">
         <div class="space-y-4">
             <div>
-                <label class="text-sm text-slate-500">Retailer</label>
+                <label class="text-sm text-slate-500">{{ __('Retailer') }}</label>
                 <select wire:model.live="retailer_id" class="w-full border rounded-lg p-2 mt-1">
-                    <option value="">— Select —</option>
+                    <option value="">{{ __('— Select —') }}</option>
                     @foreach($retailers as $retailer)
                         <option value="{{ $retailer->id }}">{{ $retailer->name }} ({{ $retailer->code }})</option>
                     @endforeach
@@ -12,9 +12,9 @@
                 @error('retailer_id') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
             </div>
             <div>
-                <label class="text-sm text-slate-500">Product</label>
+                <label class="text-sm text-slate-500">{{ __('Product') }}</label>
                 <select wire:model.live="product_id" class="w-full border rounded-lg p-2 mt-1">
-                    <option value="">— Select —</option>
+                    <option value="">{{ __('— Select —') }}</option>
                     @foreach($products as $product)
                         <option value="{{ $product->id }}">{{ $product->name }} ({{ $product->sku }})</option>
                     @endforeach
@@ -33,28 +33,28 @@
             @endif
 
             <div>
-                <label class="text-sm text-slate-500">Original Invoice (optional)</label>
+                <label class="text-sm text-slate-500">{{ __('Original Invoice (optional)') }}</label>
                 <select wire:model="sales_invoice_id" class="w-full border rounded-lg p-2 mt-1">
-                    <option value="">— None —</option>
+                    <option value="">{{ __('— None —') }}</option>
                     @foreach($invoices as $invoice)
                         <option value="{{ $invoice->id }}">{{ $invoice->number }} — {{ $invoice->invoice_date->format('d M Y') }}</option>
                     @endforeach
                 </select>
             </div>
             <div>
-                <label class="text-sm text-slate-500">Claim Date</label>
+                <label class="text-sm text-slate-500">{{ __('Claim Date') }}</label>
                 <input wire:model="claim_date" type="date" class="w-full border rounded-lg p-2 mt-1">
                 @error('claim_date') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
             </div>
             <div>
-                <label class="text-sm text-slate-500">Issue Description</label>
+                <label class="text-sm text-slate-500">{{ __('Issue Description') }}</label>
                 <textarea wire:model="issue_description" rows="3" class="w-full border rounded-lg p-2 mt-1"></textarea>
             </div>
         </div>
 
         <div class="mt-6 flex justify-end gap-2">
-            <a href="{{ route('warranty.index') }}" class="px-4 py-2 rounded-lg text-slate-600">Cancel</a>
-            <button wire:click="save" class="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-medium">Save Claim</button>
+            <a href="{{ route('warranty.index') }}" class="px-4 py-2 rounded-lg text-slate-600">{{ __('Cancel') }}</a>
+            <button wire:click="save" class="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-medium">{{ __('Save Claim') }}</button>
         </div>
     </div>
 </div>

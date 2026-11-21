@@ -12,13 +12,13 @@
                 type="button"
                 wire:click="setStatusFilter('{{ $value }}')"
                 class="px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap shrink-0 {{ $filter_status === $value ? 'bg-indigo-600 text-white' : 'bg-white text-slate-600 border' }}"
-            >{{ $label }}</button>
+            >{{ __($label) }}</button>
         @endforeach
     </div>
 
     <div class="sm:hidden mb-4" x-data="{ filtersOpen: false }">
         <div class="flex items-center gap-2">
-            <input wire:model="search" type="text" placeholder="Search by number..." class="border rounded-lg px-3 py-2 text-sm flex-1">
+            <input wire:model="search" type="text" placeholder="{{ __('Search by number...') }}" class="border rounded-lg px-3 py-2 text-sm flex-1">
             <button type="button" @click="filtersOpen = !filtersOpen" class="w-10 h-10 border rounded-lg bg-white flex items-center justify-center text-slate-500 shrink-0">
                 <x-icon name="filter" class="w-4 h-4" />
             </button>
@@ -27,19 +27,19 @@
             @endcan
         </div>
         <div x-show="filtersOpen" x-cloak class="flex gap-2 mt-2">
-            <button wire:click="resetFilters" class="flex-1 border rounded-lg px-4 py-2 text-sm text-slate-600 bg-white">Reset</button>
-            <button wire:click="applyFilters" class="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg px-4 py-2 text-sm font-medium">Apply</button>
+            <button wire:click="resetFilters" class="flex-1 border rounded-lg px-4 py-2 text-sm text-slate-600 bg-white">{{ __('Reset') }}</button>
+            <button wire:click="applyFilters" class="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg px-4 py-2 text-sm font-medium">{{ __('Apply') }}</button>
         </div>
     </div>
 
     <div class="hidden sm:flex flex-wrap items-center justify-between gap-3 mb-4">
         <div class="flex flex-wrap items-center gap-3">
-            <input wire:model="search" type="text" placeholder="Search by number..." class="border rounded-lg px-3 py-2 text-sm w-full sm:w-auto sm:min-w-[200px]">
-            <button wire:click="resetFilters" class="border rounded-lg px-4 py-2 text-sm text-slate-600 bg-white">Reset</button>
-            <button wire:click="applyFilters" class="bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg px-4 py-2 text-sm font-medium">Apply</button>
+            <input wire:model="search" type="text" placeholder="{{ __('Search by number...') }}" class="border rounded-lg px-3 py-2 text-sm w-full sm:w-auto sm:min-w-[200px]">
+            <button wire:click="resetFilters" class="border rounded-lg px-4 py-2 text-sm text-slate-600 bg-white">{{ __('Reset') }}</button>
+            <button wire:click="applyFilters" class="bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg px-4 py-2 text-sm font-medium">{{ __('Apply') }}</button>
         </div>
         @can('purchase.manage')
-            <a href="{{ route('purchase.orders.create') }}" class="bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-xl font-medium shrink-0">+ New Purchase Order</a>
+            <a href="{{ route('purchase.orders.create') }}" class="bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-xl font-medium shrink-0">{{ __('+ New Purchase Order') }}</a>
         @endcan
     </div>
 
@@ -48,13 +48,13 @@
             <thead class="bg-slate-50 text-slate-500 text-left">
                 <tr>
                     <th class="px-4 py-3 rtable-hide-mobile">#</th>
-                    <th class="px-4 py-3">Number</th>
-                    <th class="px-4 py-3">Company</th>
-                    <th class="px-4 py-3">Warehouse</th>
-                    <th class="px-4 py-3">Order Date</th>
-                    <th class="px-4 py-3">Total</th>
-                    <th class="px-4 py-3">Status</th>
-                    <th class="px-4 py-3 text-right">Action</th>
+                    <th class="px-4 py-3">{{ __('Number') }}</th>
+                    <th class="px-4 py-3">{{ __('Company') }}</th>
+                    <th class="px-4 py-3">{{ __('Warehouse') }}</th>
+                    <th class="px-4 py-3">{{ __('Order Date') }}</th>
+                    <th class="px-4 py-3">{{ __('Total') }}</th>
+                    <th class="px-4 py-3">{{ __('Status') }}</th>
+                    <th class="px-4 py-3 text-right">{{ __('Action') }}</th>
                 </tr>
             </thead>
             <tbody class="divide-y">
@@ -71,7 +71,7 @@
                                     'bg-amber-100 text-amber-700' => $order->status === 'partial',
                                     'bg-green-100 text-green-700' => $order->status === 'completed',
                                     'bg-red-100 text-red-700' => $order->status === 'cancelled',
-                                ])>{{ ucfirst($order->status) }}</span>
+                                ])>{{ __(ucfirst($order->status)) }}</span>
                             </div>
                             <p class="w-full text-xs text-slate-500 mt-0.5">{{ $order->company?->name }}</p>
                             <div class="w-full flex items-center justify-between mt-1">
@@ -92,7 +92,7 @@
                                 'bg-amber-100 text-amber-700' => $order->status === 'partial',
                                 'bg-green-100 text-green-700' => $order->status === 'completed',
                                 'bg-red-100 text-red-700' => $order->status === 'cancelled',
-                            ])>{{ ucfirst($order->status) }}</span>
+                            ])>{{ __(ucfirst($order->status)) }}</span>
                         </td>
                         <td class="px-4 py-3 text-right">
                             <a href="{{ route('purchase.orders.show', $order) }}">
@@ -102,7 +102,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="8" class="px-4 py-8 text-center text-slate-400">No purchase orders found.</td>
+                        <td colspan="8" class="px-4 py-8 text-center text-slate-400">{{ __('No purchase orders found.') }}</td>
                     </tr>
                 @endforelse
             </tbody>

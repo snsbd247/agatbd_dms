@@ -1,19 +1,19 @@
 <div>
     <div class="mb-5 overflow-hidden rounded-2xl bg-gradient-to-r from-slate-800 to-indigo-800 p-5 text-white shadow-lg">
         <p class="text-sm text-indigo-200">{{ now()->format('l, d F Y') }}</p>
-        <h2 class="mt-1 text-xl font-bold">Your account at a glance</h2>
-        <p class="mt-1 text-sm text-indigo-200">See your orders, invoices, current due and credit usage in one place.</p>
+        <h2 class="mt-1 text-xl font-bold">{{ __('Your account at a glance') }}</h2>
+        <p class="mt-1 text-sm text-indigo-200">{{ __('See your orders, invoices, current due and credit usage in one place.') }}</p>
         @if($retailer)
             <div class="mt-4 flex flex-wrap gap-2">
-                <a href="{{ route('portal.orders.create') }}" class="bg-white text-indigo-700 hover:bg-indigo-50 px-4 py-2 rounded-lg text-sm font-semibold">+ New Order</a>
-                <a href="{{ route('portal.orders') }}" class="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg text-sm font-medium">My Orders</a>
-                <a href="{{ route('portal.statement') }}" class="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg text-sm font-medium">My Statement</a>
+                <a href="{{ route('portal.orders.create') }}" class="bg-white text-indigo-700 hover:bg-indigo-50 px-4 py-2 rounded-lg text-sm font-semibold">{{ __('+ New Order') }}</a>
+                <a href="{{ route('portal.orders') }}" class="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg text-sm font-medium">{{ __('My Orders') }}</a>
+                <a href="{{ route('portal.statement') }}" class="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg text-sm font-medium">{{ __('My Statement') }}</a>
             </div>
         @endif
     </div>
     @unless($retailer)
         <div class="bg-amber-50 border border-amber-200 text-amber-800 rounded-xl p-4 mb-6">
-            No retailer profile is linked to your account yet. Ask the Dealer to link one.
+            {{ __('No retailer profile is linked to your account yet. Ask the Dealer to link one.') }}
         </div>
     @endunless
 
@@ -33,7 +33,7 @@
                 <div class="w-10 h-10 rounded-lg bg-{{ $card['color'] }}-500/10 text-{{ $card['color'] }}-600 flex items-center justify-center mb-3">
                     <x-icon :name="$card['icon']" class="w-5 h-5" />
                 </div>
-                <p class="text-slate-500 text-xs">{{ $card['label'] }}</p>
+                <p class="text-slate-500 text-xs">{{ __($card['label']) }}</p>
                 <p class="text-lg font-bold mt-1">{{ $card['money'] ? '৳ '.number_format($card['value'], 2) : number_format($card['value']) }}</p>
             </div>
         @endforeach
@@ -46,7 +46,7 @@
         @endphp
         <div class="bg-white rounded-xl shadow p-5 mt-4">
             <div class="flex justify-between items-center mb-2">
-                <h2 class="font-semibold">Credit Utilization</h2>
+                <h2 class="font-semibold">{{ __('Credit Utilization') }}</h2>
                 <span class="font-semibold">{{ $utilization }}%</span>
             </div>
             <div class="w-full bg-slate-100 rounded-full h-2.5">
@@ -59,7 +59,7 @@
     {{-- Recent Orders / Recent Invoices --}}
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-4">
         <div class="bg-white rounded-xl shadow p-5">
-            <h2 class="font-semibold mb-3">Recent Orders</h2>
+            <h2 class="font-semibold mb-3">{{ __('Recent Orders') }}</h2>
             <div class="space-y-3 text-sm">
                 @forelse($recentOrders as $order)
                     <div class="flex items-center justify-between">
@@ -76,17 +76,17 @@
                                 'bg-blue-100 text-blue-700' => $order->status === 'approved',
                                 'bg-amber-100 text-amber-700' => $order->status === 'partial',
                                 'bg-green-100 text-green-700' => $order->status === 'completed',
-                            ])>{{ ucfirst(str_replace('_', ' ', $order->status)) }}</span>
+                            ])>{{ __(ucfirst(str_replace('_', ' ', $order->status))) }}</span>
                         </div>
                     </div>
                 @empty
-                    <p class="text-slate-400">No orders yet.</p>
+                    <p class="text-slate-400">{{ __('No orders yet.') }}</p>
                 @endforelse
             </div>
         </div>
 
         <div class="bg-white rounded-xl shadow p-5">
-            <h2 class="font-semibold mb-3">Recent Invoices</h2>
+            <h2 class="font-semibold mb-3">{{ __('Recent Invoices') }}</h2>
             <div class="space-y-3 text-sm">
                 @forelse($recentInvoices as $invoice)
                     <div class="flex items-center justify-between">
@@ -101,11 +101,11 @@
                                 'bg-red-100 text-red-700' => $invoice->status === 'unpaid',
                                 'bg-amber-100 text-amber-700' => $invoice->status === 'partial',
                                 'bg-green-100 text-green-700' => $invoice->status === 'paid',
-                            ])>{{ ucfirst($invoice->status) }}</span>
+                            ])>{{ __(ucfirst($invoice->status)) }}</span>
                         </div>
                     </div>
                 @empty
-                    <p class="text-slate-400">No invoices yet.</p>
+                    <p class="text-slate-400">{{ __('No invoices yet.') }}</p>
                 @endforelse
             </div>
         </div>

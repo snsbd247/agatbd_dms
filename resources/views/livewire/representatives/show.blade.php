@@ -1,7 +1,7 @@
 <div x-data="{ tab: 'retailers' }">
     <div class="mb-4">
         <a href="{{ route('representatives.index') }}" class="flex items-center gap-1.5 text-sm text-slate-500 hover:text-indigo-600 w-fit">
-            <x-icon name="chevron-left" class="w-4 h-4" /> Back to Representatives
+            <x-icon name="chevron-left" class="w-4 h-4" /> {{ __('Back to Representatives') }}
         </a>
     </div>
 
@@ -23,15 +23,15 @@
         </div>
         <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-5 pt-5 border-t text-sm">
             <div>
-                <p class="text-slate-500">Base Salary</p>
+                <p class="text-slate-500">{{ __('Base Salary') }}</p>
                 <p class="font-medium mt-0.5">৳ {{ number_format($representative->salary_base, 2) }}</p>
             </div>
             <div>
-                <p class="text-slate-500">Commission Rate</p>
+                <p class="text-slate-500">{{ __('Commission Rate') }}</p>
                 <p class="font-medium mt-0.5">{{ number_format($representative->commission_rate, 2) }}%</p>
             </div>
             <div>
-                <p class="text-slate-500">Monthly Target</p>
+                <p class="text-slate-500">{{ __('Monthly Target') }}</p>
                 <p class="font-medium mt-0.5">৳ {{ number_format($representative->target_amount, 2) }}</p>
             </div>
         </div>
@@ -47,23 +47,23 @@
 
     <div class="bg-white rounded-xl shadow overflow-hidden">
         <div class="flex overflow-x-auto border-b">
-            <button type="button" @click="tab = 'retailers'" :class="tab === 'retailers' ? 'text-indigo-600 border-indigo-600' : 'text-slate-500 border-transparent'" class="px-4 py-3 text-sm font-medium border-b-2 shrink-0 whitespace-nowrap">Retailers</button>
-            <button type="button" @click="tab = 'orders'" :class="tab === 'orders' ? 'text-indigo-600 border-indigo-600' : 'text-slate-500 border-transparent'" class="px-4 py-3 text-sm font-medium border-b-2 shrink-0 whitespace-nowrap">Orders</button>
-            <button type="button" @click="tab = 'performance'" :class="tab === 'performance' ? 'text-indigo-600 border-indigo-600' : 'text-slate-500 border-transparent'" class="px-4 py-3 text-sm font-medium border-b-2 shrink-0 whitespace-nowrap">Performance</button>
-            <button type="button" @click="tab = 'payroll'" :class="tab === 'payroll' ? 'text-indigo-600 border-indigo-600' : 'text-slate-500 border-transparent'" class="px-4 py-3 text-sm font-medium border-b-2 shrink-0 whitespace-nowrap">Payroll</button>
+            <button type="button" @click="tab = 'retailers'" :class="tab === 'retailers' ? 'text-indigo-600 border-indigo-600' : 'text-slate-500 border-transparent'" class="px-4 py-3 text-sm font-medium border-b-2 shrink-0 whitespace-nowrap">{{ __('Retailers') }}</button>
+            <button type="button" @click="tab = 'orders'" :class="tab === 'orders' ? 'text-indigo-600 border-indigo-600' : 'text-slate-500 border-transparent'" class="px-4 py-3 text-sm font-medium border-b-2 shrink-0 whitespace-nowrap">{{ __('Orders') }}</button>
+            <button type="button" @click="tab = 'performance'" :class="tab === 'performance' ? 'text-indigo-600 border-indigo-600' : 'text-slate-500 border-transparent'" class="px-4 py-3 text-sm font-medium border-b-2 shrink-0 whitespace-nowrap">{{ __('Performance') }}</button>
+            <button type="button" @click="tab = 'payroll'" :class="tab === 'payroll' ? 'text-indigo-600 border-indigo-600' : 'text-slate-500 border-transparent'" class="px-4 py-3 text-sm font-medium border-b-2 shrink-0 whitespace-nowrap">{{ __('Payroll') }}</button>
         </div>
 
         <div x-show="tab === 'retailers'" class="overflow-x-auto">
             <table class="w-full text-sm rtable">
                 <thead class="bg-slate-50 text-slate-500 text-left">
                     <tr>
-                        <th class="px-4 py-3">Name</th>
-                        <th class="px-4 py-3">Code</th>
-                        <th class="px-4 py-3">Area</th>
-                        <th class="px-4 py-3">Credit Limit</th>
-                        <th class="px-4 py-3">Current Due</th>
-                        <th class="px-4 py-3">Status</th>
-                        <th class="px-4 py-3 text-right">Action</th>
+                        <th class="px-4 py-3">{{ __('Name') }}</th>
+                        <th class="px-4 py-3">{{ __('Code') }}</th>
+                        <th class="px-4 py-3">{{ __('Area') }}</th>
+                        <th class="px-4 py-3">{{ __('Credit Limit') }}</th>
+                        <th class="px-4 py-3">{{ __('Current Due') }}</th>
+                        <th class="px-4 py-3">{{ __('Status') }}</th>
+                        <th class="px-4 py-3 text-right">{{ __('Action') }}</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y">
@@ -84,7 +84,7 @@
                             </td>
                         </tr>
                     @empty
-                        <tr><td colspan="7" class="px-4 py-8 text-center text-slate-400">No retailers assigned yet.</td></tr>
+                        <tr><td colspan="7" class="px-4 py-8 text-center text-slate-400">{{ __('No retailers assigned yet.') }}</td></tr>
                     @endforelse
                 </tbody>
             </table>
@@ -94,12 +94,12 @@
             <table class="w-full text-sm rtable">
                 <thead class="bg-slate-50 text-slate-500 text-left">
                     <tr>
-                        <th class="px-4 py-3">Number</th>
-                        <th class="px-4 py-3">Retailer</th>
-                        <th class="px-4 py-3">Date</th>
-                        <th class="px-4 py-3">Total</th>
-                        <th class="px-4 py-3">Status</th>
-                        <th class="px-4 py-3 text-right">Action</th>
+                        <th class="px-4 py-3">{{ __('Number') }}</th>
+                        <th class="px-4 py-3">{{ __('Retailer') }}</th>
+                        <th class="px-4 py-3">{{ __('Date') }}</th>
+                        <th class="px-4 py-3">{{ __('Total') }}</th>
+                        <th class="px-4 py-3">{{ __('Status') }}</th>
+                        <th class="px-4 py-3 text-right">{{ __('Action') }}</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y">
@@ -117,14 +117,14 @@
                                     'bg-blue-100 text-blue-700' => $order->status === 'approved',
                                     'bg-amber-100 text-amber-700' => $order->status === 'partial',
                                     'bg-green-100 text-green-700' => $order->status === 'completed',
-                                ])>{{ ucfirst(str_replace('_', ' ', $order->status)) }}</span>
+                                ])>{{ __(ucfirst(str_replace('_', ' ', $order->status))) }}</span>
                             </td>
                             <td class="px-4 py-3 text-right">
                                 <a href="{{ route('sales.orders.show', $order) }}"><x-icon-action icon="eye" color="blue" label="View" /></a>
                             </td>
                         </tr>
                     @empty
-                        <tr><td colspan="6" class="px-4 py-8 text-center text-slate-400">No sales orders yet.</td></tr>
+                        <tr><td colspan="6" class="px-4 py-8 text-center text-slate-400">{{ __('No sales orders yet.') }}</td></tr>
                     @endforelse
                 </tbody>
             </table>
@@ -134,38 +134,38 @@
             <div class="flex items-center gap-2 mb-5">
                 <x-icon name="calendar" class="w-4 h-4 text-slate-400" />
                 <input type="month" wire:model.live="period" class="border rounded-lg px-3 py-2 text-sm">
-                <span class="text-xs text-slate-400">Performance for the selected month</span>
+                <span class="text-xs text-slate-400">{{ __('Performance for the selected month') }}</span>
             </div>
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
                 <div class="bg-slate-50 rounded-xl p-4">
-                    <p class="text-slate-500 text-xs">Delivered Sales</p>
+                    <p class="text-slate-500 text-xs">{{ __('Delivered Sales') }}</p>
                     <p class="text-lg font-bold mt-1">৳ {{ number_format($summary['period_sales'], 2) }}</p>
                 </div>
                 <div class="bg-slate-50 rounded-xl p-4">
-                    <p class="text-slate-500 text-xs">Collection</p>
+                    <p class="text-slate-500 text-xs">{{ __('Collection') }}</p>
                     <p class="text-lg font-bold mt-1">৳ {{ number_format($summary['period_collection'], 2) }}</p>
                 </div>
                 <div class="bg-slate-50 rounded-xl p-4">
-                    <p class="text-slate-500 text-xs">Target Achievement</p>
+                    <p class="text-slate-500 text-xs">{{ __('Target Achievement') }}</p>
                     <p class="text-lg font-bold mt-1">{{ $summary['achievement'] }}%</p>
                 </div>
                 <div class="bg-slate-50 rounded-xl p-4">
-                    <p class="text-slate-500 text-xs">Commission Earned</p>
+                    <p class="text-slate-500 text-xs">{{ __('Commission Earned') }}</p>
                     <p class="text-lg font-bold mt-1">৳ {{ number_format($summary['commission'], 2) }}</p>
                 </div>
             </div>
-            <p class="text-xs text-slate-400 mt-4">For full history across every representative, see <a href="{{ route('reports.representatives') }}" class="text-indigo-600 hover:underline">Representative Performance Report</a>.</p>
+            <p class="text-xs text-slate-400 mt-4">{{ __('For full history across every representative, see') }} <a href="{{ route('reports.representatives') }}" class="text-indigo-600 hover:underline">{{ __('Representative Performance Report') }}</a>.</p>
         </div>
 
         <div x-show="tab === 'payroll'" x-cloak class="overflow-x-auto">
             <table class="w-full text-sm rtable">
                 <thead class="bg-slate-50 text-slate-500 text-left">
                     <tr>
-                        <th class="px-4 py-3">Number</th>
-                        <th class="px-4 py-3">Period</th>
-                        <th class="px-4 py-3">Net Salary</th>
-                        <th class="px-4 py-3">Status</th>
-                        <th class="px-4 py-3 text-right">Action</th>
+                        <th class="px-4 py-3">{{ __('Number') }}</th>
+                        <th class="px-4 py-3">{{ __('Period') }}</th>
+                        <th class="px-4 py-3">{{ __('Net Salary') }}</th>
+                        <th class="px-4 py-3">{{ __('Status') }}</th>
+                        <th class="px-4 py-3 text-right">{{ __('Action') }}</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y">
@@ -176,7 +176,7 @@
                             <td class="px-4 py-3" data-label="Net Salary">৳ {{ number_format($entry->net_salary, 2) }}</td>
                             <td class="px-4 py-3" data-label="Status">
                                 <span class="px-2 py-1 rounded-full text-xs {{ $entry->status === 'paid' ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-600' }}">
-                                    {{ ucfirst($entry->status) }}
+                                    {{ __(ucfirst($entry->status)) }}
                                 </span>
                             </td>
                             <td class="px-4 py-3 text-right">
@@ -184,12 +184,12 @@
                             </td>
                         </tr>
                     @empty
-                        <tr><td colspan="5" class="px-4 py-8 text-center text-slate-400">No payroll runs yet.</td></tr>
+                        <tr><td colspan="5" class="px-4 py-8 text-center text-slate-400">{{ __('No payroll runs yet.') }}</td></tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
     </div>
 
-    <p class="text-xs text-slate-400 mt-3">Showing the latest records per section. Use the module pages for full history and filtering.</p>
+    <p class="text-xs text-slate-400 mt-3">{{ __('Showing the latest records per section. Use the module pages for full history and filtering.') }}</p>
 </div>

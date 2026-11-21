@@ -131,9 +131,15 @@ Stat card-এর আইকনের রং: blue, green, orange, purple, red, in
 - `public/manifest.json`, `icon-192.png`, `icon-512.png`, `apple-touch-icon.png`, `icon.svg`।
 - `viewport-fit=cover`, `apple-mobile-web-app-capable`, `overscroll-behavior: contain`, tap-highlight বন্ধ, `touch-action: manipulation`: সব মিলিয়ে নেটিভ অ্যাপের মতো অনুভূতি দেয়।
 
-## ৯. বাকি UI কাজ
+## ৯. ভাষা (বাংলা / English)
 
-- হেডারের Global search চালু করা।
-- Help বাটনের পেজ বানানো।
+- ডিফল্ট ভাষা বাংলা (`APP_LOCALE=bn`)। প্রত্যেক ইউজার হেডার, Profile বা লগইন পেজের **বাংলা / EN** সুইচ দিয়ে নিজের ভাষা বাছতে পারে। পছন্দ `users.locale`-এ সেভ থাকে।
+- `App\Http\Middleware\SetLocale` প্রতিটা web আর Livewire request-এ ভাষা বসায়।
+- অনুবাদ থাকে `lang/bn.json`-এ (ইংরেজি লেখাটাই key), আর validation বার্তা `lang/bn/validation.php`-এ।
+- ফন্ট: Instrument Sans, তারপর Hind Siliguri (Google Fonts)।
+- **নতুন পেজ বা বাটন যোগ করলে:** লেখা `{{ __('English text') }}` দিয়ে লিখুন আর `lang/bn.json`-এ বাংলা যোগ করুন। ডাটা-সহ লেখার জন্য `__('Delivered :v', ['v' => $date])`।
+- ইচ্ছা করে ইংরেজি রাখা হয়েছে: ইনভয়েস PDF, তারিখের মাসের নাম, সংখ্যা (০-৯ না, 0-9), SMS, নোটিফিকেশনের ভেতরের বার্তা (শিরোনাম অনুবাদ হয়), আর অল্প কয়েকটা জটিল লাইন। Help পেজ সব ভাষাতেই বাংলা।
+
+## ১০. বাকি UI কাজ
+
 - ডার্ক মোড (এখনো নেই)।
-- বাংলা ভাষা বা লোকালাইজেশন (এখন UI-এর সব লেখা ইংরেজিতে)।

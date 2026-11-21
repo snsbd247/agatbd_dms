@@ -1,16 +1,16 @@
 <div>
     <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
         <div class="flex flex-wrap items-center gap-2">
-            <input wire:model.live.debounce.400ms="search" type="text" placeholder="Search by retailer name..." class="border rounded-lg p-2 text-sm bg-white shadow-sm">
+            <input wire:model.live.debounce.400ms="search" type="text" placeholder="{{ __('Search by retailer name...') }}" class="border rounded-lg p-2 text-sm bg-white shadow-sm">
             <select wire:model.live="area_id" class="border rounded-lg p-2 text-sm bg-white shadow-sm">
-                <option value="">All Areas</option>
+                <option value="">{{ __('All Areas') }}</option>
                 @foreach($areas as $area)
                     <option value="{{ $area->id }}">{{ $area->name }}</option>
                 @endforeach
             </select>
         </div>
         <a href="{{ route('reports.export.retailers', request()->query()) }}" class="flex items-center gap-2 px-3 py-2 rounded-lg bg-white border shadow-sm text-sm text-slate-600 hover:text-indigo-600">
-            <x-icon name="download" class="w-4 h-4" /> Download CSV
+            <x-icon name="download" class="w-4 h-4" /> {{ __('Download CSV') }}
         </a>
     </div>
 
@@ -24,12 +24,12 @@
         <table class="w-full text-sm rtable">
             <thead class="bg-slate-50 text-slate-500 text-left">
                 <tr>
-                    <th class="px-4 py-3">Retailer</th>
-                    <th class="px-4 py-3">Orders</th>
-                    <th class="px-4 py-3">Total Invoiced</th>
-                    <th class="px-4 py-3">Total Paid</th>
-                    <th class="px-4 py-3">Current Due</th>
-                    <th class="px-4 py-3 text-right">Action</th>
+                    <th class="px-4 py-3">{{ __('Retailer') }}</th>
+                    <th class="px-4 py-3">{{ __('Orders') }}</th>
+                    <th class="px-4 py-3">{{ __('Total Invoiced') }}</th>
+                    <th class="px-4 py-3">{{ __('Total Paid') }}</th>
+                    <th class="px-4 py-3">{{ __('Current Due') }}</th>
+                    <th class="px-4 py-3 text-right">{{ __('Action') }}</th>
                 </tr>
             </thead>
             <tbody class="divide-y">
@@ -46,7 +46,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6" class="px-4 py-8 text-center text-slate-400">No retailers found.</td>
+                        <td colspan="6" class="px-4 py-8 text-center text-slate-400">{{ __('No retailers found.') }}</td>
                     </tr>
                 @endforelse
             </tbody>

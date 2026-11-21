@@ -7,7 +7,7 @@
     </div>
 
     <div class="flex justify-end mb-4">
-        <button wire:click="create" class="bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-xl font-medium">+ Add Policy</button>
+        <button wire:click="create" class="bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-xl font-medium">{{ __('+ Add Policy') }}</button>
     </div>
 
     <div class="bg-white rounded-xl shadow overflow-hidden overflow-x-auto">
@@ -15,10 +15,10 @@
             <thead class="bg-slate-50 text-slate-500 text-left">
                 <tr>
                     <th class="px-4 py-3 rtable-hide-mobile">#</th>
-                    <th class="px-4 py-3">Applies To</th>
-                    <th class="px-4 py-3">Duration</th>
-                    <th class="px-4 py-3">Terms</th>
-                    <th class="px-4 py-3 text-right">Action</th>
+                    <th class="px-4 py-3">{{ __('Applies To') }}</th>
+                    <th class="px-4 py-3">{{ __('Duration') }}</th>
+                    <th class="px-4 py-3">{{ __('Terms') }}</th>
+                    <th class="px-4 py-3 text-right">{{ __('Action') }}</th>
                 </tr>
             </thead>
             <tbody class="divide-y">
@@ -27,9 +27,9 @@
                         <td class="px-4 py-3 text-slate-500 rtable-hide-mobile">{{ $policies->firstItem() + $index }}</td>
                         <td class="px-4 py-3 font-medium" data-label="Applies To">
                             @if($policy->product)
-                                {{ $policy->product->name }} <span class="text-xs text-slate-400">(product)</span>
+                                {{ $policy->product->name }} <span class="text-xs text-slate-400">{{ __('(product)') }}</span>
                             @else
-                                {{ $policy->category?->name }} <span class="text-xs text-slate-400">(category)</span>
+                                {{ $policy->category?->name }} <span class="text-xs text-slate-400">{{ __('(category)') }}</span>
                             @endif
                         </td>
                         <td class="px-4 py-3" data-label="Duration">{{ $policy->duration_months }} months</td>
@@ -37,13 +37,13 @@
                         <td class="px-4 py-3">
                             <div class="flex items-center justify-end gap-1.5">
                                 <x-icon-action wire:click="edit({{ $policy->id }})" icon="pencil" color="amber" label="Edit" />
-                                <x-icon-action wire:click="delete({{ $policy->id }})" wire:confirm="Delete this warranty policy?" icon="trash" color="red" label="Delete" />
+                                <x-icon-action wire:click="delete({{ $policy->id }})" wire:confirm="{{ __('Delete this warranty policy?') }}" icon="trash" color="red" label="Delete" />
                             </div>
                         </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="5" class="px-4 py-8 text-center text-slate-400">No warranty policies configured.</td>
+                        <td colspan="5" class="px-4 py-8 text-center text-slate-400">{{ __('No warranty policies configured.') }}</td>
                     </tr>
                 @endforelse
             </tbody>
@@ -59,18 +59,18 @@
                 <div class="space-y-3">
                     <div class="flex gap-4 text-sm">
                         <label class="flex items-center gap-2">
-                            <input type="radio" wire:model.live="scope_type" value="product"> Product
+                            <input type="radio" wire:model.live="scope_type" value="product"> {{ __('Product') }}
                         </label>
                         <label class="flex items-center gap-2">
-                            <input type="radio" wire:model.live="scope_type" value="category"> Category
+                            <input type="radio" wire:model.live="scope_type" value="category"> {{ __('Category') }}
                         </label>
                     </div>
 
                     @if($scope_type === 'product')
                         <div>
-                            <label class="text-sm text-slate-500">Product</label>
+                            <label class="text-sm text-slate-500">{{ __('Product') }}</label>
                             <select wire:model="product_id" class="w-full border rounded-lg p-2 mt-1">
-                                <option value="">— Select —</option>
+                                <option value="">{{ __('— Select —') }}</option>
                                 @foreach($products as $product)
                                     <option value="{{ $product->id }}">{{ $product->name }}</option>
                                 @endforeach
@@ -78,9 +78,9 @@
                         </div>
                     @else
                         <div>
-                            <label class="text-sm text-slate-500">Category</label>
+                            <label class="text-sm text-slate-500">{{ __('Category') }}</label>
                             <select wire:model="category_id" class="w-full border rounded-lg p-2 mt-1">
-                                <option value="">— Select —</option>
+                                <option value="">{{ __('— Select —') }}</option>
                                 @foreach($categories as $category)
                                     <option value="{{ $category->id }}">{{ $category->name }}</option>
                                 @endforeach
@@ -90,19 +90,19 @@
                     @error('product_id') <p class="text-red-600 text-xs">{{ $message }}</p> @enderror
 
                     <div>
-                        <label class="text-sm text-slate-500">Duration (months)</label>
+                        <label class="text-sm text-slate-500">{{ __('Duration (months)') }}</label>
                         <input wire:model="duration_months" type="number" min="1" class="w-full border rounded-lg p-2 mt-1">
                         @error('duration_months') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
                     <div>
-                        <label class="text-sm text-slate-500">Terms</label>
+                        <label class="text-sm text-slate-500">{{ __('Terms') }}</label>
                         <textarea wire:model="terms" rows="3" class="w-full border rounded-lg p-2 mt-1"></textarea>
                     </div>
                 </div>
 
                 <div class="mt-6 flex justify-end gap-2">
-                    <button wire:click="$set('showModal', false)" class="px-4 py-2 rounded-lg text-slate-600">Cancel</button>
-                    <button wire:click="save" class="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-medium">Save</button>
+                    <button wire:click="$set('showModal', false)" class="px-4 py-2 rounded-lg text-slate-600">{{ __('Cancel') }}</button>
+                    <button wire:click="save" class="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-medium">{{ __('Save') }}</button>
                 </div>
             </div>
         </div>

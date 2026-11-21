@@ -4,7 +4,7 @@
         <p class="text-slate-500 mb-4">{{ $returnRequest->retailer?->name }}</p>
 
         <div class="mb-6">
-            <label class="text-sm text-slate-500">Receiving Warehouse</label>
+            <label class="text-sm text-slate-500">{{ __('Receiving Warehouse') }}</label>
             <select wire:model="warehouse_id" class="w-full max-w-xs border rounded-lg p-2 mt-1">
                 @foreach($warehouses as $warehouse)
                     <option value="{{ $warehouse->id }}">{{ $warehouse->name }}</option>
@@ -22,26 +22,26 @@
                     </div>
                     <div class="grid grid-cols-4 gap-3">
                         <div>
-                            <label class="text-xs text-slate-500">Receive Qty</label>
+                            <label class="text-xs text-slate-500">{{ __('Receive Qty') }}</label>
                             <input wire:model="lines.{{ $index }}.quantity" type="number" step="0.001" class="w-full border rounded-lg p-2 mt-1">
                             @error("lines.{$index}.quantity") <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
                         </div>
                         <div>
-                            <label class="text-xs text-slate-500">Disposition</label>
+                            <label class="text-xs text-slate-500">{{ __('Disposition') }}</label>
                             <select wire:model="lines.{{ $index }}.disposition" class="w-full border rounded-lg p-2 mt-1">
-                                <option value="restock">Restock</option>
-                                <option value="damage">Damage</option>
-                                <option value="company_return">Company Return</option>
+                                <option value="restock">{{ __('Restock') }}</option>
+                                <option value="damage">{{ __('Damage') }}</option>
+                                <option value="company_return">{{ __('Company Return') }}</option>
                             </select>
                         </div>
                         @if($line['disposition'] === 'restock')
                             <div>
-                                <label class="text-xs text-slate-500">Batch No.</label>
+                                <label class="text-xs text-slate-500">{{ __('Batch No.') }}</label>
                                 <input wire:model="lines.{{ $index }}.batch_no" type="text" class="w-full border rounded-lg p-2 mt-1">
                                 @error("lines.{$index}.batch_no") <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
                             </div>
                             <div>
-                                <label class="text-xs text-slate-500">Expiry Date</label>
+                                <label class="text-xs text-slate-500">{{ __('Expiry Date') }}</label>
                                 <input wire:model="lines.{{ $index }}.expiry_date" type="date" class="w-full border rounded-lg p-2 mt-1">
                             </div>
                         @endif
@@ -51,8 +51,8 @@
         </div>
 
         <div class="mt-6 flex justify-end gap-2">
-            <a href="{{ route('returns.show', $returnRequest) }}" class="px-4 py-2 rounded-lg text-slate-600">Cancel</a>
-            <button wire:click="save" class="px-4 py-2 rounded-lg bg-green-600 text-white font-medium">Confirm Receipt</button>
+            <a href="{{ route('returns.show', $returnRequest) }}" class="px-4 py-2 rounded-lg text-slate-600">{{ __('Cancel') }}</a>
+            <button wire:click="save" class="px-4 py-2 rounded-lg bg-green-600 text-white font-medium">{{ __('Confirm Receipt') }}</button>
         </div>
     </div>
 </div>

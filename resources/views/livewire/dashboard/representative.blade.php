@@ -1,13 +1,13 @@
 <div>
     <div class="mb-5 overflow-hidden rounded-2xl bg-gradient-to-r from-indigo-700 to-blue-600 p-5 text-white shadow-lg">
         <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div><p class="text-sm text-indigo-100">{{ now()->format('l, d F Y') }}</p><h2 class="mt-1 text-xl font-bold">Your sales command centre</h2><p class="mt-1 text-sm text-indigo-100">Track target progress, collection and orders assigned to you.</p></div>
-            <a href="{{ route('sales.orders.create') }}" class="inline-flex items-center gap-2 self-start rounded-lg bg-white px-3.5 py-2.5 text-sm font-semibold text-indigo-700 hover:bg-indigo-50"><x-icon name="shopping-bag" class="h-4 w-4" /> New order</a>
+            <div><p class="text-sm text-indigo-100">{{ now()->format('l, d F Y') }}</p><h2 class="mt-1 text-xl font-bold">{{ __('Your sales command centre') }}</h2><p class="mt-1 text-sm text-indigo-100">{{ __('Track target progress, collection and orders assigned to you.') }}</p></div>
+            <a href="{{ route('sales.orders.create') }}" class="inline-flex items-center gap-2 self-start rounded-lg bg-white px-3.5 py-2.5 text-sm font-semibold text-indigo-700 hover:bg-indigo-50"><x-icon name="shopping-bag" class="h-4 w-4" /> {{ __('New order') }}</a>
         </div>
     </div>
     @unless($representative)
         <div class="bg-amber-50 border border-amber-200 text-amber-800 rounded-xl p-4 mb-6">
-            No representative profile is linked to your account yet. Ask the Dealer to link one.
+            {{ __('No representative profile is linked to your account yet. Ask the Dealer to link one.') }}
         </div>
     @endunless
 
@@ -28,7 +28,7 @@
                 <div class="w-10 h-10 rounded-lg bg-{{ $card['color'] }}-500/10 text-{{ $card['color'] }}-600 flex items-center justify-center mb-3">
                     <x-icon :name="$card['icon']" class="w-5 h-5" />
                 </div>
-                <p class="text-slate-500 text-xs">{{ $card['label'] }}</p>
+                <p class="text-slate-500 text-xs">{{ __($card['label']) }}</p>
                 <p class="text-lg font-bold mt-1">{{ $card['money'] ? '৳ '.number_format($card['value'], 2) : number_format($card['value']) }}</p>
             </div>
         @endforeach
@@ -37,7 +37,7 @@
     {{-- Target progress --}}
     <div class="bg-white rounded-xl shadow p-5 mt-4">
         <div class="flex justify-between items-center mb-2">
-            <h2 class="font-semibold">Target Progress <span class="text-slate-400 text-sm font-normal">(This Month)</span></h2>
+            <h2 class="font-semibold">{{ __('Target Progress') }} <span class="text-slate-400 text-sm font-normal">{{ __('(This Month)') }}</span></h2>
             <span class="font-semibold">{{ $stats['achievement'] }}%</span>
         </div>
         <div class="w-full bg-slate-100 rounded-full h-2.5">
@@ -49,7 +49,7 @@
     {{-- Pending Orders / Recent Deliveries --}}
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-4">
         <div class="bg-white rounded-xl shadow p-5">
-            <h2 class="font-semibold mb-3">My Pending Orders</h2>
+            <h2 class="font-semibold mb-3">{{ __('My Pending Orders') }}</h2>
             <div class="space-y-3 text-sm">
                 @forelse($pendingOrders as $order)
                     <div class="flex items-center justify-between">
@@ -65,18 +65,18 @@
                                 'bg-red-100 text-red-700' => $order->status === 'credit_hold',
                                 'bg-blue-100 text-blue-700' => $order->status === 'approved',
                                 'bg-amber-100 text-amber-700' => $order->status === 'partial',
-                            ])>{{ ucfirst(str_replace('_', ' ', $order->status)) }}</span>
+                            ])>{{ __(ucfirst(str_replace('_', ' ', $order->status))) }}</span>
                         </div>
                     </div>
                 @empty
-                    <p class="text-slate-400">No pending orders.</p>
+                    <p class="text-slate-400">{{ __('No pending orders.') }}</p>
                 @endforelse
             </div>
-            <a href="{{ route('sales.orders.index') }}" class="block mt-3 text-sm text-indigo-600 hover:underline">View All Orders</a>
+            <a href="{{ route('sales.orders.index') }}" class="block mt-3 text-sm text-indigo-600 hover:underline">{{ __('View All Orders') }}</a>
         </div>
 
         <div class="bg-white rounded-xl shadow p-5">
-            <h2 class="font-semibold mb-3">Recent Deliveries</h2>
+            <h2 class="font-semibold mb-3">{{ __('Recent Deliveries') }}</h2>
             <div class="space-y-3 text-sm">
                 @forelse($recentDeliveries as $note)
                     <div class="flex items-center justify-between">
@@ -86,14 +86,14 @@
                         </div>
                         <div class="text-right">
                             <p class="text-slate-500 text-xs">{{ $note->delivery_date->format('d M Y') }}</p>
-                            <span class="text-xs px-2 py-0.5 rounded-full bg-green-100 text-green-700">{{ ucfirst($note->status) }}</span>
+                            <span class="text-xs px-2 py-0.5 rounded-full bg-green-100 text-green-700">{{ __(ucfirst($note->status)) }}</span>
                         </div>
                     </div>
                 @empty
-                    <p class="text-slate-400">No deliveries yet.</p>
+                    <p class="text-slate-400">{{ __('No deliveries yet.') }}</p>
                 @endforelse
             </div>
-            <a href="{{ route('delivery.index') }}" class="block mt-3 text-sm text-indigo-600 hover:underline">View All Deliveries</a>
+            <a href="{{ route('delivery.index') }}" class="block mt-3 text-sm text-indigo-600 hover:underline">{{ __('View All Deliveries') }}</a>
         </div>
     </div>
 </div>

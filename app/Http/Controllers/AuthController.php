@@ -35,7 +35,7 @@ class AuthController extends Controller
                 'status' => 'failed',
             ]);
 
-            return back()->withErrors(['email' => 'Invalid credentials']);
+            return back()->withErrors(['email' => __('Invalid credentials')]);
         }
 
         $request->session()->regenerate();

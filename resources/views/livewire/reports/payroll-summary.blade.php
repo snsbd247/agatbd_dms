@@ -8,14 +8,14 @@
                 <input type="month" wire:model.live="to_period" class="text-sm border-0 p-0 focus:ring-0 w-28">
             </div>
             <select wire:model.live="representative_id" class="border rounded-lg p-2 text-sm bg-white shadow-sm">
-                <option value="">All Representatives</option>
+                <option value="">{{ __('All Representatives') }}</option>
                 @foreach($representatives as $representative)
                     <option value="{{ $representative->id }}">{{ $representative->name }}</option>
                 @endforeach
             </select>
         </div>
         <a href="{{ route('reports.export.payroll', request()->query()) }}" class="flex items-center gap-2 px-3 py-2 rounded-lg bg-white border shadow-sm text-sm text-slate-600 hover:text-indigo-600">
-            <x-icon name="download" class="w-4 h-4" /> Download CSV
+            <x-icon name="download" class="w-4 h-4" /> {{ __('Download CSV') }}
         </a>
     </div>
 
@@ -29,14 +29,14 @@
         <table class="w-full text-sm rtable">
             <thead class="bg-slate-50 text-slate-500 text-left">
                 <tr>
-                    <th class="px-4 py-3">Representative</th>
-                    <th class="px-4 py-3">Period</th>
-                    <th class="px-4 py-3">Base</th>
-                    <th class="px-4 py-3">Commission</th>
-                    <th class="px-4 py-3">Bonus</th>
-                    <th class="px-4 py-3">Deductions</th>
-                    <th class="px-4 py-3">Net Salary</th>
-                    <th class="px-4 py-3">Status</th>
+                    <th class="px-4 py-3">{{ __('Representative') }}</th>
+                    <th class="px-4 py-3">{{ __('Period') }}</th>
+                    <th class="px-4 py-3">{{ __('Base') }}</th>
+                    <th class="px-4 py-3">{{ __('Commission') }}</th>
+                    <th class="px-4 py-3">{{ __('Bonus') }}</th>
+                    <th class="px-4 py-3">{{ __('Deductions') }}</th>
+                    <th class="px-4 py-3">{{ __('Net Salary') }}</th>
+                    <th class="px-4 py-3">{{ __('Status') }}</th>
                 </tr>
             </thead>
             <tbody class="divide-y">
@@ -50,12 +50,12 @@
                         <td class="px-4 py-3 text-red-600" data-label="Deductions">৳ {{ number_format($entry->advance_deduction + $entry->other_deduction, 2) }}</td>
                         <td class="px-4 py-3 font-medium" data-label="Net Salary">৳ {{ number_format($entry->net_salary, 2) }}</td>
                         <td class="px-4 py-3" data-label="Status">
-                            <span class="px-2 py-1 rounded-full text-xs {{ $entry->status === 'paid' ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-600' }}">{{ ucfirst($entry->status) }}</span>
+                            <span class="px-2 py-1 rounded-full text-xs {{ $entry->status === 'paid' ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-600' }}">{{ __(ucfirst($entry->status)) }}</span>
                         </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="8" class="px-4 py-8 text-center text-slate-400">No payroll entries in this range.</td>
+                        <td colspan="8" class="px-4 py-8 text-center text-slate-400">{{ __('No payroll entries in this range.') }}</td>
                     </tr>
                 @endforelse
             </tbody>

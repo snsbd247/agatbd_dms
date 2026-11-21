@@ -1,6 +1,6 @@
 <div class="max-w-4xl">
     <a href="{{ route('purchase.orders.index') }}" class="flex items-center gap-1.5 text-sm text-slate-500 hover:text-indigo-600 mb-4">
-        <x-icon name="chevron-left" class="w-4 h-4" /> Back to Purchase Orders
+        <x-icon name="chevron-left" class="w-4 h-4" /> {{ __('Back to Purchase Orders') }}
     </a>
 
     <div class="bg-white rounded-xl shadow p-6 mb-6">
@@ -28,7 +28,7 @@
                         default => 'bg-slate-100 text-slate-600',
                     };
                 @endphp
-                <span class="px-3 py-1 rounded-full text-sm {{ $badge }}">{{ ucfirst($purchaseOrder->status) }}</span>
+                <span class="px-3 py-1 rounded-full text-sm {{ $badge }}">{{ __(ucfirst($purchaseOrder->status)) }}</span>
                 <p class="text-2xl font-bold mt-2">৳ {{ number_format($purchaseOrder->total_amount, 2) }}</p>
             </div>
         </div>
@@ -36,13 +36,13 @@
         @can('purchase.manage')
             <div class="mt-4 flex flex-wrap gap-2">
                 @if($purchaseOrder->status === 'draft')
-                    <button wire:click="send" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-lg font-medium">Send to Company</button>
+                    <button wire:click="send" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-lg font-medium">{{ __('Send to Company') }}</button>
                 @endif
                 @if(in_array($purchaseOrder->status, ['sent', 'partial']))
-                    <a href="{{ route('purchase.receipts.create', $purchaseOrder) }}" class="bg-green-600 hover:bg-green-500 text-white px-4 py-2 rounded-lg font-medium">Receive Goods</a>
+                    <a href="{{ route('purchase.receipts.create', $purchaseOrder) }}" class="bg-green-600 hover:bg-green-500 text-white px-4 py-2 rounded-lg font-medium">{{ __('Receive Goods') }}</a>
                 @endif
                 @if(in_array($purchaseOrder->status, ['draft', 'sent']) && ! $purchaseOrder->items->contains(fn ($i) => $i->received_quantity > 0))
-                    <button wire:click="cancel" wire:confirm="Cancel this purchase order?" class="text-red-600 hover:bg-red-50 px-4 py-2 rounded-lg font-medium">Cancel</button>
+                    <button wire:click="cancel" wire:confirm="{{ __('Cancel this purchase order?') }}" class="text-red-600 hover:bg-red-50 px-4 py-2 rounded-lg font-medium">{{ __('Cancel') }}</button>
                 @endif
             </div>
         @endcan
@@ -52,11 +52,11 @@
         <table class="w-full text-sm rtable">
             <thead class="bg-slate-50 text-slate-500 text-left">
                 <tr>
-                    <th class="px-4 py-3">Product</th>
-                    <th class="px-4 py-3">Ordered</th>
-                    <th class="px-4 py-3">Received</th>
-                    <th class="px-4 py-3">Remaining</th>
-                    <th class="px-4 py-3">Unit Price</th>
+                    <th class="px-4 py-3">{{ __('Product') }}</th>
+                    <th class="px-4 py-3">{{ __('Ordered') }}</th>
+                    <th class="px-4 py-3">{{ __('Received') }}</th>
+                    <th class="px-4 py-3">{{ __('Remaining') }}</th>
+                    <th class="px-4 py-3">{{ __('Unit Price') }}</th>
                 </tr>
             </thead>
             <tbody class="divide-y">
@@ -74,14 +74,14 @@
     </div>
 
     <div class="bg-white rounded-xl shadow p-6">
-        <h2 class="font-semibold mb-3 flex items-center gap-2"><x-icon name="archive-box" class="w-5 h-5 text-slate-400" /> Goods Receipts</h2>
+        <h2 class="font-semibold mb-3 flex items-center gap-2"><x-icon name="archive-box" class="w-5 h-5 text-slate-400" /> {{ __('Goods Receipts') }}</h2>
         @forelse($purchaseOrder->goodsReceipts as $receipt)
             <div class="flex justify-between py-2 border-b last:border-0">
                 <span>{{ $receipt->number }} &mdash; {{ $receipt->receipt_date->format('d M Y') }}</span>
                 <span class="font-medium">৳ {{ number_format($receipt->total_amount, 2) }}</span>
             </div>
         @empty
-            <p class="text-slate-400">No goods received yet.</p>
+            <p class="text-slate-400">{{ __('No goods received yet.') }}</p>
         @endforelse
     </div>
 </div>

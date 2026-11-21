@@ -1,6 +1,6 @@
 <div class="max-w-4xl">
     <a href="{{ route('returns.company.index') }}" class="flex items-center gap-1.5 text-sm text-slate-500 hover:text-indigo-600 mb-4">
-        <x-icon name="chevron-left" class="w-4 h-4" /> Back to Company Returns
+        <x-icon name="chevron-left" class="w-4 h-4" /> {{ __('Back to Company Returns') }}
     </a>
 
     <div class="bg-white rounded-xl shadow p-6 mb-6">
@@ -24,14 +24,14 @@
                         default => 'bg-slate-100 text-slate-600',
                     };
                 @endphp
-                <span class="px-3 py-1 rounded-full text-sm {{ $badge }}">{{ ucfirst($companyReturn->status) }}</span>
+                <span class="px-3 py-1 rounded-full text-sm {{ $badge }}">{{ __(ucfirst($companyReturn->status)) }}</span>
             </div>
         </div>
 
         @can('returns.manage')
             @if($companyReturn->status === 'draft')
                 <div class="mt-4">
-                    <button wire:click="send" wire:confirm="Mark this return as sent to the company?" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-lg font-medium">Send to Company</button>
+                    <button wire:click="send" wire:confirm="{{ __('Mark this return as sent to the company?') }}" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-lg font-medium">{{ __('Send to Company') }}</button>
                 </div>
             @endif
         @endcan
@@ -41,8 +41,8 @@
         <table class="w-full text-sm rtable">
             <thead class="bg-slate-50 text-slate-500 text-left">
                 <tr>
-                    <th class="px-4 py-3">Product</th>
-                    <th class="px-4 py-3">Quantity</th>
+                    <th class="px-4 py-3">{{ __('Product') }}</th>
+                    <th class="px-4 py-3">{{ __('Quantity') }}</th>
                 </tr>
             </thead>
             <tbody class="divide-y">

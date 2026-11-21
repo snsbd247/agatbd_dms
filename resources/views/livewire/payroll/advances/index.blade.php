@@ -9,21 +9,21 @@
     <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
         <div class="flex flex-wrap items-center gap-3">
             <select wire:model="filter_status" class="border rounded-lg px-3 py-2 text-sm bg-white w-full sm:w-auto">
-                <option value="">All Status</option>
-                <option value="outstanding">Outstanding</option>
-                <option value="deducted">Deducted</option>
+                <option value="">{{ __('All Status') }}</option>
+                <option value="outstanding">{{ __('Outstanding') }}</option>
+                <option value="deducted">{{ __('Deducted') }}</option>
             </select>
             <select wire:model="filter_representative_id" class="border rounded-lg px-3 py-2 text-sm bg-white w-full sm:w-auto">
-                <option value="">All Representatives</option>
+                <option value="">{{ __('All Representatives') }}</option>
                 @foreach($representatives as $representative)
                     <option value="{{ $representative->id }}">{{ $representative->name }}</option>
                 @endforeach
             </select>
-            <button wire:click="resetFilters" class="border rounded-lg px-4 py-2 text-sm text-slate-600 bg-white">Reset</button>
-            <button wire:click="applyFilters" class="bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg px-4 py-2 text-sm font-medium">Apply</button>
+            <button wire:click="resetFilters" class="border rounded-lg px-4 py-2 text-sm text-slate-600 bg-white">{{ __('Reset') }}</button>
+            <button wire:click="applyFilters" class="bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg px-4 py-2 text-sm font-medium">{{ __('Apply') }}</button>
         </div>
         @can('payroll.manage')
-            <button wire:click="create" class="bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-xl font-medium shrink-0">+ Record Advance</button>
+            <button wire:click="create" class="bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-xl font-medium shrink-0">{{ __('+ Record Advance') }}</button>
         @endcan
     </div>
 
@@ -32,12 +32,12 @@
             <thead class="bg-slate-50 text-slate-500 text-left">
                 <tr>
                     <th class="px-4 py-3 rtable-hide-mobile">#</th>
-                    <th class="px-4 py-3">Representative</th>
-                    <th class="px-4 py-3">Date</th>
-                    <th class="px-4 py-3">Amount</th>
-                    <th class="px-4 py-3">Reason</th>
-                    <th class="px-4 py-3">Status</th>
-                    <th class="px-4 py-3 text-right">Action</th>
+                    <th class="px-4 py-3">{{ __('Representative') }}</th>
+                    <th class="px-4 py-3">{{ __('Date') }}</th>
+                    <th class="px-4 py-3">{{ __('Amount') }}</th>
+                    <th class="px-4 py-3">{{ __('Reason') }}</th>
+                    <th class="px-4 py-3">{{ __('Status') }}</th>
+                    <th class="px-4 py-3 text-right">{{ __('Action') }}</th>
                 </tr>
             </thead>
             <tbody class="divide-y">
@@ -56,14 +56,14 @@
                         <td class="px-4 py-3 text-right">
                             @can('payroll.manage')
                                 @if(! $advance->deducted)
-                                    <x-icon-action wire:click="delete({{ $advance->id }})" wire:confirm="Delete this advance?" icon="trash" color="red" label="Delete" />
+                                    <x-icon-action wire:click="delete({{ $advance->id }})" wire:confirm="{{ __('Delete this advance?') }}" icon="trash" color="red" label="Delete" />
                                 @endif
                             @endcan
                         </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="7" class="px-4 py-8 text-center text-slate-400">No advances recorded.</td>
+                        <td colspan="7" class="px-4 py-8 text-center text-slate-400">{{ __('No advances recorded.') }}</td>
                     </tr>
                 @endforelse
             </tbody>
@@ -75,13 +75,13 @@
     @if($showModal)
         <div class="fixed inset-0 bg-black/40 flex items-end sm:items-center justify-center z-50">
             <div class="bg-white rounded-t-2xl sm:rounded-2xl p-6 w-full max-w-md shadow-2xl max-h-[90vh] overflow-y-auto">
-                <h2 class="text-lg font-semibold mb-4">Record Advance</h2>
+                <h2 class="text-lg font-semibold mb-4">{{ __('Record Advance') }}</h2>
 
                 <div class="space-y-3">
                     <div>
-                        <label class="text-sm text-slate-500">Representative</label>
+                        <label class="text-sm text-slate-500">{{ __('Representative') }}</label>
                         <select wire:model="form_representative_id" class="w-full border rounded-lg p-2 mt-1">
-                            <option value="">— Select —</option>
+                            <option value="">{{ __('— Select —') }}</option>
                             @foreach($representatives as $representative)
                                 <option value="{{ $representative->id }}">{{ $representative->name }}</option>
                             @endforeach
@@ -89,23 +89,23 @@
                         @error('form_representative_id') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
                     <div>
-                        <label class="text-sm text-slate-500">Amount</label>
+                        <label class="text-sm text-slate-500">{{ __('Amount') }}</label>
                         <input wire:model="amount" type="number" step="0.01" class="w-full border rounded-lg p-2 mt-1">
                         @error('amount') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
                     <div>
-                        <label class="text-sm text-slate-500">Date</label>
+                        <label class="text-sm text-slate-500">{{ __('Date') }}</label>
                         <input wire:model="advance_date" type="date" class="w-full border rounded-lg p-2 mt-1">
                     </div>
                     <div>
-                        <label class="text-sm text-slate-500">Reason</label>
+                        <label class="text-sm text-slate-500">{{ __('Reason') }}</label>
                         <input wire:model="reason" type="text" class="w-full border rounded-lg p-2 mt-1">
                     </div>
                 </div>
 
                 <div class="mt-6 flex justify-end gap-2">
-                    <button wire:click="$set('showModal', false)" class="px-4 py-2 rounded-lg text-slate-600">Cancel</button>
-                    <button wire:click="save" class="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-medium">Save</button>
+                    <button wire:click="$set('showModal', false)" class="px-4 py-2 rounded-lg text-slate-600">{{ __('Cancel') }}</button>
+                    <button wire:click="save" class="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-medium">{{ __('Save') }}</button>
                 </div>
             </div>
         </div>

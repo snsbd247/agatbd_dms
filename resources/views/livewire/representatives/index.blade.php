@@ -7,7 +7,7 @@
         <div class="col-span-3 sm:col-span-2 xl:col-span-1 flex items-center justify-end">
             @can('representatives.manage')
                 <button wire:click="create" class="w-full xl:w-auto bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-3 rounded-xl font-medium">
-                    + New Representative
+                    {{ __('+ New Representative') }}
                 </button>
             @endcan
         </div>
@@ -15,45 +15,45 @@
 
     <div class="sm:hidden mb-4" x-data="{ filtersOpen: false }">
         <div class="flex items-center gap-2">
-            <input wire:model="search" type="text" placeholder="Search by name or employee code..." class="border rounded-lg px-3 py-2 text-sm flex-1">
+            <input wire:model="search" type="text" placeholder="{{ __('Search by name or employee code...') }}" class="border rounded-lg px-3 py-2 text-sm flex-1">
             <button type="button" @click="filtersOpen = !filtersOpen" class="w-10 h-10 border rounded-lg bg-white flex items-center justify-center text-slate-500 shrink-0">
                 <x-icon name="filter" class="w-4 h-4" />
             </button>
         </div>
         <div x-show="filtersOpen" x-cloak class="flex flex-col gap-2 mt-2">
             <select wire:model="filter_status" class="border rounded-lg px-3 py-2 text-sm bg-white w-full">
-                <option value="">All Status</option>
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
+                <option value="">{{ __('All Status') }}</option>
+                <option value="active">{{ __('Active') }}</option>
+                <option value="inactive">{{ __('Inactive') }}</option>
             </select>
             <select wire:model="filter_area_id" class="border rounded-lg px-3 py-2 text-sm bg-white w-full">
-                <option value="">All Areas</option>
+                <option value="">{{ __('All Areas') }}</option>
                 @foreach($areas as $area)
                     <option value="{{ $area->id }}">{{ $area->name }}</option>
                 @endforeach
             </select>
             <div class="flex gap-2">
-                <button wire:click="resetFilters" class="flex-1 border rounded-lg px-4 py-2 text-sm text-slate-600 bg-white">Reset</button>
-                <button wire:click="applyFilters" class="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg px-4 py-2 text-sm font-medium">Apply</button>
+                <button wire:click="resetFilters" class="flex-1 border rounded-lg px-4 py-2 text-sm text-slate-600 bg-white">{{ __('Reset') }}</button>
+                <button wire:click="applyFilters" class="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg px-4 py-2 text-sm font-medium">{{ __('Apply') }}</button>
             </div>
         </div>
     </div>
 
     <div class="hidden sm:flex flex-wrap items-center gap-3 mb-4">
         <select wire:model="filter_status" class="border rounded-lg px-3 py-2 text-sm bg-white w-full sm:w-auto">
-            <option value="">All Status</option>
-            <option value="active">Active</option>
-            <option value="inactive">Inactive</option>
+            <option value="">{{ __('All Status') }}</option>
+            <option value="active">{{ __('Active') }}</option>
+            <option value="inactive">{{ __('Inactive') }}</option>
         </select>
         <select wire:model="filter_area_id" class="border rounded-lg px-3 py-2 text-sm bg-white w-full sm:w-auto">
-            <option value="">All Areas</option>
+            <option value="">{{ __('All Areas') }}</option>
             @foreach($areas as $area)
                 <option value="{{ $area->id }}">{{ $area->name }}</option>
             @endforeach
         </select>
-        <input wire:model="search" type="text" placeholder="Search by name or employee code..." class="border rounded-lg px-3 py-2 text-sm flex-1 min-w-[200px]">
-        <button wire:click="resetFilters" class="border rounded-lg px-4 py-2 text-sm text-slate-600 bg-white">Reset</button>
-        <button wire:click="applyFilters" class="bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg px-4 py-2 text-sm font-medium">Apply</button>
+        <input wire:model="search" type="text" placeholder="{{ __('Search by name or employee code...') }}" class="border rounded-lg px-3 py-2 text-sm flex-1 min-w-[200px]">
+        <button wire:click="resetFilters" class="border rounded-lg px-4 py-2 text-sm text-slate-600 bg-white">{{ __('Reset') }}</button>
+        <button wire:click="applyFilters" class="bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg px-4 py-2 text-sm font-medium">{{ __('Apply') }}</button>
     </div>
 
     <div class="bg-white rounded-xl shadow overflow-hidden overflow-x-auto">
@@ -61,13 +61,13 @@
             <thead class="bg-slate-50 text-slate-500 text-left">
                 <tr>
                     <th class="px-4 py-3 rtable-hide-mobile">#</th>
-                    <th class="px-4 py-3">Name</th>
-                    <th class="px-4 py-3">Employee Code</th>
-                    <th class="px-4 py-3">Area</th>
-                    <th class="px-4 py-3">Commission</th>
-                    <th class="px-4 py-3">Target</th>
-                    <th class="px-4 py-3">Status</th>
-                    <th class="px-4 py-3 text-right">Action</th>
+                    <th class="px-4 py-3">{{ __('Name') }}</th>
+                    <th class="px-4 py-3">{{ __('Employee Code') }}</th>
+                    <th class="px-4 py-3">{{ __('Area') }}</th>
+                    <th class="px-4 py-3">{{ __('Commission') }}</th>
+                    <th class="px-4 py-3">{{ __('Target') }}</th>
+                    <th class="px-4 py-3">{{ __('Status') }}</th>
+                    <th class="px-4 py-3 text-right">{{ __('Action') }}</th>
                 </tr>
             </thead>
             <tbody class="divide-y">
@@ -103,14 +103,14 @@
                                 </a>
                                 @can('representatives.manage')
                                     <x-icon-action wire:click="edit({{ $representative->id }})" icon="pencil" color="amber" label="Edit" />
-                                    <x-icon-action wire:click="delete({{ $representative->id }})" wire:confirm="Delete this representative?" icon="trash" color="red" label="Delete" />
+                                    <x-icon-action wire:click="delete({{ $representative->id }})" wire:confirm="{{ __('Delete this representative?') }}" icon="trash" color="red" label="Delete" />
                                 @endcan
                             </div>
                         </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="8" class="px-4 py-8 text-center text-slate-400">No representatives found.</td>
+                        <td colspan="8" class="px-4 py-8 text-center text-slate-400">{{ __('No representatives found.') }}</td>
                     </tr>
                 @endforelse
             </tbody>
@@ -126,45 +126,45 @@
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                        <label class="text-sm text-slate-500">Name</label>
+                        <label class="text-sm text-slate-500">{{ __('Name') }}</label>
                         <input wire:model="name" type="text" class="w-full border rounded-lg p-2 mt-1">
                         @error('name') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
                     <div>
-                        <label class="text-sm text-slate-500">Employee Code</label>
+                        <label class="text-sm text-slate-500">{{ __('Employee Code') }}</label>
                         <input wire:model="employee_code" type="text" class="w-full border rounded-lg p-2 mt-1">
                         @error('employee_code') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
                     <div>
-                        <label class="text-sm text-slate-500">Phone</label>
+                        <label class="text-sm text-slate-500">{{ __('Phone') }}</label>
                         <input wire:model="phone" type="text" class="w-full border rounded-lg p-2 mt-1">
                     </div>
                     <div>
-                        <label class="text-sm text-slate-500">Area</label>
+                        <label class="text-sm text-slate-500">{{ __('Area') }}</label>
                         <select wire:model="form_area_id" class="w-full border rounded-lg p-2 mt-1">
-                            <option value="">— Select —</option>
+                            <option value="">{{ __('— Select —') }}</option>
                             @foreach($areas as $area)
                                 <option value="{{ $area->id }}">{{ $area->name }}</option>
                             @endforeach
                         </select>
                     </div>
                     <div>
-                        <label class="text-sm text-slate-500">Base Salary</label>
+                        <label class="text-sm text-slate-500">{{ __('Base Salary') }}</label>
                         <input wire:model="salary_base" type="number" step="0.01" class="w-full border rounded-lg p-2 mt-1">
                         @error('salary_base') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
                     <div>
-                        <label class="text-sm text-slate-500">Commission Rate (%)</label>
+                        <label class="text-sm text-slate-500">{{ __('Commission Rate (%)') }}</label>
                         <input wire:model="commission_rate" type="number" step="0.01" class="w-full border rounded-lg p-2 mt-1">
                         @error('commission_rate') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
                     <div>
-                        <label class="text-sm text-slate-500">Monthly Target</label>
+                        <label class="text-sm text-slate-500">{{ __('Monthly Target') }}</label>
                         <input wire:model="target_amount" type="number" step="0.01" class="w-full border rounded-lg p-2 mt-1">
                         @error('target_amount') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
                     <label class="flex items-center gap-2 text-sm mt-6">
-                        <input wire:model="active" type="checkbox" class="rounded"> Active
+                        <input wire:model="active" type="checkbox" class="rounded"> {{ __('Active') }}
                     </label>
                 </div>
 
@@ -173,17 +173,17 @@
                         <p class="text-sm text-slate-500">Login: {{ $linkedEmail ?? 'None linked' }}</p>
                     @else
                         <label class="flex items-center gap-2 text-sm">
-                            <input wire:model.live="create_login" type="checkbox" class="rounded"> Create a login for this representative
+                            <input wire:model.live="create_login" type="checkbox" class="rounded"> {{ __('Create a login for this representative') }}
                         </label>
                         @if($create_login)
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
                                 <div>
-                                    <label class="text-sm text-slate-500">Login Email</label>
+                                    <label class="text-sm text-slate-500">{{ __('Login Email') }}</label>
                                     <input wire:model="login_email" type="email" class="w-full border rounded-lg p-2 mt-1">
                                     @error('login_email') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
                                 </div>
                                 <div>
-                                    <label class="text-sm text-slate-500">Login Password</label>
+                                    <label class="text-sm text-slate-500">{{ __('Login Password') }}</label>
                                     <input wire:model="login_password" type="password" class="w-full border rounded-lg p-2 mt-1">
                                     @error('login_password') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
                                 </div>
@@ -193,8 +193,8 @@
                 </div>
 
                 <div class="mt-6 flex justify-end gap-2">
-                    <button wire:click="$set('showModal', false)" class="px-4 py-2 rounded-lg text-slate-600">Cancel</button>
-                    <button wire:click="save" class="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-medium">Save</button>
+                    <button wire:click="$set('showModal', false)" class="px-4 py-2 rounded-lg text-slate-600">{{ __('Cancel') }}</button>
+                    <button wire:click="save" class="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-medium">{{ __('Save') }}</button>
                 </div>
             </div>
         </div>

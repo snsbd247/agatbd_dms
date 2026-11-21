@@ -12,41 +12,41 @@
                 type="button"
                 wire:click="setStatusFilter('{{ $value }}')"
                 class="px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap shrink-0 {{ $filter_status === $value ? 'bg-indigo-600 text-white' : 'bg-white text-slate-600 border' }}"
-            >{{ $label }}</button>
+            >{{ __($label) }}</button>
         @endforeach
     </div>
 
     <div class="sm:hidden mb-4" x-data="{ filtersOpen: false }">
         <div class="flex items-center gap-2">
-            <input wire:model="search" type="text" placeholder="Search by number..." class="border rounded-lg px-3 py-2 text-sm flex-1">
+            <input wire:model="search" type="text" placeholder="{{ __('Search by number...') }}" class="border rounded-lg px-3 py-2 text-sm flex-1">
             <button type="button" @click="filtersOpen = !filtersOpen" class="w-10 h-10 border rounded-lg bg-white flex items-center justify-center text-slate-500 shrink-0">
                 <x-icon name="filter" class="w-4 h-4" />
             </button>
         </div>
         <div x-show="filtersOpen" x-cloak class="flex flex-col gap-2 mt-2">
             <select wire:model="filter_warehouse_id" class="border rounded-lg px-3 py-2 text-sm bg-white w-full">
-                <option value="">All Warehouses</option>
+                <option value="">{{ __('All Warehouses') }}</option>
                 @foreach($warehouses as $warehouse)
                     <option value="{{ $warehouse->id }}">{{ $warehouse->name }}</option>
                 @endforeach
             </select>
             <div class="flex gap-2">
-                <button wire:click="resetFilters" class="flex-1 border rounded-lg px-4 py-2 text-sm text-slate-600 bg-white">Reset</button>
-                <button wire:click="applyFilters" class="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg px-4 py-2 text-sm font-medium">Apply</button>
+                <button wire:click="resetFilters" class="flex-1 border rounded-lg px-4 py-2 text-sm text-slate-600 bg-white">{{ __('Reset') }}</button>
+                <button wire:click="applyFilters" class="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg px-4 py-2 text-sm font-medium">{{ __('Apply') }}</button>
             </div>
         </div>
     </div>
 
     <div class="hidden sm:flex flex-wrap items-center gap-3 mb-4">
         <select wire:model="filter_warehouse_id" class="border rounded-lg px-3 py-2 text-sm bg-white w-full sm:w-auto">
-            <option value="">All Warehouses</option>
+            <option value="">{{ __('All Warehouses') }}</option>
             @foreach($warehouses as $warehouse)
                 <option value="{{ $warehouse->id }}">{{ $warehouse->name }}</option>
             @endforeach
         </select>
-        <input wire:model="search" type="text" placeholder="Search by number..." class="border rounded-lg px-3 py-2 text-sm w-full sm:w-auto sm:min-w-[200px]">
-        <button wire:click="resetFilters" class="border rounded-lg px-4 py-2 text-sm text-slate-600 bg-white">Reset</button>
-        <button wire:click="applyFilters" class="bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg px-4 py-2 text-sm font-medium">Apply</button>
+        <input wire:model="search" type="text" placeholder="{{ __('Search by number...') }}" class="border rounded-lg px-3 py-2 text-sm w-full sm:w-auto sm:min-w-[200px]">
+        <button wire:click="resetFilters" class="border rounded-lg px-4 py-2 text-sm text-slate-600 bg-white">{{ __('Reset') }}</button>
+        <button wire:click="applyFilters" class="bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg px-4 py-2 text-sm font-medium">{{ __('Apply') }}</button>
     </div>
 
     <div class="bg-white rounded-xl shadow overflow-hidden overflow-x-auto">
@@ -54,11 +54,11 @@
             <thead class="bg-slate-50 text-slate-500 text-left">
                 <tr>
                     <th class="px-4 py-3 rtable-hide-mobile">#</th>
-                    <th class="px-4 py-3 rtable-hide-mobile">Number</th>
-                    <th class="px-4 py-3 rtable-hide-mobile">Date</th>
-                    <th class="px-4 py-3 rtable-hide-mobile">Warehouse</th>
-                    <th class="px-4 py-3">Purchase Order</th>
-                    <th class="px-4 py-3 rtable-hide-mobile">Total</th>
+                    <th class="px-4 py-3 rtable-hide-mobile">{{ __('Number') }}</th>
+                    <th class="px-4 py-3 rtable-hide-mobile">{{ __('Date') }}</th>
+                    <th class="px-4 py-3 rtable-hide-mobile">{{ __('Warehouse') }}</th>
+                    <th class="px-4 py-3">{{ __('Purchase Order') }}</th>
+                    <th class="px-4 py-3 rtable-hide-mobile">{{ __('Total') }}</th>
                 </tr>
             </thead>
             <tbody class="divide-y">
@@ -74,7 +74,7 @@
                                         'bg-amber-100 text-amber-700' => $receipt->purchaseOrder->status === 'partial',
                                         'bg-green-100 text-green-700' => $receipt->purchaseOrder->status === 'completed',
                                         'bg-slate-100 text-slate-600' => ! in_array($receipt->purchaseOrder->status, ['partial', 'completed']),
-                                    ])>{{ ucfirst($receipt->purchaseOrder->status) }}</span>
+                                    ])>{{ __(ucfirst($receipt->purchaseOrder->status)) }}</span>
                                 @endif
                             </div>
                             <p class="w-full text-xs text-slate-500 mt-0.5">{{ $receipt->warehouse?->name }}</p>
@@ -97,7 +97,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6" class="px-4 py-8 text-center text-slate-400">No goods receipts yet.</td>
+                        <td colspan="6" class="px-4 py-8 text-center text-slate-400">{{ __('No goods receipts yet.') }}</td>
                     </tr>
                 @endforelse
             </tbody>

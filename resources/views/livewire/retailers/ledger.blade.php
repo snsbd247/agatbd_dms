@@ -1,6 +1,6 @@
 <div class="max-w-4xl">
     <a href="{{ route('retailers.show', $retailer) }}" class="flex items-center gap-1.5 text-sm text-slate-500 hover:text-indigo-600 mb-4">
-        <x-icon name="chevron-left" class="w-4 h-4" /> Back to {{ $retailer->name }}
+        <x-icon name="chevron-left" class="w-4 h-4" /> {{ __('Back to :v', ['v' => $retailer->name]) }}
     </a>
 
     <div class="bg-white rounded-xl shadow p-6 mb-6">
@@ -15,9 +15,9 @@
                 </div>
             </div>
             <div class="text-right shrink-0">
-                <p class="text-slate-500 text-sm">Credit Limit</p>
+                <p class="text-slate-500 text-sm">{{ __('Credit Limit') }}</p>
                 <p class="text-lg font-semibold">৳ {{ number_format($retailer->credit_limit, 2) }}</p>
-                <p class="text-slate-500 text-sm mt-2">Current Due</p>
+                <p class="text-slate-500 text-sm mt-2">{{ __('Current Due') }}</p>
                 <p class="text-2xl font-bold {{ $retailer->current_due > 0 ? 'text-red-600' : 'text-green-600' }}">৳ {{ number_format($retailer->current_due, 2) }}</p>
             </div>
         </div>
@@ -27,12 +27,12 @@
         <table class="w-full text-sm rtable">
             <thead class="bg-slate-50 text-slate-500 text-left">
                 <tr>
-                    <th class="px-4 py-3">Date</th>
-                    <th class="px-4 py-3">Type</th>
-                    <th class="px-4 py-3">Reference</th>
-                    <th class="px-4 py-3">Debit</th>
-                    <th class="px-4 py-3">Credit</th>
-                    <th class="px-4 py-3">Balance</th>
+                    <th class="px-4 py-3">{{ __('Date') }}</th>
+                    <th class="px-4 py-3">{{ __('Type') }}</th>
+                    <th class="px-4 py-3">{{ __('Reference') }}</th>
+                    <th class="px-4 py-3">{{ __('Debit') }}</th>
+                    <th class="px-4 py-3">{{ __('Credit') }}</th>
+                    <th class="px-4 py-3">{{ __('Balance') }}</th>
                 </tr>
             </thead>
             <tbody class="divide-y">
@@ -47,7 +47,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6" class="px-4 py-8 text-center text-slate-400">No ledger entries yet.</td>
+                        <td colspan="6" class="px-4 py-8 text-center text-slate-400">{{ __('No ledger entries yet.') }}</td>
                     </tr>
                 @endforelse
             </tbody>

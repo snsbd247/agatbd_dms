@@ -10,7 +10,7 @@
 
 <div class="max-w-4xl">
     <a href="{{ route('delivery.invoices.index') }}" class="flex items-center gap-1.5 text-sm text-slate-500 hover:text-indigo-600 mb-4">
-        <x-icon name="chevron-left" class="w-4 h-4" /> Back to Delivery Invoices
+        <x-icon name="chevron-left" class="w-4 h-4" /> {{ __('Back to Delivery Invoices') }}
     </a>
 
     <div class="bg-white rounded-xl shadow p-6 mb-6">
@@ -22,39 +22,39 @@
                 <div class="min-w-0">
                     <h2 class="text-2xl font-bold break-words">{{ $invoice->number }}</h2>
                     <p class="text-slate-500 mt-1">{{ $invoice->retailer?->name }}@if($invoice->retailer?->shop_name) &middot; {{ $invoice->retailer->shop_name }}@endif</p>
-                    <p class="text-slate-500">Invoice date {{ $invoice->invoice_date->format('d M Y') }}</p>
+                    <p class="text-slate-500">{{ __('Invoice date :v', ['v' => $invoice->invoice_date->format('d M Y')]) }}</p>
                 </div>
             </div>
             <div class="text-right shrink-0">
-                <span class="px-3 py-1 rounded-full text-sm {{ $badge }}">{{ ucfirst($invoice->status) }}</span>
+                <span class="px-3 py-1 rounded-full text-sm {{ $badge }}">{{ __(ucfirst($invoice->status)) }}</span>
                 <p class="text-2xl font-bold mt-2">৳ {{ number_format($invoice->grand_total, 2) }}</p>
             </div>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6 text-sm">
             <div>
-                <p class="text-slate-400 text-xs">Sales Order</p>
+                <p class="text-slate-400 text-xs">{{ __('Sales Order') }}</p>
                 @if($invoice->salesOrder)
                     <a href="{{ route('sales.orders.show', $invoice->salesOrder) }}" class="text-indigo-600 hover:underline font-medium">{{ $invoice->salesOrder->number }}</a>
                 @endif
             </div>
             <div>
-                <p class="text-slate-400 text-xs">Delivery Note</p>
+                <p class="text-slate-400 text-xs">{{ __('Delivery Note') }}</p>
                 <p class="font-medium">{{ $invoice->deliveryNote?->number }}</p>
             </div>
             <div>
-                <p class="text-slate-400 text-xs">Delivery Date</p>
+                <p class="text-slate-400 text-xs">{{ __('Delivery Date') }}</p>
                 <p class="font-medium">{{ $invoice->deliveryNote?->delivery_date?->format('d M Y') }}</p>
             </div>
         </div>
 
         <div class="mt-6 flex flex-wrap gap-2">
             <a href="{{ route('delivery.invoices.print', $invoice) }}" target="_blank" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-lg font-medium flex items-center gap-2">
-                <x-icon name="printer" class="w-4 h-4" /> Print PDF
+                <x-icon name="printer" class="w-4 h-4" /> {{ __('Print PDF') }}
             </a>
             @can('delivery.manage')
                 @if($invoice->status === 'pending')
-                    <button wire:click="finalizeInvoice" class="border border-blue-200 text-blue-700 hover:bg-blue-50 px-4 py-2 rounded-lg font-medium">Finalize</button>
+                    <button wire:click="finalizeInvoice" class="border border-blue-200 text-blue-700 hover:bg-blue-50 px-4 py-2 rounded-lg font-medium">{{ __('Finalize') }}</button>
                 @endif
             @endcan
         </div>
@@ -64,11 +64,11 @@
         <table class="w-full text-sm rtable">
             <thead class="bg-slate-50 text-slate-500 text-left">
                 <tr>
-                    <th class="px-4 py-3">Product</th>
-                    <th class="px-4 py-3">Batch</th>
-                    <th class="px-4 py-3 text-right">Quantity</th>
-                    <th class="px-4 py-3 text-right">Unit Price</th>
-                    <th class="px-4 py-3 text-right">Total</th>
+                    <th class="px-4 py-3">{{ __('Product') }}</th>
+                    <th class="px-4 py-3">{{ __('Batch') }}</th>
+                    <th class="px-4 py-3 text-right">{{ __('Quantity') }}</th>
+                    <th class="px-4 py-3 text-right">{{ __('Unit Price') }}</th>
+                    <th class="px-4 py-3 text-right">{{ __('Total') }}</th>
                 </tr>
             </thead>
             <tbody class="divide-y">
@@ -84,9 +84,9 @@
             </tbody>
         </table>
         <div class="border-t px-4 py-4 text-sm space-y-1 sm:w-72 sm:ml-auto">
-            <div class="flex justify-between"><span class="text-slate-500">Subtotal</span><span>৳ {{ number_format($invoice->subtotal, 2) }}</span></div>
-            <div class="flex justify-between"><span class="text-slate-500">Discount</span><span>৳ {{ number_format($invoice->discount, 2) }}</span></div>
-            <div class="flex justify-between font-bold text-base pt-1 border-t"><span>Grand Total</span><span>৳ {{ number_format($invoice->grand_total, 2) }}</span></div>
+            <div class="flex justify-between"><span class="text-slate-500">{{ __('Subtotal') }}</span><span>৳ {{ number_format($invoice->subtotal, 2) }}</span></div>
+            <div class="flex justify-between"><span class="text-slate-500">{{ __('Discount') }}</span><span>৳ {{ number_format($invoice->discount, 2) }}</span></div>
+            <div class="flex justify-between font-bold text-base pt-1 border-t"><span>{{ __('Grand Total') }}</span><span>৳ {{ number_format($invoice->grand_total, 2) }}</span></div>
         </div>
     </div>
 </div>

@@ -16,7 +16,7 @@
                 ])>
                     <x-icon :name="$item['icon']" class="w-6 h-6" />
                 </div>
-                <p class="text-xs font-medium text-slate-700 leading-tight">{{ $item['title'] }}</p>
+                <p class="text-xs font-medium text-slate-700 leading-tight">{{ __($item['title']) }}</p>
             </a>
         @endforeach
         <a href="mailto:support@syncsolutionbd.com" class="flex flex-col items-center text-center gap-2">
@@ -30,7 +30,7 @@
     <form method="post" action="{{ route('logout') }}" class="mt-6">
         @csrf
         <button class="w-full flex items-center justify-center gap-2 bg-red-50 hover:bg-red-100 text-red-600 font-medium rounded-xl py-3">
-            <x-icon name="logout" class="w-5 h-5" /> Logout
+            <x-icon name="logout" class="w-5 h-5" /> {{ __('Logout') }}
         </button>
     </form>
 </div>

@@ -107,6 +107,7 @@ Route::middleware('guest')->group(function () {
 // Site root: logged-in users go to their dashboard, everyone else to the login page.
 // (public/.htaccess also sends a bare "/dms/" to /login so route caching works under a sub-folder.)
 Route::get('/', [AuthController::class, 'home'])->name('home');
+Route::post('/locale/{locale}', \App\Http\Controllers\LocaleController::class)->name('locale.switch');
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', DashboardController::class)->name('dashboard');

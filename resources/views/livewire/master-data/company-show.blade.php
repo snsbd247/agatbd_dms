@@ -1,7 +1,7 @@
 <div x-data="{ tab: 'products' }">
     <div class="flex items-center justify-between mb-4">
         <a href="{{ route('master-data.companies') }}" class="flex items-center gap-1.5 text-sm text-slate-500 hover:text-indigo-600">
-            <x-icon name="chevron-left" class="w-4 h-4" /> Back to Companies
+            <x-icon name="chevron-left" class="w-4 h-4" /> {{ __('Back to Companies') }}
         </a>
     </div>
 
@@ -14,7 +14,7 @@
                 <div class="min-w-0">
                     <h1 class="text-xl font-bold truncate">{{ $company->name }}</h1>
                     <p class="text-slate-500 text-sm">{{ $company->code }}</p>
-                    <p class="text-slate-400 text-xs mt-1">Joined {{ $company->created_at->format('d M Y') }}</p>
+                    <p class="text-slate-400 text-xs mt-1">{{ __('Joined :v', ['v' => $company->created_at->format('d M Y')]) }}</p>
                 </div>
             </div>
             <span class="px-2.5 py-1 rounded-full text-xs font-medium self-start {{ $company->active ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }}">
@@ -23,15 +23,15 @@
         </div>
         <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-5 pt-5 border-t text-sm">
             <div>
-                <p class="text-slate-500">Phone</p>
+                <p class="text-slate-500">{{ __('Phone') }}</p>
                 <p class="font-medium mt-0.5">{{ $company->phone ?? '—' }}</p>
             </div>
             <div>
-                <p class="text-slate-500">Email</p>
+                <p class="text-slate-500">{{ __('Email') }}</p>
                 <p class="font-medium mt-0.5">{{ $company->email ?? '—' }}</p>
             </div>
             <div>
-                <p class="text-slate-500">Address</p>
+                <p class="text-slate-500">{{ __('Address') }}</p>
                 <p class="font-medium mt-0.5">{{ $company->address ?? '—' }}</p>
             </div>
         </div>
@@ -47,22 +47,22 @@
 
     <div class="bg-white rounded-xl shadow overflow-hidden">
         <div class="flex overflow-x-auto border-b">
-            <button type="button" @click="tab = 'products'" :class="tab === 'products' ? 'text-indigo-600 border-indigo-600' : 'text-slate-500 border-transparent'" class="px-4 py-3 text-sm font-medium border-b-2 shrink-0 whitespace-nowrap">Products</button>
-            <button type="button" @click="tab = 'brands'" :class="tab === 'brands' ? 'text-indigo-600 border-indigo-600' : 'text-slate-500 border-transparent'" class="px-4 py-3 text-sm font-medium border-b-2 shrink-0 whitespace-nowrap">Brands</button>
-            <button type="button" @click="tab = 'orders'" :class="tab === 'orders' ? 'text-indigo-600 border-indigo-600' : 'text-slate-500 border-transparent'" class="px-4 py-3 text-sm font-medium border-b-2 shrink-0 whitespace-nowrap">Purchase Orders</button>
-            <button type="button" @click="tab = 'receipts'" :class="tab === 'receipts' ? 'text-indigo-600 border-indigo-600' : 'text-slate-500 border-transparent'" class="px-4 py-3 text-sm font-medium border-b-2 shrink-0 whitespace-nowrap">Goods Receipts</button>
-            <button type="button" @click="tab = 'returns'" :class="tab === 'returns' ? 'text-indigo-600 border-indigo-600' : 'text-slate-500 border-transparent'" class="px-4 py-3 text-sm font-medium border-b-2 shrink-0 whitespace-nowrap">Purchase Returns</button>
+            <button type="button" @click="tab = 'products'" :class="tab === 'products' ? 'text-indigo-600 border-indigo-600' : 'text-slate-500 border-transparent'" class="px-4 py-3 text-sm font-medium border-b-2 shrink-0 whitespace-nowrap">{{ __('Products') }}</button>
+            <button type="button" @click="tab = 'brands'" :class="tab === 'brands' ? 'text-indigo-600 border-indigo-600' : 'text-slate-500 border-transparent'" class="px-4 py-3 text-sm font-medium border-b-2 shrink-0 whitespace-nowrap">{{ __('Brands') }}</button>
+            <button type="button" @click="tab = 'orders'" :class="tab === 'orders' ? 'text-indigo-600 border-indigo-600' : 'text-slate-500 border-transparent'" class="px-4 py-3 text-sm font-medium border-b-2 shrink-0 whitespace-nowrap">{{ __('Purchase Orders') }}</button>
+            <button type="button" @click="tab = 'receipts'" :class="tab === 'receipts' ? 'text-indigo-600 border-indigo-600' : 'text-slate-500 border-transparent'" class="px-4 py-3 text-sm font-medium border-b-2 shrink-0 whitespace-nowrap">{{ __('Goods Receipts') }}</button>
+            <button type="button" @click="tab = 'returns'" :class="tab === 'returns' ? 'text-indigo-600 border-indigo-600' : 'text-slate-500 border-transparent'" class="px-4 py-3 text-sm font-medium border-b-2 shrink-0 whitespace-nowrap">{{ __('Purchase Returns') }}</button>
         </div>
 
         <div x-show="tab === 'products'" class="overflow-x-auto">
             <table class="w-full text-sm rtable">
                 <thead class="bg-slate-50 text-slate-500 text-left">
                     <tr>
-                        <th class="px-4 py-3">Name</th>
-                        <th class="px-4 py-3">SKU</th>
-                        <th class="px-4 py-3">Category</th>
-                        <th class="px-4 py-3">Price</th>
-                        <th class="px-4 py-3">Status</th>
+                        <th class="px-4 py-3">{{ __('Name') }}</th>
+                        <th class="px-4 py-3">{{ __('SKU') }}</th>
+                        <th class="px-4 py-3">{{ __('Category') }}</th>
+                        <th class="px-4 py-3">{{ __('Price') }}</th>
+                        <th class="px-4 py-3">{{ __('Status') }}</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y">
@@ -77,7 +77,7 @@
                             </td>
                         </tr>
                     @empty
-                        <tr><td colspan="5" class="px-4 py-8 text-center text-slate-400">No products yet.</td></tr>
+                        <tr><td colspan="5" class="px-4 py-8 text-center text-slate-400">{{ __('No products yet.') }}</td></tr>
                     @endforelse
                 </tbody>
             </table>
@@ -87,10 +87,10 @@
             <table class="w-full text-sm rtable">
                 <thead class="bg-slate-50 text-slate-500 text-left">
                     <tr>
-                        <th class="px-4 py-3">Name</th>
-                        <th class="px-4 py-3">Code</th>
-                        <th class="px-4 py-3">Products</th>
-                        <th class="px-4 py-3">Status</th>
+                        <th class="px-4 py-3">{{ __('Name') }}</th>
+                        <th class="px-4 py-3">{{ __('Code') }}</th>
+                        <th class="px-4 py-3">{{ __('Products') }}</th>
+                        <th class="px-4 py-3">{{ __('Status') }}</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y">
@@ -104,7 +104,7 @@
                             </td>
                         </tr>
                     @empty
-                        <tr><td colspan="4" class="px-4 py-8 text-center text-slate-400">No brands yet.</td></tr>
+                        <tr><td colspan="4" class="px-4 py-8 text-center text-slate-400">{{ __('No brands yet.') }}</td></tr>
                     @endforelse
                 </tbody>
             </table>
@@ -114,12 +114,12 @@
             <table class="w-full text-sm rtable">
                 <thead class="bg-slate-50 text-slate-500 text-left">
                     <tr>
-                        <th class="px-4 py-3">Number</th>
-                        <th class="px-4 py-3">Warehouse</th>
-                        <th class="px-4 py-3">Date</th>
-                        <th class="px-4 py-3">Total</th>
-                        <th class="px-4 py-3">Status</th>
-                        <th class="px-4 py-3 text-right">Action</th>
+                        <th class="px-4 py-3">{{ __('Number') }}</th>
+                        <th class="px-4 py-3">{{ __('Warehouse') }}</th>
+                        <th class="px-4 py-3">{{ __('Date') }}</th>
+                        <th class="px-4 py-3">{{ __('Total') }}</th>
+                        <th class="px-4 py-3">{{ __('Status') }}</th>
+                        <th class="px-4 py-3 text-right">{{ __('Action') }}</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y">
@@ -137,14 +137,14 @@
                                     'bg-amber-100 text-amber-700' => $order->status === 'partial',
                                     'bg-green-100 text-green-700' => $order->status === 'completed',
                                     'bg-red-100 text-red-700' => $order->status === 'cancelled',
-                                ])>{{ ucfirst($order->status) }}</span>
+                                ])>{{ __(ucfirst($order->status)) }}</span>
                             </td>
                             <td class="px-4 py-3 text-right">
                                 <a href="{{ route('purchase.orders.show', $order) }}"><x-icon-action icon="eye" color="blue" label="View" /></a>
                             </td>
                         </tr>
                     @empty
-                        <tr><td colspan="6" class="px-4 py-8 text-center text-slate-400">No purchase orders yet.</td></tr>
+                        <tr><td colspan="6" class="px-4 py-8 text-center text-slate-400">{{ __('No purchase orders yet.') }}</td></tr>
                     @endforelse
                 </tbody>
             </table>
@@ -154,11 +154,11 @@
             <table class="w-full text-sm rtable">
                 <thead class="bg-slate-50 text-slate-500 text-left">
                     <tr>
-                        <th class="px-4 py-3">Number</th>
-                        <th class="px-4 py-3">Purchase Order</th>
-                        <th class="px-4 py-3">Warehouse</th>
-                        <th class="px-4 py-3">Date</th>
-                        <th class="px-4 py-3">Total</th>
+                        <th class="px-4 py-3">{{ __('Number') }}</th>
+                        <th class="px-4 py-3">{{ __('Purchase Order') }}</th>
+                        <th class="px-4 py-3">{{ __('Warehouse') }}</th>
+                        <th class="px-4 py-3">{{ __('Date') }}</th>
+                        <th class="px-4 py-3">{{ __('Total') }}</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y">
@@ -177,7 +177,7 @@
                             <td class="px-4 py-3" data-label="Total">৳ {{ number_format($receipt->total_amount, 2) }}</td>
                         </tr>
                     @empty
-                        <tr><td colspan="5" class="px-4 py-8 text-center text-slate-400">No goods receipts yet.</td></tr>
+                        <tr><td colspan="5" class="px-4 py-8 text-center text-slate-400">{{ __('No goods receipts yet.') }}</td></tr>
                     @endforelse
                 </tbody>
             </table>
@@ -187,12 +187,12 @@
             <table class="w-full text-sm rtable">
                 <thead class="bg-slate-50 text-slate-500 text-left">
                     <tr>
-                        <th class="px-4 py-3">Number</th>
-                        <th class="px-4 py-3">Warehouse</th>
-                        <th class="px-4 py-3">Date</th>
-                        <th class="px-4 py-3">Total</th>
-                        <th class="px-4 py-3">Status</th>
-                        <th class="px-4 py-3 text-right">Action</th>
+                        <th class="px-4 py-3">{{ __('Number') }}</th>
+                        <th class="px-4 py-3">{{ __('Warehouse') }}</th>
+                        <th class="px-4 py-3">{{ __('Date') }}</th>
+                        <th class="px-4 py-3">{{ __('Total') }}</th>
+                        <th class="px-4 py-3">{{ __('Status') }}</th>
+                        <th class="px-4 py-3 text-right">{{ __('Action') }}</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y">
@@ -208,19 +208,19 @@
                                     'bg-slate-100 text-slate-600' => $return->status === 'draft',
                                     'bg-blue-100 text-blue-700' => $return->status === 'sent',
                                     'bg-green-100 text-green-700' => $return->status === 'completed',
-                                ])>{{ ucfirst($return->status) }}</span>
+                                ])>{{ __(ucfirst($return->status)) }}</span>
                             </td>
                             <td class="px-4 py-3 text-right">
                                 <a href="{{ route('purchase.returns.show', $return) }}"><x-icon-action icon="eye" color="blue" label="View" /></a>
                             </td>
                         </tr>
                     @empty
-                        <tr><td colspan="6" class="px-4 py-8 text-center text-slate-400">No purchase returns yet.</td></tr>
+                        <tr><td colspan="6" class="px-4 py-8 text-center text-slate-400">{{ __('No purchase returns yet.') }}</td></tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
     </div>
 
-    <p class="text-xs text-slate-400 mt-3">Showing the latest 15 records per section. Use the module pages for full history and filtering.</p>
+    <p class="text-xs text-slate-400 mt-3">{{ __('Showing the latest 15 records per section. Use the module pages for full history and filtering.') }}</p>
 </div>

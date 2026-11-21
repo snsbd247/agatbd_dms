@@ -7,7 +7,7 @@
             <input type="date" wire:model.live="to" class="text-sm border-0 p-0 focus:ring-0 w-32">
         </div>
         <a href="{{ route('reports.export.areas', request()->query()) }}" class="flex items-center gap-2 px-3 py-2 rounded-lg bg-white border shadow-sm text-sm text-slate-600 hover:text-indigo-600">
-            <x-icon name="download" class="w-4 h-4" /> Download CSV
+            <x-icon name="download" class="w-4 h-4" /> {{ __('Download CSV') }}
         </a>
     </div>
 
@@ -21,11 +21,11 @@
         <table class="w-full text-sm rtable">
             <thead class="bg-slate-50 text-slate-500 text-left">
                 <tr>
-                    <th class="px-4 py-3">Area</th>
-                    <th class="px-4 py-3">Retailers</th>
-                    <th class="px-4 py-3">Representatives</th>
-                    <th class="px-4 py-3">Sales</th>
-                    <th class="px-4 py-3">Due</th>
+                    <th class="px-4 py-3">{{ __('Area') }}</th>
+                    <th class="px-4 py-3">{{ __('Retailers') }}</th>
+                    <th class="px-4 py-3">{{ __('Representatives') }}</th>
+                    <th class="px-4 py-3">{{ __('Sales') }}</th>
+                    <th class="px-4 py-3">{{ __('Due') }}</th>
                 </tr>
             </thead>
             <tbody class="divide-y">
@@ -39,7 +39,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="5" class="px-4 py-8 text-center text-slate-400">No areas found.</td>
+                        <td colspan="5" class="px-4 py-8 text-center text-slate-400">{{ __('No areas found.') }}</td>
                     </tr>
                 @endforelse
             </tbody>

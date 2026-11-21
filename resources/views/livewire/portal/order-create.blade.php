@@ -6,28 +6,28 @@
 <div class="space-y-4">
     <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-            <h2 class="text-xl font-bold text-slate-800">New order</h2>
-            <p class="text-sm text-slate-500">Tap products to add them. The dealer will approve your order before delivery.</p>
+            <h2 class="text-xl font-bold text-slate-800">{{ __('New order') }}</h2>
+            <p class="text-sm text-slate-500">{{ __('Tap products to add them. The dealer will approve your order before delivery.') }}</p>
         </div>
-        <a href="{{ route('portal.orders') }}" class="inline-flex items-center justify-center rounded-lg border bg-white px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50">Cancel</a>
+        <a href="{{ route('portal.orders') }}" class="inline-flex items-center justify-center rounded-lg border bg-white px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50">{{ __('Cancel') }}</a>
     </div>
 
     <div class="grid gap-4 xl:grid-cols-[minmax(0,1fr)_400px]">
         <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm order-2 xl:order-1">
             <div class="border-b p-4 flex flex-col gap-3 sm:flex-row">
                 <select wire:model.live="categoryId" class="border rounded-lg px-3 py-2 text-sm bg-white sm:w-48">
-                    <option value="">All categories</option>
+                    <option value="">{{ __('All categories') }}</option>
                     @foreach($categories as $category)
                         <option value="{{ $category->id }}">{{ $category->name }}</option>
                     @endforeach
                 </select>
-                <input wire:model.live.debounce.300ms="productSearch" type="search" placeholder="Search products…" class="border rounded-lg px-3 py-2 text-sm flex-1">
+                <input wire:model.live.debounce.300ms="productSearch" type="search" placeholder="{{ __('Search products…') }}" class="border rounded-lg px-3 py-2 text-sm flex-1">
             </div>
             <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 p-4 max-h-[70vh] overflow-y-auto">
                 @forelse($products as $product)
                     @php $stocked = (float) ($product->warehouse_stock ?? 0) > 0; $added = in_array($product->id, $inCart, true); @endphp
                     <button type="button" wire:click="addProduct({{ $product->id }})" wire:key="pp-{{ $product->id }}" class="relative rounded-xl border p-3 text-left transition {{ $added ? 'border-indigo-400 bg-indigo-50 ring-1 ring-indigo-200' : 'border-slate-200 hover:border-indigo-300 hover:shadow-md' }}">
-                        @if($added)<span class="absolute right-2 top-2 rounded-full bg-indigo-600 px-2 py-0.5 text-[10px] font-bold text-white">ADDED</span>@endif
+                        @if($added)<span class="absolute right-2 top-2 rounded-full bg-indigo-600 px-2 py-0.5 text-[10px] font-bold text-white">{{ __('ADDED') }}</span>@endif
                         <div class="flex h-14 items-center justify-center rounded-lg bg-slate-100 text-lg font-bold text-slate-400">{{ strtoupper(substr($product->name, 0, 2)) }}</div>
                         <p class="mt-2 text-sm font-semibold text-slate-800 line-clamp-2">{{ $product->name }}</p>
                         <div class="mt-2 flex items-end justify-between gap-1">
@@ -36,14 +36,14 @@
                         </div>
                     </button>
                 @empty
-                    <p class="col-span-full py-12 text-center text-sm text-slate-400">No products found.</p>
+                    <p class="col-span-full py-12 text-center text-sm text-slate-400">{{ __('No products found.') }}</p>
                 @endforelse
             </div>
         </section>
 
         <section class="rounded-2xl border border-slate-200 bg-white shadow-sm order-1 xl:order-2 xl:sticky xl:top-20 xl:self-start overflow-hidden">
             <div class="border-b bg-slate-50 px-4 py-3 flex items-center justify-between">
-                <h3 class="font-semibold">Your order</h3>
+                <h3 class="font-semibold">{{ __('Your order') }}</h3>
                 <span class="rounded-full bg-indigo-100 px-2.5 py-1 text-xs font-semibold text-indigo-700">{{ count($items) }} item{{ count($items) === 1 ? '' : 's' }}</span>
             </div>
             <div class="max-h-[40vh] overflow-y-auto divide-y">
@@ -62,20 +62,20 @@
                         </div>
                     </div>
                 @empty
-                    <p class="px-4 py-10 text-center text-sm text-slate-400">Your order is empty.</p>
+                    <p class="px-4 py-10 text-center text-sm text-slate-400">{{ __('Your order is empty.') }}</p>
                 @endforelse
             </div>
             <div class="border-t bg-slate-50 p-4 space-y-2 text-sm">
-                <div class="flex justify-between"><span class="text-slate-500">Current due</span><span>৳ {{ number_format($retailer->current_due, 2) }}</span></div>
-                <div class="flex justify-between"><span class="text-slate-500">Credit available</span><span>৳ {{ number_format($availableCredit, 2) }}</span></div>
-                <div class="flex justify-between border-t pt-2 text-base font-bold"><span>Order total</span><span class="text-indigo-700">৳ {{ number_format($total, 2) }}</span></div>
+                <div class="flex justify-between"><span class="text-slate-500">{{ __('Current due') }}</span><span>৳ {{ number_format($retailer->current_due, 2) }}</span></div>
+                <div class="flex justify-between"><span class="text-slate-500">{{ __('Credit available') }}</span><span>৳ {{ number_format($availableCredit, 2) }}</span></div>
+                <div class="flex justify-between border-t pt-2 text-base font-bold"><span>{{ __('Order total') }}</span><span class="text-indigo-700">৳ {{ number_format($total, 2) }}</span></div>
                 @if($total > $availableCredit && $total > 0)
-                    <p class="rounded-lg bg-amber-50 border border-amber-200 p-2 text-xs text-amber-800">This order is above your available credit. You can still place it, but the dealer must approve the extra credit first.</p>
+                    <p class="rounded-lg bg-amber-50 border border-amber-200 p-2 text-xs text-amber-800">{{ __('This order is above your available credit. You can still place it, but the dealer must approve the extra credit first.') }}</p>
                 @endif
                 @error('items') <p class="text-xs text-red-600">{{ $message }}</p> @enderror
                 <button type="button" wire:click="save" wire:loading.attr="disabled" @disabled(count($items) === 0) class="mt-2 w-full rounded-xl bg-indigo-600 py-3 font-semibold text-white hover:bg-indigo-500 disabled:opacity-50">
-                    <span wire:loading.remove wire:target="save">Place order</span>
-                    <span wire:loading wire:target="save">Placing order…</span>
+                    <span wire:loading.remove wire:target="save">{{ __('Place order') }}</span>
+                    <span wire:loading wire:target="save">{{ __('Placing order…') }}</span>
                 </button>
             </div>
         </section>

@@ -1,6 +1,6 @@
 <div class="max-w-3xl">
     <a href="{{ route('warranty.index') }}" class="flex items-center gap-1.5 text-sm text-slate-500 hover:text-indigo-600 mb-4">
-        <x-icon name="chevron-left" class="w-4 h-4" /> Back to Warranty Claims
+        <x-icon name="chevron-left" class="w-4 h-4" /> {{ __('Back to Warranty Claims') }}
     </a>
 
     @if($expiry)
@@ -15,7 +15,7 @@
         @endif
     @elseif(!$policy)
         <div class="bg-amber-50 border border-amber-200 text-amber-800 rounded-xl p-4 mb-6">
-            No warranty policy configured for this product or its category.
+            {{ __('No warranty policy configured for this product or its category.') }}
         </div>
     @endif
 
@@ -45,20 +45,20 @@
                     default => 'bg-slate-100 text-slate-600',
                 };
             @endphp
-            <span class="px-3 py-1 rounded-full text-sm shrink-0 {{ $badge }}">{{ ucfirst($warrantyClaim->status) }}</span>
+            <span class="px-3 py-1 rounded-full text-sm shrink-0 {{ $badge }}">{{ __(ucfirst($warrantyClaim->status)) }}</span>
         </div>
 
         @can('warranty.manage')
             <div class="mt-4">
-                <input wire:model="note" type="text" placeholder="Optional note for this status change" class="w-full border rounded-lg p-2 mb-2 text-sm">
+                <input wire:model="note" type="text" placeholder="{{ __('Optional note for this status change') }}" class="w-full border rounded-lg p-2 mb-2 text-sm">
                 <div class="flex flex-wrap gap-2">
                     @if($warrantyClaim->status === 'pending')
-                        <button wire:click="approve" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-lg font-medium">Approve</button>
-                        <button wire:click="reject" class="text-red-600 hover:bg-red-50 px-4 py-2 rounded-lg font-medium">Reject</button>
+                        <button wire:click="approve" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-lg font-medium">{{ __('Approve') }}</button>
+                        <button wire:click="reject" class="text-red-600 hover:bg-red-50 px-4 py-2 rounded-lg font-medium">{{ __('Reject') }}</button>
                     @endif
                     @if($warrantyClaim->status === 'approved')
-                        <button wire:click="markReplaced" class="bg-green-600 hover:bg-green-500 text-white px-4 py-2 rounded-lg font-medium">Mark Replaced</button>
-                        <button wire:click="markRepaired" class="bg-teal-600 hover:bg-teal-500 text-white px-4 py-2 rounded-lg font-medium">Mark Repaired</button>
+                        <button wire:click="markReplaced" class="bg-green-600 hover:bg-green-500 text-white px-4 py-2 rounded-lg font-medium">{{ __('Mark Replaced') }}</button>
+                        <button wire:click="markRepaired" class="bg-teal-600 hover:bg-teal-500 text-white px-4 py-2 rounded-lg font-medium">{{ __('Mark Repaired') }}</button>
                     @endif
                 </div>
             </div>
@@ -66,17 +66,17 @@
     </div>
 
     <div class="bg-white rounded-xl shadow p-6">
-        <h2 class="font-semibold mb-3 flex items-center gap-2"><x-icon name="clock" class="w-5 h-5 text-slate-400" /> Tracking History</h2>
+        <h2 class="font-semibold mb-3 flex items-center gap-2"><x-icon name="clock" class="w-5 h-5 text-slate-400" /> {{ __('Tracking History') }}</h2>
         @forelse($warrantyClaim->tracking as $entry)
             <div class="flex justify-between py-2 border-b last:border-0 text-sm">
                 <div>
-                    <span class="font-medium">{{ ucfirst($entry->status) }}</span>
+                    <span class="font-medium">{{ __(ucfirst($entry->status)) }}</span>
                     @if($entry->note) <span class="text-slate-500">— {{ $entry->note }}</span> @endif
                 </div>
                 <span class="text-slate-400">{{ $entry->changed_at?->format('d M Y H:i') }}</span>
             </div>
         @empty
-            <p class="text-slate-400">No status changes yet.</p>
+            <p class="text-slate-400">{{ __('No status changes yet.') }}</p>
         @endforelse
     </div>
 </div>

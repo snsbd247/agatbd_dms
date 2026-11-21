@@ -5,7 +5,7 @@
             <input type="month" wire:model.live="period" class="text-sm border-0 p-0 focus:ring-0">
         </div>
         <a href="{{ route('reports.export.representatives', request()->query()) }}" class="flex items-center gap-2 px-3 py-2 rounded-lg bg-white border shadow-sm text-sm text-slate-600 hover:text-indigo-600">
-            <x-icon name="download" class="w-4 h-4" /> Download CSV
+            <x-icon name="download" class="w-4 h-4" /> {{ __('Download CSV') }}
         </a>
     </div>
 
@@ -19,12 +19,12 @@
         <table class="w-full text-sm rtable">
             <thead class="bg-slate-50 text-slate-500 text-left">
                 <tr>
-                    <th class="px-4 py-3">Representative</th>
-                    <th class="px-4 py-3">Delivered Sales</th>
-                    <th class="px-4 py-3">Collection</th>
-                    <th class="px-4 py-3">Target</th>
-                    <th class="px-4 py-3">Achievement</th>
-                    <th class="px-4 py-3">Commission Earned</th>
+                    <th class="px-4 py-3">{{ __('Representative') }}</th>
+                    <th class="px-4 py-3">{{ __('Delivered Sales') }}</th>
+                    <th class="px-4 py-3">{{ __('Collection') }}</th>
+                    <th class="px-4 py-3">{{ __('Target') }}</th>
+                    <th class="px-4 py-3">{{ __('Achievement') }}</th>
+                    <th class="px-4 py-3">{{ __('Commission Earned') }}</th>
                 </tr>
             </thead>
             <tbody class="divide-y">
@@ -46,13 +46,13 @@
                             @if($row['commission'])
                                 ৳ {{ number_format($row['commission']->commission_amount, 2) }}
                             @else
-                                <span class="text-slate-400">Not generated yet</span>
+                                <span class="text-slate-400">{{ __('Not generated yet') }}</span>
                             @endif
                         </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6" class="px-4 py-8 text-center text-slate-400">No active representatives.</td>
+                        <td colspan="6" class="px-4 py-8 text-center text-slate-400">{{ __('No active representatives.') }}</td>
                     </tr>
                 @endforelse
             </tbody>

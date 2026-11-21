@@ -10,12 +10,12 @@
         <table class="w-full text-sm rtable">
             <thead class="bg-slate-50 text-slate-500 text-left">
                 <tr>
-                    <th class="px-4 py-3">Date</th>
-                    <th class="px-4 py-3">Type</th>
-                    <th class="px-4 py-3">Reference</th>
-                    <th class="px-4 py-3 text-right">Charged</th>
-                    <th class="px-4 py-3 text-right">Paid / Credit</th>
-                    <th class="px-4 py-3 text-right">Balance</th>
+                    <th class="px-4 py-3">{{ __('Date') }}</th>
+                    <th class="px-4 py-3">{{ __('Type') }}</th>
+                    <th class="px-4 py-3">{{ __('Reference') }}</th>
+                    <th class="px-4 py-3 text-right">{{ __('Charged') }}</th>
+                    <th class="px-4 py-3 text-right">{{ __('Paid / Credit') }}</th>
+                    <th class="px-4 py-3 text-right">{{ __('Balance') }}</th>
                 </tr>
             </thead>
             <tbody class="divide-y">
@@ -29,7 +29,7 @@
                         <td class="px-4 py-3 text-right font-semibold" data-label="Balance">৳ {{ number_format($entry->balance_after, 2) }}</td>
                     </tr>
                 @empty
-                    <tr><td colspan="6" class="px-4 py-10 text-center text-slate-400">No transactions yet.</td></tr>
+                    <tr><td colspan="6" class="px-4 py-10 text-center text-slate-400">{{ __('No transactions yet.') }}</td></tr>
                 @endforelse
             </tbody>
         </table>

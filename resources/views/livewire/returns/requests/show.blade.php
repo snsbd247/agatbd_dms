@@ -1,6 +1,6 @@
 <div class="max-w-4xl">
     <a href="{{ route('returns.index') }}" class="flex items-center gap-1.5 text-sm text-slate-500 hover:text-indigo-600 mb-4">
-        <x-icon name="chevron-left" class="w-4 h-4" /> Back to Return Requests
+        <x-icon name="chevron-left" class="w-4 h-4" /> {{ __('Back to Return Requests') }}
     </a>
 
     <div class="bg-white rounded-xl shadow p-6 mb-6">
@@ -30,7 +30,7 @@
                         default => 'bg-slate-100 text-slate-600',
                     };
                 @endphp
-                <span class="px-3 py-1 rounded-full text-sm {{ $badge }}">{{ ucfirst($returnRequest->status) }}</span>
+                <span class="px-3 py-1 rounded-full text-sm {{ $badge }}">{{ __(ucfirst($returnRequest->status)) }}</span>
                 <p class="text-2xl font-bold mt-2">৳ {{ number_format($returnRequest->items->sum(fn($i) => $i->quantity * $i->unit_price), 2) }}</p>
             </div>
         </div>
@@ -38,11 +38,11 @@
         <div class="mt-4 flex flex-wrap gap-2">
             @can('returns.manage')
                 @if($returnRequest->status === 'pending')
-                    <button wire:click="approve" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-lg font-medium">Approve</button>
-                    <button wire:click="reject" wire:confirm="Reject this return request?" class="text-red-600 hover:bg-red-50 px-4 py-2 rounded-lg font-medium">Reject</button>
+                    <button wire:click="approve" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-lg font-medium">{{ __('Approve') }}</button>
+                    <button wire:click="reject" wire:confirm="{{ __('Reject this return request?') }}" class="text-red-600 hover:bg-red-50 px-4 py-2 rounded-lg font-medium">{{ __('Reject') }}</button>
                 @endif
                 @if($returnRequest->status === 'approved')
-                    <a href="{{ route('returns.receive', $returnRequest) }}" class="bg-green-600 hover:bg-green-500 text-white px-4 py-2 rounded-lg font-medium">Receive Return</a>
+                    <a href="{{ route('returns.receive', $returnRequest) }}" class="bg-green-600 hover:bg-green-500 text-white px-4 py-2 rounded-lg font-medium">{{ __('Receive Return') }}</a>
                 @endif
             @endcan
         </div>
@@ -52,11 +52,11 @@
         <table class="w-full text-sm rtable">
             <thead class="bg-slate-50 text-slate-500 text-left">
                 <tr>
-                    <th class="px-4 py-3">Product</th>
-                    <th class="px-4 py-3">Quantity</th>
-                    <th class="px-4 py-3">Unit Price</th>
-                    <th class="px-4 py-3">Line Total</th>
-                    <th class="px-4 py-3">Reason</th>
+                    <th class="px-4 py-3">{{ __('Product') }}</th>
+                    <th class="px-4 py-3">{{ __('Quantity') }}</th>
+                    <th class="px-4 py-3">{{ __('Unit Price') }}</th>
+                    <th class="px-4 py-3">{{ __('Line Total') }}</th>
+                    <th class="px-4 py-3">{{ __('Reason') }}</th>
                 </tr>
             </thead>
             <tbody class="divide-y">
@@ -74,14 +74,14 @@
     </div>
 
     <div class="bg-white rounded-xl shadow p-6">
-        <h2 class="font-semibold mb-3 flex items-center gap-2"><x-icon name="shield-check" class="w-5 h-5 text-slate-400" /> Receives</h2>
+        <h2 class="font-semibold mb-3 flex items-center gap-2"><x-icon name="shield-check" class="w-5 h-5 text-slate-400" /> {{ __('Receives') }}</h2>
         @forelse($returnRequest->receives as $receive)
             <div class="flex justify-between py-2 border-b last:border-0">
                 <span>{{ $receive->number }}</span>
                 <span class="text-slate-500">{{ $receive->receive_date->format('d M Y') }}</span>
             </div>
         @empty
-            <p class="text-slate-400">Not received yet.</p>
+            <p class="text-slate-400">{{ __('Not received yet.') }}</p>
         @endforelse
     </div>
 </div>

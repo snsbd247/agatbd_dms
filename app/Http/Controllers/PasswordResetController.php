@@ -64,8 +64,8 @@ class PasswordResetController extends Controller
         }
 
         $message = self::mailEnabled()
-            ? 'If that email belongs to an account, a password reset link has been sent to it.'
-            : 'If that email belongs to an account, your administrator has been notified and will set a new password for you.';
+            ? __('If that email belongs to an account, a password reset link has been sent to it.')
+            : __('If that email belongs to an account, your administrator has been notified and will set a new password for you.');
 
         return back()->with('status', $message);
     }
@@ -100,7 +100,7 @@ class PasswordResetController extends Controller
         );
 
         if ($status === Password::PASSWORD_RESET) {
-            return redirect()->route('login')->with('status', 'Your password has been reset. You can sign in now.');
+            return redirect()->route('login')->with('status', __('Your password has been reset. You can sign in now.'));
         }
 
         return back()->withInput($request->only('email'))->withErrors(['email' => __($status)]);

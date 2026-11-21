@@ -8,15 +8,15 @@
                 <input type="date" wire:model.live="to" class="text-sm border-0 p-0 focus:ring-0 w-32">
             </div>
             <select wire:model.live="status" class="border rounded-lg p-2 text-sm bg-white shadow-sm">
-                <option value="">All Statuses</option>
-                <option value="pending">Pending</option>
-                <option value="approved">Approved</option>
-                <option value="rejected">Rejected</option>
-                <option value="received">Received</option>
+                <option value="">{{ __('All Statuses') }}</option>
+                <option value="pending">{{ __('Pending') }}</option>
+                <option value="approved">{{ __('Approved') }}</option>
+                <option value="rejected">{{ __('Rejected') }}</option>
+                <option value="received">{{ __('Received') }}</option>
             </select>
         </div>
         <a href="{{ route('reports.export.returns', request()->query()) }}" class="flex items-center gap-2 px-3 py-2 rounded-lg bg-white border shadow-sm text-sm text-slate-600 hover:text-indigo-600">
-            <x-icon name="download" class="w-4 h-4" /> Download CSV
+            <x-icon name="download" class="w-4 h-4" /> {{ __('Download CSV') }}
         </a>
     </div>
 
@@ -28,9 +28,9 @@
 
     @if($dispositionCounts->isNotEmpty())
         <div class="bg-white rounded-xl shadow p-4 mb-4 flex flex-wrap gap-6 text-sm">
-            <span class="text-slate-500">Disposition breakdown (received in range):</span>
+            <span class="text-slate-500">{{ __('Disposition breakdown (received in range):') }}</span>
             @foreach(['restock' => 'Restocked', 'damage' => 'Damaged', 'company_return' => 'Sent to Company'] as $key => $label)
-                <span>{{ $label }}: <span class="font-semibold">{{ $dispositionCounts[$key] ?? 0 }}</span></span>
+                <span>{{ __($label) }}: <span class="font-semibold">{{ $dispositionCounts[$key] ?? 0 }}</span></span>
             @endforeach
         </div>
     @endif
@@ -39,11 +39,11 @@
         <table class="w-full text-sm rtable">
             <thead class="bg-slate-50 text-slate-500 text-left">
                 <tr>
-                    <th class="px-4 py-3">Number</th>
-                    <th class="px-4 py-3">Date</th>
-                    <th class="px-4 py-3">Retailer</th>
-                    <th class="px-4 py-3">Value</th>
-                    <th class="px-4 py-3">Status</th>
+                    <th class="px-4 py-3">{{ __('Number') }}</th>
+                    <th class="px-4 py-3">{{ __('Date') }}</th>
+                    <th class="px-4 py-3">{{ __('Retailer') }}</th>
+                    <th class="px-4 py-3">{{ __('Value') }}</th>
+                    <th class="px-4 py-3">{{ __('Status') }}</th>
                 </tr>
             </thead>
             <tbody class="divide-y">
@@ -55,13 +55,13 @@
                         <td class="px-4 py-3" data-label="Value">৳ {{ number_format($request->value, 2) }}</td>
                         <td class="px-4 py-3" data-label="Status">
                             <span class="px-2 py-1 rounded-full text-xs {{ $request->status === 'received' ? 'bg-green-100 text-green-700' : ($request->status === 'rejected' ? 'bg-red-100 text-red-700' : 'bg-slate-100 text-slate-600') }}">
-                                {{ ucfirst($request->status) }}
+                                {{ __(ucfirst($request->status)) }}
                             </span>
                         </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="5" class="px-4 py-8 text-center text-slate-400">No return requests in this range.</td>
+                        <td colspan="5" class="px-4 py-8 text-center text-slate-400">{{ __('No return requests in this range.') }}</td>
                     </tr>
                 @endforelse
             </tbody>

@@ -16,21 +16,21 @@
 
     <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
         <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
-            <input wire:model.live.debounce.400ms="search" type="text" placeholder="Search product..." class="border rounded-lg px-3 py-2 text-sm bg-white flex-1 sm:flex-none sm:min-w-[200px]">
+            <input wire:model.live.debounce.400ms="search" type="text" placeholder="{{ __('Search product...') }}" class="border rounded-lg px-3 py-2 text-sm bg-white flex-1 sm:flex-none sm:min-w-[200px]">
             <select wire:model.live="filter_warehouse" class="border rounded-lg px-3 py-2 text-sm bg-white">
-                <option value="">All Warehouses</option>
+                <option value="">{{ __('All Warehouses') }}</option>
                 @foreach($warehouses as $w)
                     <option value="{{ $w->id }}">{{ $w->name }}</option>
                 @endforeach
             </select>
             <select wire:model.live="filter_direction" class="border rounded-lg px-3 py-2 text-sm bg-white">
-                <option value="">Added &amp; Removed</option>
-                <option value="add">Added only</option>
-                <option value="remove">Removed only</option>
+                <option value="">{{ __('Added & Removed') }}</option>
+                <option value="add">{{ __('Added only') }}</option>
+                <option value="remove">{{ __('Removed only') }}</option>
             </select>
         </div>
         @can('inventory.manage')
-            <button wire:click="create" class="bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-xl font-medium w-full sm:w-auto">+ New Adjustment</button>
+            <button wire:click="create" class="bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-xl font-medium w-full sm:w-auto">{{ __('+ New Adjustment') }}</button>
         @endcan
     </div>
 
@@ -38,13 +38,13 @@
         <table class="w-full text-sm rtable">
             <thead class="bg-slate-50 text-slate-500 text-left">
                 <tr>
-                    <th class="px-4 py-3">Date</th>
-                    <th class="px-4 py-3">Product</th>
-                    <th class="px-4 py-3">Warehouse</th>
-                    <th class="px-4 py-3">Batch</th>
-                    <th class="px-4 py-3 text-right">Change</th>
-                    <th class="px-4 py-3">Reason</th>
-                    <th class="px-4 py-3">By</th>
+                    <th class="px-4 py-3">{{ __('Date') }}</th>
+                    <th class="px-4 py-3">{{ __('Product') }}</th>
+                    <th class="px-4 py-3">{{ __('Warehouse') }}</th>
+                    <th class="px-4 py-3">{{ __('Batch') }}</th>
+                    <th class="px-4 py-3 text-right">{{ __('Change') }}</th>
+                    <th class="px-4 py-3">{{ __('Reason') }}</th>
+                    <th class="px-4 py-3">{{ __('By') }}</th>
                 </tr>
             </thead>
             <tbody class="divide-y">
@@ -63,7 +63,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="7" class="px-4 py-8 text-center text-slate-400">No stock adjustments yet.</td>
+                        <td colspan="7" class="px-4 py-8 text-center text-slate-400">{{ __('No stock adjustments yet.') }}</td>
                     </tr>
                 @endforelse
             </tbody>
@@ -75,13 +75,13 @@
     @if($showModal)
         <div class="fixed inset-0 bg-black/40 flex items-end sm:items-center justify-center z-50">
             <div class="bg-white rounded-t-2xl sm:rounded-2xl p-6 w-full max-w-lg shadow-2xl max-h-[90vh] overflow-y-auto">
-                <h2 class="text-lg font-semibold mb-4">New Stock Adjustment</h2>
+                <h2 class="text-lg font-semibold mb-4">{{ __('New Stock Adjustment') }}</h2>
 
                 <div class="space-y-3">
                     <div>
-                        <label class="text-sm text-slate-500">Warehouse</label>
+                        <label class="text-sm text-slate-500">{{ __('Warehouse') }}</label>
                         <select wire:model.live="warehouse_id" class="w-full border rounded-lg p-2 mt-1 bg-white">
-                            <option value="">Select warehouse</option>
+                            <option value="">{{ __('Select warehouse') }}</option>
                             @foreach($warehouses as $w)
                                 <option value="{{ $w->id }}">{{ $w->name }}</option>
                             @endforeach
@@ -90,23 +90,23 @@
                     </div>
 
                     <div>
-                        <label class="text-sm text-slate-500">Product</label>
-                        <input wire:model.live.debounce.300ms="productSearch" type="text" placeholder="Search by name, SKU or barcode..." class="w-full border rounded-lg p-2 mt-1 text-sm">
+                        <label class="text-sm text-slate-500">{{ __('Product') }}</label>
+                        <input wire:model.live.debounce.300ms="productSearch" type="text" placeholder="{{ __('Search by name, SKU or barcode...') }}" class="w-full border rounded-lg p-2 mt-1 text-sm">
                         <select wire:model.live="product_id" class="w-full border rounded-lg p-2 mt-2 bg-white">
-                            <option value="">Select product</option>
+                            <option value="">{{ __('Select product') }}</option>
                             @foreach($formProducts as $p)
                                 <option value="{{ $p->id }}">{{ $p->name }} ({{ $p->sku }})</option>
                             @endforeach
                         </select>
                         @error('product_id') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
                         @if(! is_null($currentStock))
-                            <p class="text-xs text-slate-500 mt-1">Current stock in this warehouse: <span class="font-semibold text-slate-700">{{ $qty($currentStock) }} {{ $selectedProduct?->unit?->short_code }}</span></p>
+                            <p class="text-xs text-slate-500 mt-1">{{ __('Current stock in this warehouse:') }} <span class="font-semibold text-slate-700">{{ $qty($currentStock) }} {{ $selectedProduct?->unit?->short_code }}</span></p>
                         @endif
                     </div>
 
                     @if($product_id && $warehouse_id)
                         <div>
-                            <label class="text-sm text-slate-500">Batch <span class="text-slate-400">(optional)</span></label>
+                            <label class="text-sm text-slate-500">{{ __('Batch') }} <span class="text-slate-400">{{ __('(optional)') }}</span></label>
                             <select wire:model="batch_id" class="w-full border rounded-lg p-2 mt-1 bg-white">
                                 <option value="">{{ $direction === 'add' ? 'New adjustment batch' : 'Oldest batches first (FIFO)' }}</option>
                                 @foreach($batches as $b)
@@ -118,14 +118,14 @@
 
                     <div class="grid grid-cols-2 gap-3">
                         <div>
-                            <label class="text-sm text-slate-500">Type</label>
+                            <label class="text-sm text-slate-500">{{ __('Type') }}</label>
                             <div class="grid grid-cols-2 gap-1 mt-1 p-1 bg-slate-100 rounded-lg">
-                                <button type="button" wire:click="$set('direction', 'remove')" class="py-1.5 rounded-md text-sm font-medium {{ $direction === 'remove' ? 'bg-white shadow text-red-600' : 'text-slate-500' }}">− Remove</button>
-                                <button type="button" wire:click="$set('direction', 'add')" class="py-1.5 rounded-md text-sm font-medium {{ $direction === 'add' ? 'bg-white shadow text-green-700' : 'text-slate-500' }}">+ Add</button>
+                                <button type="button" wire:click="$set('direction', 'remove')" class="py-1.5 rounded-md text-sm font-medium {{ $direction === 'remove' ? 'bg-white shadow text-red-600' : 'text-slate-500' }}">{{ __('− Remove') }}</button>
+                                <button type="button" wire:click="$set('direction', 'add')" class="py-1.5 rounded-md text-sm font-medium {{ $direction === 'add' ? 'bg-white shadow text-green-700' : 'text-slate-500' }}">{{ __('+ Add') }}</button>
                             </div>
                         </div>
                         <div>
-                            <label class="text-sm text-slate-500">Quantity</label>
+                            <label class="text-sm text-slate-500">{{ __('Quantity') }}</label>
                             <input wire:model="quantity" type="number" step="0.001" min="0" class="w-full border rounded-lg p-2 mt-1">
                         </div>
                     </div>
@@ -133,7 +133,7 @@
 
                     <div class="grid grid-cols-2 gap-3">
                         <div>
-                            <label class="text-sm text-slate-500">Reason</label>
+                            <label class="text-sm text-slate-500">{{ __('Reason') }}</label>
                             <select wire:model="reason" class="w-full border rounded-lg p-2 mt-1 bg-white">
                                 @foreach($reasons as $r)
                                     <option value="{{ $r }}">{{ $r }}</option>
@@ -141,21 +141,21 @@
                             </select>
                         </div>
                         <div>
-                            <label class="text-sm text-slate-500">Date</label>
+                            <label class="text-sm text-slate-500">{{ __('Date') }}</label>
                             <input wire:model="adjustment_date" type="date" max="{{ today()->toDateString() }}" class="w-full border rounded-lg p-2 mt-1">
                             @error('adjustment_date') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
                         </div>
                     </div>
 
                     <div>
-                        <label class="text-sm text-slate-500">Note <span class="text-slate-400">(optional)</span></label>
-                        <input wire:model="note" type="text" maxlength="200" placeholder="e.g. 3 cartons water-damaged in store room" class="w-full border rounded-lg p-2 mt-1">
+                        <label class="text-sm text-slate-500">{{ __('Note') }} <span class="text-slate-400">{{ __('(optional)') }}</span></label>
+                        <input wire:model="note" type="text" maxlength="200" placeholder="{{ __('e.g. 3 cartons water-damaged in store room') }}" class="w-full border rounded-lg p-2 mt-1">
                     </div>
                 </div>
 
                 <div class="mt-6 flex justify-end gap-2">
-                    <button wire:click="$set('showModal', false)" class="px-4 py-2 rounded-lg text-slate-600">Cancel</button>
-                    <button wire:click="save" wire:loading.attr="disabled" class="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 disabled:opacity-60 text-white font-medium">Save Adjustment</button>
+                    <button wire:click="$set('showModal', false)" class="px-4 py-2 rounded-lg text-slate-600">{{ __('Cancel') }}</button>
+                    <button wire:click="save" wire:loading.attr="disabled" class="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 disabled:opacity-60 text-white font-medium">{{ __('Save Adjustment') }}</button>
                 </div>
             </div>
         </div>

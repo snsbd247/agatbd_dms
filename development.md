@@ -117,17 +117,26 @@
 - **Email ও SMS:** নতুন টেবিল `app_settings` (key/value; পাসওয়ার্ড আর API key APP_KEY দিয়ে encrypted) আর `sms_logs`। `MailSettings::apply()` boot-এ SMTP config বসায়। নোটিফিকেশনে `AlsoSendsEmail` trait আর `SafeMailChannel` আছে, তাই SMTP নষ্ট থাকলেও কাজ আটকায় না। `.local` ইমেইলে মেইল যায় না। ইউজার Notification Settings-এ "Also send by email" চালু বা বন্ধ করতে পারে। `SmsService` যেকোনো HTTP gateway-এর সাথে কাজ করে (`{api_key} {sender_id} {to} {message}`)। নম্বর 8801… বা 01… ফরম্যাটে বদলায়। SMS যায় অর্ডার approve, ডেলিভারি আর পেমেন্টে। ব্যর্থ হলেও কাজ থামে না, আর লগে লেখা থাকে।
 - **টেস্ট:** audit entry, SMS (এই সার্ভারের `/dms/up`-কে নকল gateway বানিয়ে, API key লগে লুকানো), ভাঙা SMTP-তেও নোটিফিকেশন জমা হয়, লোগোসহ PDF, রোলভিত্তিক access আর সব পেজের smoke test করা হলো, সবই rollback-সহ।
 
+### ২১ নভেম্বর ২০২৬ (পঞ্চম ধাপ): Test, Timezone, Route cache, MySQL প্রস্তুতি, বাংলা
+- **Automated tests:** `tests/Feature/*`-এ ৪৫টা টেস্ট, ১৬৪টা assertion (Inventory FIFO ও adjustment, Numbering, পুরো বিক্রয় ফ্লো ডিসকাউন্ট ভাগসহ, পেমেন্ট, পোর্টাল isolation, রোলের access matrix, Backup ও Restore, Password reset, Audit, SMS)। চালাতে: `F:\Lovable\xampp\php\php.exe vendor\bin\phpunit`।
+  - **নিরাপত্তা:** phpunit.xml জোর করে in-memory ডাটাবেস আর আলাদা config/route cache ব্যবহার করে। `tests/TestCase.php` ডাটাবেস `:memory:` না হলে migration চালানোর আগেই থেমে যায়, আর storage যায় অস্থায়ী ফোল্ডারে। আগে phpunit.xml-এ `:memory:` লাইন comment করা ছিল, তখন টেস্ট চালালে লাইভ ডাটাবেস মুছে যেত।
+- **Timezone:** `APP_TIMEZONE=Asia/Dhaka`। migration `2026_11_21_000002` আগের সব সময়ের কলাম +৬ ঘণ্টা সরিয়েছে, আর রোলব্যাক করলে −৬ ঘণ্টা হয়। `NumberGeneratorService` এখন `now()` ব্যবহার করে।
+- **Route cache:** লগইন পেজ এখন `/login`-এ। `/` হলো `AuthController@home` (ড্যাশবোর্ড বা লগইনে নেয়)। `public/.htaccess`-এর `RewriteRule ^$ %{REQUEST_URI}login [R=302,L]` খালি `/dms/`-কে Laravel পর্যন্ত পৌঁছানোর আগেই `/dms/login`-এ পাঠায়। কারণ: Laravel-এর `CompiledRouteCollection` শেষের `/` কেটে দেয়, আর তাতে subfolder-এর root `/dms/` ভুল base path পায়। এখন `php artisan route:cache` চালানো যায়, প্রতিবার route বদলালে আবার চালাতে হবে।
+- **MySQL প্রস্তুতি:** `php artisan dms:copy-to-mysql --database=dms [--fresh]` ([CopyToMysql.php](app/Console/Commands/CopyToMysql.php))। এটা ডাটাবেস বানায়, migration চালায়, সব ডাটা কপি করে, আর প্রতিটা টেবিলের row গুনে মেলায়। পরীক্ষামূলক `dms_copy_test`-এ ৫৮টা টেবিলে ৩৭৩টা row ঠিকঠাক কপি হয়েছে, তারপর সেটা মুছে দেওয়া হয়েছে। raw SQL-গুলো যাচাই করা হয়েছে (`COALESCE`, `SUM`, `CASE`, `substr`, `instr`), সবই MySQL-এ চলে। **যাওয়ার ধাপ:** (১) `dms:backup` (২) `dms:copy-to-mysql --database=dms` (৩) `.env`-এ `DB_CONNECTION=mysql` আর `DB_*` (৪) `config:cache` (৫) Backup/Restore MySQL-এর জন্য বদলানো।
+  - সতর্কতা: কমান্ড চালানোর সময় লাইভ SQLite-এর md5 বদলেছিল। ব্যাকআপের সাথে টেবিল ধরে মিলিয়ে দেখা গেছে শুধু `cache` টেবিল আলাদা, ব্যবসার কোনো ডাটা না।
+- **বাংলা:** ৮৮টা view-এ ১৩৮৫টা লেখা স্ক্রিপ্ট দিয়ে `__()`-এ মোড়ানো হয়েছে, সাথে মেনু, টাইটেল, stat card আর স্ট্যাটাসের লেখা। `lang/bn.json`-এ ৯১৯টা অনুবাদ আর `lang/bn/validation.php`। `users.locale` কলাম, `SetLocale` middleware, `POST /locale/{bn|en}`, `<x-locale-switch>` (হেডার, Profile আর লগইন পেজে), Hind Siliguri ফন্ট। ডিফল্ট `APP_LOCALE=bn`, টেস্টে `en`। বিস্তারিত `ui.md` §৯-এ।
+
 ---
 
 ## জানা সমস্যা (Known issues)
 
 | # | সমস্যা | প্রভাব / করণীয় |
 |---|---|---|
-| 1 | `php artisan route:cache` চালালে ঠিক `/dms/` ঠিকানায় 405 আসে (`allow: HEAD`)। ভেতর থেকে `/` আর `/dms/index.php` ঠিক কাজ করে, তাই এটা subfolder-এ চালানোর সাথে route cache-এর একটা edge case। আপডেটের পরেও আছে | route cache ব্যবহার করা যাবে না। শুধু `config:cache` আর `view:cache` চালাতে হবে |
-| 2 | অ্যাপের timezone `UTC` (বাংলাদেশ UTC+6) | সময় ৬ ঘণ্টা পিছিয়ে দেখায়, ব্যাকআপ ফাইলের নামও UTC সময়ে হয় |
-| 3 | SSL সার্টিফিকেট self-signed | ব্রাউজার প্রথমবার সতর্কতা দেখায়। ডোমেইন হলে Let's Encrypt দিয়ে আসল সার্টিফিকেট নেওয়া যাবে |
-| 4 | ব্যাকআপ একই ডিস্কে (F:) থাকে | ডিস্ক নষ্ট হলে ব্যাকআপও যাবে। অফসাইট কপি দরকার |
-| 5 | কোনো automated test নেই | রিগ্রেশন ধরা পড়বে না |
+| 1 | SSL সার্টিফিকেট self-signed | ব্রাউজার প্রথমবার সতর্কতা দেখায়। ডোমেইন হলে Let's Encrypt দিয়ে আসল সার্টিফিকেট নেওয়া যাবে |
+| 2 | ব্যাকআপ একই ডিস্কে (F:) থাকে | ডিস্ক নষ্ট হলে ব্যাকআপও যাবে। অফসাইট কপি দরকার |
+| 3 | ২১ নভেম্বরের আগে `today()` UTC-তে চলত | সন্ধ্যা ৬টা থেকে রাত ১২টার (বাংলাদেশ সময়) মধ্যে তৈরি হওয়া পুরনো রেকর্ডের তারিখ (`order_date` ইত্যাদি) এক দিন আগের দেখাতে পারে। সময়ের কলাম ঠিক করা হয়েছে, কিন্তু শুধু-তারিখের কলাম না |
+| 4 | Backup/Restore শুধু SQLite-এ কাজ করে | MySQL-এ গেলে mysqldump-ভিত্তিক ব্যাকআপ লাগবে |
+| 5 | লগইনে প্রতি মিনিটে ১০টা চেষ্টার সীমা (প্রতি IP) | অফিসের সবাই একই পাবলিক IP থেকে একসাথে লগইন করলে সীমায় পড়তে পারে। দরকার হলে `routes/web.php`-এ `throttle:10,1` বাড়ান |
 | 6 | `IMPLEMENTATION_SUMMARY.md` ফাঁকা ফাইল | মুছে ফেলা যায় |
 
 ---
@@ -145,8 +154,9 @@ F:\Lovable\xampp\php\php.exe artisan migrate --force
 npm run build                                   # CSS/JS বদলালে
 F:\Lovable\xampp\php\php.exe artisan optimize:clear
 F:\Lovable\xampp\php\php.exe artisan config:cache
+F:\Lovable\xampp\php\php.exe artisan route:cache
 F:\Lovable\xampp\php\php.exe artisan view:cache
-# route:cache চালানো যাবে না (Known issue #2)
+F:\Lovable\xampp\php\php.exe vendor\bin\phpunit   # সব টেস্ট পাস হওয়া চাই (লাইভ ডাটাবেসে হাত দেয় না)
 ```
 
 Apache কনফিগ বদলালে: `F:\Lovable\xampp\apache\bin\httpd.exe -t`, তারপর `httpd.exe -k restart -n Apache2.4`।

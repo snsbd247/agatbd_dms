@@ -6,5 +6,5 @@
     </div>
     <h2 class="text-xl font-semibold">{{ $title }}</h2>
     <p class="text-slate-500 mt-2">{{ $description }}</p>
-    <span class="mt-4 px-3 py-1 rounded-full text-xs bg-amber-100 text-amber-700 font-medium">Coming soon</span>
+    <span class="mt-4 px-3 py-1 rounded-full text-xs bg-amber-100 text-amber-700 font-medium">{{ __('Coming soon') }}</span>
 </div>

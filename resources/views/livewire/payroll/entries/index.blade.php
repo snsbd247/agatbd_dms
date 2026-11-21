@@ -12,7 +12,7 @@
                 type="button"
                 wire:click="setStatusFilter('{{ $value }}')"
                 class="px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap shrink-0 {{ $filter_status === $value ? 'bg-indigo-600 text-white' : 'bg-white text-slate-600 border' }}"
-            >{{ $label }}</button>
+            >{{ __($label) }}</button>
         @endforeach
     </div>
 
@@ -27,19 +27,19 @@
             @endcan
         </div>
         <div x-show="filtersOpen" x-cloak class="flex gap-2 mt-2">
-            <button wire:click="resetFilters" class="flex-1 border rounded-lg px-4 py-2 text-sm text-slate-600 bg-white">Reset</button>
-            <button wire:click="applyFilters" class="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg px-4 py-2 text-sm font-medium">Apply</button>
+            <button wire:click="resetFilters" class="flex-1 border rounded-lg px-4 py-2 text-sm text-slate-600 bg-white">{{ __('Reset') }}</button>
+            <button wire:click="applyFilters" class="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg px-4 py-2 text-sm font-medium">{{ __('Apply') }}</button>
         </div>
     </div>
 
     <div class="hidden sm:flex flex-wrap items-center justify-between gap-3 mb-4">
         <div class="flex flex-wrap items-center gap-3">
             <input wire:model="period" type="month" class="border rounded-lg px-3 py-2 text-sm bg-white w-full sm:w-auto">
-            <button wire:click="resetFilters" class="border rounded-lg px-4 py-2 text-sm text-slate-600 bg-white">Reset</button>
-            <button wire:click="applyFilters" class="bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg px-4 py-2 text-sm font-medium">Apply</button>
+            <button wire:click="resetFilters" class="border rounded-lg px-4 py-2 text-sm text-slate-600 bg-white">{{ __('Reset') }}</button>
+            <button wire:click="applyFilters" class="bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg px-4 py-2 text-sm font-medium">{{ __('Apply') }}</button>
         </div>
         @can('payroll.manage')
-            <a href="{{ route('payroll.generate') }}" class="bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-xl font-medium shrink-0">+ Generate Payroll</a>
+            <a href="{{ route('payroll.generate') }}" class="bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-xl font-medium shrink-0">{{ __('+ Generate Payroll') }}</a>
         @endcan
     </div>
 
@@ -48,12 +48,12 @@
             <thead class="bg-slate-50 text-slate-500 text-left">
                 <tr>
                     <th class="px-4 py-3 rtable-hide-mobile">#</th>
-                    <th class="px-4 py-3">Number</th>
-                    <th class="px-4 py-3">Representative</th>
-                    <th class="px-4 py-3">Period</th>
-                    <th class="px-4 py-3">Net Salary</th>
-                    <th class="px-4 py-3">Status</th>
-                    <th class="px-4 py-3 text-right">Action</th>
+                    <th class="px-4 py-3">{{ __('Number') }}</th>
+                    <th class="px-4 py-3">{{ __('Representative') }}</th>
+                    <th class="px-4 py-3">{{ __('Period') }}</th>
+                    <th class="px-4 py-3">{{ __('Net Salary') }}</th>
+                    <th class="px-4 py-3">{{ __('Status') }}</th>
+                    <th class="px-4 py-3 text-right">{{ __('Action') }}</th>
                 </tr>
             </thead>
             <tbody class="divide-y">
@@ -63,7 +63,7 @@
                         <td class="rtable-title rtable-block sm:hidden">
                             <div class="w-full flex items-center justify-between">
                                 <p class="font-semibold truncate">{{ $entry->representative?->name }}</p>
-                                <span class="px-2 py-1 rounded-full text-xs shrink-0 {{ $entry->status === 'paid' ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-600' }}">{{ ucfirst($entry->status) }}</span>
+                                <span class="px-2 py-1 rounded-full text-xs shrink-0 {{ $entry->status === 'paid' ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-600' }}">{{ __(ucfirst($entry->status)) }}</span>
                             </div>
                             <p class="w-full text-xs text-slate-500 mt-0.5">{{ $entry->number }}</p>
                             <div class="w-full flex items-center justify-between mt-1">
@@ -77,7 +77,7 @@
                         <td class="px-4 py-3 rtable-hide-mobile" data-label="Net Salary">৳ {{ number_format($entry->net_salary, 2) }}</td>
                         <td class="px-4 py-3 rtable-hide-mobile" data-label="Status">
                             <span class="px-2 py-1 rounded-full text-xs {{ $entry->status === 'paid' ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-600' }}">
-                                {{ ucfirst($entry->status) }}
+                                {{ __(ucfirst($entry->status)) }}
                             </span>
                         </td>
                         <td class="px-4 py-3 text-right">
@@ -88,7 +88,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="7" class="px-4 py-8 text-center text-slate-400">No payroll runs yet.</td>
+                        <td colspan="7" class="px-4 py-8 text-center text-slate-400">{{ __('No payroll runs yet.') }}</td>
                     </tr>
                 @endforelse
             </tbody>

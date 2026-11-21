@@ -8,22 +8,22 @@
                 <input type="date" wire:model.live="to" class="text-sm border-0 p-0 focus:ring-0 w-32">
             </div>
             <select wire:model.live="company_id" class="border rounded-lg p-2 text-sm bg-white shadow-sm">
-                <option value="">All Companies</option>
+                <option value="">{{ __('All Companies') }}</option>
                 @foreach($companies as $company)
                     <option value="{{ $company->id }}">{{ $company->name }}</option>
                 @endforeach
             </select>
             <select wire:model.live="status" class="border rounded-lg p-2 text-sm bg-white shadow-sm">
-                <option value="">All Status</option>
-                <option value="draft">Draft</option>
-                <option value="sent">Sent</option>
-                <option value="partial">Partial</option>
-                <option value="completed">Completed</option>
-                <option value="cancelled">Cancelled</option>
+                <option value="">{{ __('All Status') }}</option>
+                <option value="draft">{{ __('Draft') }}</option>
+                <option value="sent">{{ __('Sent') }}</option>
+                <option value="partial">{{ __('Partial') }}</option>
+                <option value="completed">{{ __('Completed') }}</option>
+                <option value="cancelled">{{ __('Cancelled') }}</option>
             </select>
         </div>
         <a href="{{ route('reports.export.purchase', request()->query()) }}" class="flex items-center gap-2 px-3 py-2 rounded-lg bg-white border shadow-sm text-sm text-slate-600 hover:text-indigo-600">
-            <x-icon name="download" class="w-4 h-4" /> Download CSV
+            <x-icon name="download" class="w-4 h-4" /> {{ __('Download CSV') }}
         </a>
     </div>
 
@@ -37,12 +37,12 @@
         <table class="w-full text-sm rtable">
             <thead class="bg-slate-50 text-slate-500 text-left">
                 <tr>
-                    <th class="px-4 py-3">Number</th>
-                    <th class="px-4 py-3">Date</th>
-                    <th class="px-4 py-3">Company</th>
-                    <th class="px-4 py-3">Warehouse</th>
-                    <th class="px-4 py-3">Total</th>
-                    <th class="px-4 py-3">Status</th>
+                    <th class="px-4 py-3">{{ __('Number') }}</th>
+                    <th class="px-4 py-3">{{ __('Date') }}</th>
+                    <th class="px-4 py-3">{{ __('Company') }}</th>
+                    <th class="px-4 py-3">{{ __('Warehouse') }}</th>
+                    <th class="px-4 py-3">{{ __('Total') }}</th>
+                    <th class="px-4 py-3">{{ __('Status') }}</th>
                 </tr>
             </thead>
             <tbody class="divide-y">
@@ -61,12 +61,12 @@
                                 'bg-amber-100 text-amber-700' => $order->status === 'partial',
                                 'bg-green-100 text-green-700' => $order->status === 'completed',
                                 'bg-red-100 text-red-700' => $order->status === 'cancelled',
-                            ])>{{ ucfirst($order->status) }}</span>
+                            ])>{{ __(ucfirst($order->status)) }}</span>
                         </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6" class="px-4 py-8 text-center text-slate-400">No purchase orders in this range.</td>
+                        <td colspan="6" class="px-4 py-8 text-center text-slate-400">{{ __('No purchase orders in this range.') }}</td>
                     </tr>
                 @endforelse
             </tbody>

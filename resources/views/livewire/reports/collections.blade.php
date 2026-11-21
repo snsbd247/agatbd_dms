@@ -7,7 +7,7 @@
             <input type="date" wire:model.live="to" class="text-sm border-0 p-0 focus:ring-0 w-32">
         </div>
         <a href="{{ route('reports.export.collections', request()->query()) }}" class="flex items-center gap-2 px-3 py-2 rounded-lg bg-white border shadow-sm text-sm text-slate-600 hover:text-indigo-600">
-            <x-icon name="download" class="w-4 h-4" /> Download CSV
+            <x-icon name="download" class="w-4 h-4" /> {{ __('Download CSV') }}
         </a>
     </div>
 
@@ -17,15 +17,15 @@
     </div>
 
     <div class="bg-white rounded-xl shadow overflow-hidden mb-6">
-        <div class="px-4 py-3 border-b font-semibold text-sm">Collections</div>
+        <div class="px-4 py-3 border-b font-semibold text-sm">{{ __('Collections') }}</div>
         <table class="w-full text-sm rtable">
             <thead class="bg-slate-50 text-slate-500 text-left">
                 <tr>
-                    <th class="px-4 py-3">Number</th>
-                    <th class="px-4 py-3">Date</th>
-                    <th class="px-4 py-3">Retailer</th>
-                    <th class="px-4 py-3">Method</th>
-                    <th class="px-4 py-3">Amount</th>
+                    <th class="px-4 py-3">{{ __('Number') }}</th>
+                    <th class="px-4 py-3">{{ __('Date') }}</th>
+                    <th class="px-4 py-3">{{ __('Retailer') }}</th>
+                    <th class="px-4 py-3">{{ __('Method') }}</th>
+                    <th class="px-4 py-3">{{ __('Amount') }}</th>
                 </tr>
             </thead>
             <tbody class="divide-y">
@@ -34,12 +34,12 @@
                         <td class="px-4 py-3 font-medium" data-label="Number">{{ $collection->number }}</td>
                         <td class="px-4 py-3 text-slate-500" data-label="Date">{{ $collection->collection_date->format('d M Y') }}</td>
                         <td class="px-4 py-3" data-label="Retailer">{{ $collection->retailer?->name }}</td>
-                        <td class="px-4 py-3 text-slate-500" data-label="Method">{{ ucfirst($collection->method) }}</td>
+                        <td class="px-4 py-3 text-slate-500" data-label="Method">{{ __(ucfirst($collection->method)) }}</td>
                         <td class="px-4 py-3" data-label="Amount">৳ {{ number_format($collection->amount, 2) }}</td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="5" class="px-4 py-8 text-center text-slate-400">No collections in this range.</td>
+                        <td colspan="5" class="px-4 py-8 text-center text-slate-400">{{ __('No collections in this range.') }}</td>
                     </tr>
                 @endforelse
             </tbody>
@@ -47,14 +47,14 @@
     </div>
 
     <div class="bg-white rounded-xl shadow overflow-hidden">
-        <div class="px-4 py-3 border-b font-semibold text-sm">Retailers with Outstanding Dues</div>
+        <div class="px-4 py-3 border-b font-semibold text-sm">{{ __('Retailers with Outstanding Dues') }}</div>
         <table class="w-full text-sm rtable">
             <thead class="bg-slate-50 text-slate-500 text-left">
                 <tr>
-                    <th class="px-4 py-3">Retailer</th>
-                    <th class="px-4 py-3">Phone</th>
-                    <th class="px-4 py-3">Credit Limit</th>
-                    <th class="px-4 py-3">Current Due</th>
+                    <th class="px-4 py-3">{{ __('Retailer') }}</th>
+                    <th class="px-4 py-3">{{ __('Phone') }}</th>
+                    <th class="px-4 py-3">{{ __('Credit Limit') }}</th>
+                    <th class="px-4 py-3">{{ __('Current Due') }}</th>
                 </tr>
             </thead>
             <tbody class="divide-y">
@@ -67,7 +67,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="4" class="px-4 py-8 text-center text-slate-400">No outstanding dues.</td>
+                        <td colspan="4" class="px-4 py-8 text-center text-slate-400">{{ __('No outstanding dues.') }}</td>
                     </tr>
                 @endforelse
             </tbody>

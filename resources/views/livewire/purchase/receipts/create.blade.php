@@ -14,21 +14,21 @@
                     </div>
                     <div class="grid grid-cols-4 gap-3">
                         <div>
-                            <label class="text-xs text-slate-500">Receive Qty</label>
+                            <label class="text-xs text-slate-500">{{ __('Receive Qty') }}</label>
                             <input wire:model="lines.{{ $index }}.quantity" type="number" step="0.001" class="w-full border rounded-lg p-2 mt-1">
                             @error("lines.{$index}.quantity") <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
                         </div>
                         <div>
-                            <label class="text-xs text-slate-500">Batch No.</label>
+                            <label class="text-xs text-slate-500">{{ __('Batch No.') }}</label>
                             <input wire:model="lines.{{ $index }}.batch_no" type="text" class="w-full border rounded-lg p-2 mt-1">
                             @error("lines.{$index}.batch_no") <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
                         </div>
                         <div>
-                            <label class="text-xs text-slate-500">Expiry Date</label>
+                            <label class="text-xs text-slate-500">{{ __('Expiry Date') }}</label>
                             <input wire:model="lines.{{ $index }}.expiry_date" type="date" class="w-full border rounded-lg p-2 mt-1">
                         </div>
                         <div>
-                            <label class="text-xs text-slate-500">Unit Cost</label>
+                            <label class="text-xs text-slate-500">{{ __('Unit Cost') }}</label>
                             <input wire:model="lines.{{ $index }}.unit_cost" type="number" step="0.01" class="w-full border rounded-lg p-2 mt-1">
                             @error("lines.{$index}.unit_cost") <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
                         </div>
@@ -38,8 +38,8 @@
         </div>
 
         <div class="mt-6 flex justify-end gap-2">
-            <a href="{{ route('purchase.orders.show', $purchaseOrder) }}" class="px-4 py-2 rounded-lg text-slate-600">Cancel</a>
-            <button wire:click="save" class="px-4 py-2 rounded-lg bg-green-600 text-white font-medium">Confirm Receipt</button>
+            <a href="{{ route('purchase.orders.show', $purchaseOrder) }}" class="px-4 py-2 rounded-lg text-slate-600">{{ __('Cancel') }}</a>
+            <button wire:click="save" class="px-4 py-2 rounded-lg bg-green-600 text-white font-medium">{{ __('Confirm Receipt') }}</button>
         </div>
     </div>
 </div>

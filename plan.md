@@ -119,15 +119,15 @@ Payroll:   Base salary + Commission + Bonus − Advance − Other = Net salary �
 3. Retailer পোর্টালে Return request আর Warranty claim।
 4. SMS-এর লেখা Settings থেকে বদলানোর ব্যবস্থা (এখন ইংরেজিতে নির্দিষ্ট লেখা)।
 
+২১ নভেম্বর ২০২৬-এ আরও শেষ হয়েছে: ৪৫টা automated test, timezone Asia/Dhaka, route cache চালু, MySQL-এ যাওয়ার কমান্ড (`dms:copy-to-mysql`), আর পুরো অ্যাপ বাংলায় (ভাষা বদলানোর সুইচসহ)।
+
 **মান ও স্থায়িত্ব**
-5. **Automated tests**: Inventory (FIFO, adjustment), Payment allocation, Discount ভাগ, Numbering, Sales credit hold, Delivery invoice, Portal isolation, Restore।
-6. Timezone `Asia/Dhaka` করা।
-7. GitHub-এ push করা (রিপোর লিংক পেলে) আর অফসাইট ব্যাকআপ।
-8. ডোমেইন নিয়ে আসল SSL সার্টিফিকেট (এখন self-signed)।
-9. MySQL-এ নেওয়া (দরকার হলে)।
+5. GitHub-এ push করা (রিপোর লিংক পেলে) আর অফসাইট ব্যাকআপ।
+6. ডোমেইন নিয়ে আসল SSL সার্টিফিকেট (এখন self-signed)।
+7. Test-এর পরিধি বাড়ানো (Purchase, Returns, Warranty, Payroll, Reports)।
 
 **ঐচ্ছিক**
-10. বাংলা ভাষা, ডার্ক মোড, রিপোর্টের PDF এক্সপোর্ট, Sales Invoice আর মানি রিসিট প্রিন্ট।
+8. ডার্ক মোড, রিপোর্টের PDF এক্সপোর্ট, Sales Invoice আর মানি রিসিট প্রিন্ট, বাংলা ইনভয়েস PDF।
 
 ## ৭. সার্ভার
 

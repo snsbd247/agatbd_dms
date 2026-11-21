@@ -1,13 +1,13 @@
 <div class="max-w-4xl">
     <div class="bg-white rounded-xl shadow p-6">
-        <h2 class="text-lg font-semibold mb-1">Deliver against {{ $salesOrder->number }}</h2>
+        <h2 class="text-lg font-semibold mb-1">{{ __('Deliver against :v', ['v' => $salesOrder->number]) }}</h2>
         <p class="text-slate-500 mb-4">{{ $salesOrder->retailer?->name }} · {{ $salesOrder->warehouse?->name }}</p>
 
         <div class="mb-6">
-            <label class="text-sm text-slate-500">Delivery Type</label>
+            <label class="text-sm text-slate-500">{{ __('Delivery Type') }}</label>
             <select wire:model="delivery_type" class="w-full max-w-xs border rounded-lg p-2 mt-1">
-                <option value="dealer">Dealer Delivery</option>
-                <option value="representative">Representative Delivery</option>
+                <option value="dealer">{{ __('Dealer Delivery') }}</option>
+                <option value="representative">{{ __('Representative Delivery') }}</option>
             </select>
         </div>
 
@@ -24,11 +24,11 @@
                         </span>
                     </div>
                     @if($line['available'] < $line['remaining'])
-                        <p class="text-amber-600 text-xs mb-2">Not enough stock to fulfill this line in full — partial delivery only.</p>
+                        <p class="text-amber-600 text-xs mb-2">{{ __('Not enough stock to fulfill this line in full — partial delivery only.') }}</p>
                     @endif
                     <div class="grid grid-cols-4 gap-3">
                         <div>
-                            <label class="text-xs text-slate-500">Deliver Qty</label>
+                            <label class="text-xs text-slate-500">{{ __('Deliver Qty') }}</label>
                             <input wire:model="lines.{{ $index }}.quantity" type="number" step="0.001" class="w-full border rounded-lg p-2 mt-1">
                             @error("lines.{$index}.quantity") <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
                         </div>
@@ -38,8 +38,8 @@
         </div>
 
         <div class="mt-6 flex justify-end gap-2">
-            <a href="{{ route('sales.orders.show', $salesOrder) }}" class="px-4 py-2 rounded-lg text-slate-600">Cancel</a>
-            <button wire:click="save" class="px-4 py-2 rounded-lg bg-green-600 text-white font-medium">Confirm Delivery</button>
+            <a href="{{ route('sales.orders.show', $salesOrder) }}" class="px-4 py-2 rounded-lg text-slate-600">{{ __('Cancel') }}</a>
+            <button wire:click="save" class="px-4 py-2 rounded-lg bg-green-600 text-white font-medium">{{ __('Confirm Delivery') }}</button>
         </div>
     </div>
 </div>

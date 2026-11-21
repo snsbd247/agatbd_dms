@@ -8,12 +8,12 @@
 
     <div class="flex flex-wrap items-center gap-3 mb-4">
         <select wire:model="filter_status" class="border rounded-lg px-3 py-2 text-sm bg-white w-full sm:w-auto">
-            <option value="">All Status</option>
-            <option value="success">Success</option>
-            <option value="failed">Failed</option>
+            <option value="">{{ __('All Status') }}</option>
+            <option value="success">{{ __('Success') }}</option>
+            <option value="failed">{{ __('Failed') }}</option>
         </select>
-        <button wire:click="resetFilters" class="border rounded-lg px-4 py-2 text-sm text-slate-600 bg-white">Reset</button>
-        <button wire:click="applyFilters" class="bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg px-4 py-2 text-sm font-medium">Apply</button>
+        <button wire:click="resetFilters" class="border rounded-lg px-4 py-2 text-sm text-slate-600 bg-white">{{ __('Reset') }}</button>
+        <button wire:click="applyFilters" class="bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg px-4 py-2 text-sm font-medium">{{ __('Apply') }}</button>
     </div>
 
     <div class="bg-white rounded-xl shadow overflow-hidden overflow-x-auto">
@@ -21,11 +21,11 @@
             <thead class="bg-slate-50 text-slate-500 text-left">
                 <tr>
                     <th class="px-4 py-3 rtable-hide-mobile">#</th>
-                    <th class="px-4 py-3">User</th>
-                    <th class="px-4 py-3">IP Address</th>
-                    <th class="px-4 py-3">Login At</th>
-                    <th class="px-4 py-3">Logout At</th>
-                    <th class="px-4 py-3">Status</th>
+                    <th class="px-4 py-3">{{ __('User') }}</th>
+                    <th class="px-4 py-3">{{ __('IP Address') }}</th>
+                    <th class="px-4 py-3">{{ __('Login At') }}</th>
+                    <th class="px-4 py-3">{{ __('Logout At') }}</th>
+                    <th class="px-4 py-3">{{ __('Status') }}</th>
                 </tr>
             </thead>
             <tbody class="divide-y">
@@ -38,13 +38,13 @@
                         <td class="px-4 py-3 text-slate-500" data-label="Logout At">{{ $history->logout_at?->format('d M Y H:i') ?? '—' }}</td>
                         <td class="px-4 py-3" data-label="Status">
                             <span class="px-2 py-1 rounded-full text-xs {{ $history->status === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }}">
-                                {{ ucfirst($history->status) }}
+                                {{ __(ucfirst($history->status)) }}
                             </span>
                         </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6" class="px-4 py-8 text-center text-slate-400">No login history yet.</td>
+                        <td colspan="6" class="px-4 py-8 text-center text-slate-400">{{ __('No login history yet.') }}</td>
                     </tr>
                 @endforelse
             </tbody>

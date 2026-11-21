@@ -1,6 +1,6 @@
 <div class="max-w-4xl">
     <a href="{{ route('purchase.returns.index') }}" class="flex items-center gap-1.5 text-sm text-slate-500 hover:text-indigo-600 mb-4">
-        <x-icon name="chevron-left" class="w-4 h-4" /> Back to Purchase Returns
+        <x-icon name="chevron-left" class="w-4 h-4" /> {{ __('Back to Purchase Returns') }}
     </a>
 
     <div class="bg-white rounded-xl shadow p-6 mb-6">
@@ -27,7 +27,7 @@
                         default => 'bg-slate-100 text-slate-600',
                     };
                 @endphp
-                <span class="px-3 py-1 rounded-full text-sm {{ $badge }}">{{ ucfirst($purchaseReturn->status) }}</span>
+                <span class="px-3 py-1 rounded-full text-sm {{ $badge }}">{{ __(ucfirst($purchaseReturn->status)) }}</span>
                 <p class="text-2xl font-bold mt-2">৳ {{ number_format($purchaseReturn->total_amount, 2) }}</p>
             </div>
         </div>
@@ -35,10 +35,10 @@
         @can('purchase.manage')
             <div class="mt-4 flex flex-wrap gap-2">
                 @if($purchaseReturn->status === 'draft')
-                    <button wire:click="send" wire:confirm="Send this return? Stock will be deducted from the warehouse." class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-lg font-medium">Send to Supplier</button>
+                    <button wire:click="send" wire:confirm="{{ __('Send this return? Stock will be deducted from the warehouse.') }}" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-lg font-medium">{{ __('Send to Supplier') }}</button>
                 @endif
                 @if($purchaseReturn->status === 'sent')
-                    <button wire:click="complete" class="bg-green-600 hover:bg-green-500 text-white px-4 py-2 rounded-lg font-medium">Mark Completed</button>
+                    <button wire:click="complete" class="bg-green-600 hover:bg-green-500 text-white px-4 py-2 rounded-lg font-medium">{{ __('Mark Completed') }}</button>
                 @endif
             </div>
         @endcan
@@ -48,11 +48,11 @@
         <table class="w-full text-sm rtable">
             <thead class="bg-slate-50 text-slate-500 text-left">
                 <tr>
-                    <th class="px-4 py-3">Product</th>
-                    <th class="px-4 py-3">Batch</th>
-                    <th class="px-4 py-3">Quantity</th>
-                    <th class="px-4 py-3">Unit Cost</th>
-                    <th class="px-4 py-3">Line Total</th>
+                    <th class="px-4 py-3">{{ __('Product') }}</th>
+                    <th class="px-4 py-3">{{ __('Batch') }}</th>
+                    <th class="px-4 py-3">{{ __('Quantity') }}</th>
+                    <th class="px-4 py-3">{{ __('Unit Cost') }}</th>
+                    <th class="px-4 py-3">{{ __('Line Total') }}</th>
                 </tr>
             </thead>
             <tbody class="divide-y">

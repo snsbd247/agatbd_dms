@@ -12,13 +12,13 @@
                 type="button"
                 wire:click="setStatusFilter('{{ $value }}')"
                 class="px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap shrink-0 {{ $filter_status === $value ? 'bg-indigo-600 text-white' : 'bg-white text-slate-600 border' }}"
-            >{{ $label }}</button>
+            >{{ __($label) }}</button>
         @endforeach
     </div>
 
     <div class="sm:hidden mb-4" x-data="{ filtersOpen: false }">
         <div class="flex items-center gap-2">
-            <input wire:model="search" type="text" placeholder="Search by number..." class="border rounded-lg px-3 py-2 text-sm flex-1">
+            <input wire:model="search" type="text" placeholder="{{ __('Search by number...') }}" class="border rounded-lg px-3 py-2 text-sm flex-1">
             <button type="button" @click="filtersOpen = !filtersOpen" class="w-10 h-10 border rounded-lg bg-white flex items-center justify-center text-slate-500 shrink-0">
                 <x-icon name="filter" class="w-4 h-4" />
             </button>
@@ -27,19 +27,19 @@
             @endcan
         </div>
         <div x-show="filtersOpen" x-cloak class="flex gap-2 mt-2">
-            <button wire:click="resetFilters" class="flex-1 border rounded-lg px-4 py-2 text-sm text-slate-600 bg-white">Reset</button>
-            <button wire:click="applyFilters" class="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg px-4 py-2 text-sm font-medium">Apply</button>
+            <button wire:click="resetFilters" class="flex-1 border rounded-lg px-4 py-2 text-sm text-slate-600 bg-white">{{ __('Reset') }}</button>
+            <button wire:click="applyFilters" class="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg px-4 py-2 text-sm font-medium">{{ __('Apply') }}</button>
         </div>
     </div>
 
     <div class="hidden sm:flex flex-wrap items-center justify-between gap-3 mb-4">
         <div class="flex flex-wrap items-center gap-3">
-            <input wire:model="search" type="text" placeholder="Search by number..." class="border rounded-lg px-3 py-2 text-sm w-full sm:w-auto sm:min-w-[200px]">
-            <button wire:click="resetFilters" class="border rounded-lg px-4 py-2 text-sm text-slate-600 bg-white">Reset</button>
-            <button wire:click="applyFilters" class="bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg px-4 py-2 text-sm font-medium">Apply</button>
+            <input wire:model="search" type="text" placeholder="{{ __('Search by number...') }}" class="border rounded-lg px-3 py-2 text-sm w-full sm:w-auto sm:min-w-[200px]">
+            <button wire:click="resetFilters" class="border rounded-lg px-4 py-2 text-sm text-slate-600 bg-white">{{ __('Reset') }}</button>
+            <button wire:click="applyFilters" class="bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg px-4 py-2 text-sm font-medium">{{ __('Apply') }}</button>
         </div>
         @can('warranty.manage')
-            <a href="{{ route('warranty.create') }}" class="bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-xl font-medium shrink-0">+ New Warranty Claim</a>
+            <a href="{{ route('warranty.create') }}" class="bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-xl font-medium shrink-0">{{ __('+ New Warranty Claim') }}</a>
         @endcan
     </div>
 
@@ -48,12 +48,12 @@
             <thead class="bg-slate-50 text-slate-500 text-left">
                 <tr>
                     <th class="px-4 py-3 rtable-hide-mobile">#</th>
-                    <th class="px-4 py-3">Number</th>
-                    <th class="px-4 py-3">Retailer</th>
-                    <th class="px-4 py-3">Product</th>
-                    <th class="px-4 py-3">Date</th>
-                    <th class="px-4 py-3">Status</th>
-                    <th class="px-4 py-3 text-right">Action</th>
+                    <th class="px-4 py-3">{{ __('Number') }}</th>
+                    <th class="px-4 py-3">{{ __('Retailer') }}</th>
+                    <th class="px-4 py-3">{{ __('Product') }}</th>
+                    <th class="px-4 py-3">{{ __('Date') }}</th>
+                    <th class="px-4 py-3">{{ __('Status') }}</th>
+                    <th class="px-4 py-3 text-right">{{ __('Action') }}</th>
                 </tr>
             </thead>
             <tbody class="divide-y">
@@ -69,7 +69,7 @@
                                     'bg-blue-100 text-blue-700' => $claim->status === 'approved',
                                     'bg-red-100 text-red-700' => $claim->status === 'rejected',
                                     'bg-green-100 text-green-700' => in_array($claim->status, ['replaced', 'repaired']),
-                                ])>{{ ucfirst($claim->status) }}</span>
+                                ])>{{ __(ucfirst($claim->status)) }}</span>
                             </div>
                             <p class="w-full text-xs text-slate-500 mt-0.5">{{ $claim->retailer?->name }}</p>
                             <p class="w-full text-xs text-slate-400 mt-0.5">{{ $claim->product?->name }}</p>
@@ -85,7 +85,7 @@
                                 'bg-blue-100 text-blue-700' => $claim->status === 'approved',
                                 'bg-red-100 text-red-700' => $claim->status === 'rejected',
                                 'bg-green-100 text-green-700' => in_array($claim->status, ['replaced', 'repaired']),
-                            ])>{{ ucfirst($claim->status) }}</span>
+                            ])>{{ __(ucfirst($claim->status)) }}</span>
                         </td>
                         <td class="px-4 py-3 text-right">
                             <a href="{{ route('warranty.show', $claim) }}">
@@ -95,7 +95,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="7" class="px-4 py-8 text-center text-slate-400">No warranty claims found.</td>
+                        <td colspan="7" class="px-4 py-8 text-center text-slate-400">{{ __('No warranty claims found.') }}</td>
                     </tr>
                 @endforelse
             </tbody>

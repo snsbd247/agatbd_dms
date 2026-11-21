@@ -7,7 +7,7 @@
             <input type="date" wire:model.live="to" class="text-sm border-0 p-0 focus:ring-0 w-32">
         </div>
         <a href="{{ route('reports.export.products', request()->query()) }}" class="flex items-center gap-2 px-3 py-2 rounded-lg bg-white border shadow-sm text-sm text-slate-600 hover:text-indigo-600">
-            <x-icon name="download" class="w-4 h-4" /> Download CSV
+            <x-icon name="download" class="w-4 h-4" /> {{ __('Download CSV') }}
         </a>
     </div>
 
@@ -21,10 +21,10 @@
         <table class="w-full text-sm rtable">
             <thead class="bg-slate-50 text-slate-500 text-left">
                 <tr>
-                    <th class="px-4 py-3">Product</th>
-                    <th class="px-4 py-3">Quantity Sold</th>
-                    <th class="px-4 py-3">Revenue</th>
-                    <th class="px-4 py-3">Profit</th>
+                    <th class="px-4 py-3">{{ __('Product') }}</th>
+                    <th class="px-4 py-3">{{ __('Quantity Sold') }}</th>
+                    <th class="px-4 py-3">{{ __('Revenue') }}</th>
+                    <th class="px-4 py-3">{{ __('Profit') }}</th>
                 </tr>
             </thead>
             <tbody class="divide-y">
@@ -37,7 +37,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="4" class="px-4 py-8 text-center text-slate-400">No sales in this range.</td>
+                        <td colspan="4" class="px-4 py-8 text-center text-slate-400">{{ __('No sales in this range.') }}</td>
                     </tr>
                 @endforelse
             </tbody>

@@ -1,11 +1,11 @@
 <div>
     <div class="flex items-center justify-between mb-4">
         <div class="flex gap-2 text-sm">
-            <button wire:click="$set('filter', 'all')" class="px-3 py-1.5 rounded-lg {{ $filter === 'all' ? 'bg-indigo-600 text-white' : 'bg-white border text-slate-600' }}">All</button>
+            <button wire:click="$set('filter', 'all')" class="px-3 py-1.5 rounded-lg {{ $filter === 'all' ? 'bg-indigo-600 text-white' : 'bg-white border text-slate-600' }}">{{ __('All') }}</button>
             <button wire:click="$set('filter', 'unread')" class="px-3 py-1.5 rounded-lg {{ $filter === 'unread' ? 'bg-indigo-600 text-white' : 'bg-white border text-slate-600' }}">Unread ({{ $unreadCount }})</button>
         </div>
         @if($unreadCount > 0)
-            <button wire:click="markAllRead" class="text-sm text-indigo-600 hover:underline">Mark all as read</button>
+            <button wire:click="markAllRead" class="text-sm text-indigo-600 hover:underline">{{ __('Mark all as read') }}</button>
         @endif
     </div>
 
@@ -16,7 +16,7 @@
                     <x-icon name="bell" class="w-4 h-4" />
                 </div>
                 <span class="flex-1 min-w-0">
-                    <span class="block font-medium text-sm">{{ $notification->data['title'] ?? 'Notification' }}</span>
+                    <span class="block font-medium text-sm">{{ __($notification->data['title'] ?? 'Notification') }}</span>
                     <span class="block text-sm text-slate-500">{{ $notification->data['message'] ?? '' }}</span>
                     <span class="block text-xs text-slate-400 mt-1">{{ $notification->created_at->diffForHumans() }}</span>
                 </span>

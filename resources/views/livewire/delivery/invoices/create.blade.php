@@ -5,7 +5,7 @@
 
 <div class="max-w-4xl">
     <a href="{{ route('delivery.invoices.index') }}" class="flex items-center gap-1.5 text-sm text-slate-500 hover:text-indigo-600 mb-4">
-        <x-icon name="chevron-left" class="w-4 h-4" /> Back to Delivery Invoices
+        <x-icon name="chevron-left" class="w-4 h-4" /> {{ __('Back to Delivery Invoices') }}
     </a>
 
     @error('invoice')
@@ -15,10 +15,10 @@
     <div class="bg-white rounded-xl shadow p-6 mb-6">
         <div class="flex justify-between items-start gap-4">
             <div class="min-w-0">
-                <p class="text-xs text-slate-400">Delivery Note</p>
+                <p class="text-xs text-slate-400">{{ __('Delivery Note') }}</p>
                 <h2 class="text-2xl font-bold">{{ $deliveryNote->number }}</h2>
                 <p class="text-slate-500 mt-1">{{ $deliveryNote->salesOrder?->retailer?->name }} &middot; {{ $deliveryNote->salesOrder?->number }}</p>
-                <p class="text-slate-500">Delivered {{ $deliveryNote->delivery_date->format('d M Y') }}</p>
+                <p class="text-slate-500">{{ __('Delivered :v', ['v' => $deliveryNote->delivery_date->format('d M Y')]) }}</p>
             </div>
             <p class="text-2xl font-bold shrink-0">৳ {{ number_format($total, 2) }}</p>
         </div>
@@ -28,11 +28,11 @@
         <table class="w-full text-sm rtable">
             <thead class="bg-slate-50 text-slate-500 text-left">
                 <tr>
-                    <th class="px-4 py-3">Product</th>
-                    <th class="px-4 py-3">Batch</th>
-                    <th class="px-4 py-3 text-right">Quantity</th>
-                    <th class="px-4 py-3 text-right">Unit Price</th>
-                    <th class="px-4 py-3 text-right">Total</th>
+                    <th class="px-4 py-3">{{ __('Product') }}</th>
+                    <th class="px-4 py-3">{{ __('Batch') }}</th>
+                    <th class="px-4 py-3 text-right">{{ __('Quantity') }}</th>
+                    <th class="px-4 py-3 text-right">{{ __('Unit Price') }}</th>
+                    <th class="px-4 py-3 text-right">{{ __('Total') }}</th>
                 </tr>
             </thead>
             <tbody class="divide-y">
@@ -51,6 +51,6 @@
     </div>
 
     <button wire:click="createInvoice" wire:loading.attr="disabled" class="bg-indigo-600 hover:bg-indigo-500 disabled:opacity-60 text-white px-5 py-2.5 rounded-lg font-medium">
-        Create Invoice
+        {{ __('Create Invoice') }}
     </button>
 </div>

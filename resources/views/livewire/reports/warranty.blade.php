@@ -8,16 +8,16 @@
                 <input type="date" wire:model.live="to" class="text-sm border-0 p-0 focus:ring-0 w-32">
             </div>
             <select wire:model.live="status" class="border rounded-lg p-2 text-sm bg-white shadow-sm">
-                <option value="">All Status</option>
-                <option value="pending">Pending</option>
-                <option value="approved">Approved</option>
-                <option value="rejected">Rejected</option>
-                <option value="replaced">Replaced</option>
-                <option value="repaired">Repaired</option>
+                <option value="">{{ __('All Status') }}</option>
+                <option value="pending">{{ __('Pending') }}</option>
+                <option value="approved">{{ __('Approved') }}</option>
+                <option value="rejected">{{ __('Rejected') }}</option>
+                <option value="replaced">{{ __('Replaced') }}</option>
+                <option value="repaired">{{ __('Repaired') }}</option>
             </select>
         </div>
         <a href="{{ route('reports.export.warranty', request()->query()) }}" class="flex items-center gap-2 px-3 py-2 rounded-lg bg-white border shadow-sm text-sm text-slate-600 hover:text-indigo-600">
-            <x-icon name="download" class="w-4 h-4" /> Download CSV
+            <x-icon name="download" class="w-4 h-4" /> {{ __('Download CSV') }}
         </a>
     </div>
 
@@ -31,11 +31,11 @@
         <table class="w-full text-sm rtable">
             <thead class="bg-slate-50 text-slate-500 text-left">
                 <tr>
-                    <th class="px-4 py-3">Number</th>
-                    <th class="px-4 py-3">Date</th>
-                    <th class="px-4 py-3">Retailer</th>
-                    <th class="px-4 py-3">Product</th>
-                    <th class="px-4 py-3">Status</th>
+                    <th class="px-4 py-3">{{ __('Number') }}</th>
+                    <th class="px-4 py-3">{{ __('Date') }}</th>
+                    <th class="px-4 py-3">{{ __('Retailer') }}</th>
+                    <th class="px-4 py-3">{{ __('Product') }}</th>
+                    <th class="px-4 py-3">{{ __('Status') }}</th>
                 </tr>
             </thead>
             <tbody class="divide-y">
@@ -52,12 +52,12 @@
                                 'bg-blue-100 text-blue-700' => $claim->status === 'approved',
                                 'bg-red-100 text-red-700' => $claim->status === 'rejected',
                                 'bg-green-100 text-green-700' => in_array($claim->status, ['replaced', 'repaired']),
-                            ])>{{ ucfirst($claim->status) }}</span>
+                            ])>{{ __(ucfirst($claim->status)) }}</span>
                         </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="5" class="px-4 py-8 text-center text-slate-400">No warranty claims in this range.</td>
+                        <td colspan="5" class="px-4 py-8 text-center text-slate-400">{{ __('No warranty claims in this range.') }}</td>
                     </tr>
                 @endforelse
             </tbody>

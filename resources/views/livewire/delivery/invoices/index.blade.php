@@ -22,7 +22,7 @@
     @can('delivery.manage')
         @if($uninvoicedNotes->isNotEmpty())
             <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-4">
-                <p class="text-sm font-medium text-amber-800 mb-2">These deliveries have no invoice yet:</p>
+                <p class="text-sm font-medium text-amber-800 mb-2">{{ __('These deliveries have no invoice yet:') }}</p>
                 <div class="flex flex-wrap gap-2">
                     @foreach($uninvoicedNotes as $note)
                         <a href="{{ route('delivery.invoices.create', $note) }}" class="bg-white border border-amber-300 text-amber-800 hover:bg-amber-100 rounded-lg px-3 py-1.5 text-xs font-medium">
@@ -40,25 +40,25 @@
                 type="button"
                 wire:click="setStatusFilter('{{ $value }}')"
                 class="px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap shrink-0 {{ $status === $value ? 'bg-indigo-600 text-white' : 'bg-white text-slate-600 border' }}"
-            >{{ $label }}</button>
+            >{{ __($label) }}</button>
         @endforeach
     </div>
 
     <div class="mb-4">
-        <input wire:model.live.debounce.400ms="search" type="text" placeholder="Search by invoice number or retailer..." class="border rounded-lg px-3 py-2 text-sm w-full sm:w-80 bg-white">
+        <input wire:model.live.debounce.400ms="search" type="text" placeholder="{{ __('Search by invoice number or retailer...') }}" class="border rounded-lg px-3 py-2 text-sm w-full sm:w-80 bg-white">
     </div>
 
     <div class="bg-white rounded-xl shadow overflow-hidden overflow-x-auto">
         <table class="w-full text-sm rtable">
             <thead class="bg-slate-50 text-slate-500 text-left">
                 <tr>
-                    <th class="px-4 py-3">Invoice No.</th>
-                    <th class="px-4 py-3">Date</th>
-                    <th class="px-4 py-3">Retailer</th>
-                    <th class="px-4 py-3">Sales Order</th>
-                    <th class="px-4 py-3">Delivery</th>
-                    <th class="px-4 py-3 text-right">Amount</th>
-                    <th class="px-4 py-3">Status</th>
+                    <th class="px-4 py-3">{{ __('Invoice No.') }}</th>
+                    <th class="px-4 py-3">{{ __('Date') }}</th>
+                    <th class="px-4 py-3">{{ __('Retailer') }}</th>
+                    <th class="px-4 py-3">{{ __('Sales Order') }}</th>
+                    <th class="px-4 py-3">{{ __('Delivery') }}</th>
+                    <th class="px-4 py-3 text-right">{{ __('Amount') }}</th>
+                    <th class="px-4 py-3">{{ __('Status') }}</th>
                     <th class="px-4 py-3"></th>
                 </tr>
             </thead>
@@ -78,16 +78,16 @@
                         <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="Delivery">{{ $invoice->deliveryNote?->number }}</td>
                         <td class="px-4 py-3 text-right font-medium" data-label="Amount">৳ {{ number_format($invoice->grand_total, 2) }}</td>
                         <td class="px-4 py-3" data-label="Status">
-                            <span class="px-2 py-1 rounded-full text-xs {{ $badge($invoice->status) }}">{{ ucfirst($invoice->status) }}</span>
+                            <span class="px-2 py-1 rounded-full text-xs {{ $badge($invoice->status) }}">{{ __(ucfirst($invoice->status)) }}</span>
                         </td>
                         <td class="px-4 py-3 whitespace-nowrap">
                             <div class="flex items-center justify-end gap-1">
-                                <a href="{{ route('delivery.invoices.show', $invoice) }}" class="p-1.5 rounded-lg text-slate-500 hover:bg-slate-100" title="View"><x-icon name="eye" class="w-4 h-4" /></a>
-                                <a href="{{ route('delivery.invoices.print', $invoice) }}" target="_blank" class="p-1.5 rounded-lg text-slate-500 hover:bg-slate-100" title="Print PDF"><x-icon name="printer" class="w-4 h-4" /></a>
+                                <a href="{{ route('delivery.invoices.show', $invoice) }}" class="p-1.5 rounded-lg text-slate-500 hover:bg-slate-100" title="{{ __('View') }}"><x-icon name="eye" class="w-4 h-4" /></a>
+                                <a href="{{ route('delivery.invoices.print', $invoice) }}" target="_blank" class="p-1.5 rounded-lg text-slate-500 hover:bg-slate-100" title="{{ __('Print PDF') }}"><x-icon name="printer" class="w-4 h-4" /></a>
                                 @can('delivery.manage')
                                     @if($invoice->status === 'pending')
-                                        <button wire:click="finalizeInvoice({{ $invoice->id }})" class="p-1.5 rounded-lg text-blue-600 hover:bg-blue-50" title="Finalize"><x-icon name="shield-check" class="w-4 h-4" /></button>
-                                        <button wire:click="deleteInvoice({{ $invoice->id }})" wire:confirm="Delete invoice {{ $invoice->number }}?" class="p-1.5 rounded-lg text-red-600 hover:bg-red-50" title="Delete"><x-icon name="trash" class="w-4 h-4" /></button>
+                                        <button wire:click="finalizeInvoice({{ $invoice->id }})" class="p-1.5 rounded-lg text-blue-600 hover:bg-blue-50" title="{{ __('Finalize') }}"><x-icon name="shield-check" class="w-4 h-4" /></button>
+                                        <button wire:click="deleteInvoice({{ $invoice->id }})" wire:confirm="Delete invoice {{ $invoice->number }}?" class="p-1.5 rounded-lg text-red-600 hover:bg-red-50" title="{{ __('Delete') }}"><x-icon name="trash" class="w-4 h-4" /></button>
                                     @endif
                                 @endcan
                             </div>
@@ -95,7 +95,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="8" class="px-4 py-8 text-center text-slate-400">No delivery invoices yet.</td>
+                        <td colspan="8" class="px-4 py-8 text-center text-slate-400">{{ __('No delivery invoices yet.') }}</td>
                     </tr>
                 @endforelse
             </tbody>
