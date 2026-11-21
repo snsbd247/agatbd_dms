@@ -27,6 +27,23 @@ class DeliveryInvoiceController extends Controller
         return $pdf->stream('delivery-invoice-'.$invoice->number.'.pdf');
     }
 
+    /**
+     * Retailer portal: a retailer may view only their own invoices. Viewing
+     * here does not change the invoice status.
+     */
+    public function printForRetailer(DeliveryInvoice $deliveryInvoice)
+    {
+        $retailer = auth()->user()?->retailer;
+        abort_unless($retailer && $deliveryInvoice->retailer_id === $retailer->id, 404);
+
+        $invoice = $deliveryInvoice->load(self::RELATIONS);
+
+        return Pdf::loadView('pdfs.delivery-invoice', [
+            'invoice' => $invoice,
+            'company' => CompanyProfile::first(),
+        ])->setPaper('A4', 'portrait')->stream('delivery-invoice-'.$invoice->number.'.pdf');
+    }
+
     public function printSalesOrderInvoices(SalesOrder $salesOrder)
     {
         $invoices = DeliveryInvoice::where('sales_order_id', $salesOrder->id)

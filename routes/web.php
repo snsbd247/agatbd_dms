@@ -6,6 +6,7 @@ use App\Http\Controllers\DeliveryInvoiceController;
 use App\Http\Controllers\MasterData\CompanyExportController;
 use App\Http\Controllers\MasterData\ProductExportController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\Reports\ExportController as ReportExportController;
 use App\Http\Controllers\Settings\BackupController;
 use App\Livewire\Account\ChangePassword;
@@ -23,6 +24,7 @@ use App\Livewire\Delivery\Invoices\Index as DeliveryInvoiceIndex;
 use App\Livewire\Delivery\Invoices\Create as DeliveryInvoiceCreate;
 use App\Livewire\Delivery\Invoices\Show as DeliveryInvoiceShow;
 use App\Livewire\Inventory\Areas;
+use App\Livewire\Inventory\StockAdjustments;
 use App\Livewire\Inventory\Warehouses;
 use App\Livewire\MasterData\Brands;
 use App\Livewire\MasterData\Categories;
@@ -42,6 +44,10 @@ use App\Livewire\Purchase\Returns\Index as PurchaseReturnsIndex;
 use App\Livewire\Purchase\Returns\Show as PurchaseReturnsShow;
 use App\Livewire\Notifications\Index as NotificationsIndex;
 use App\Livewire\Payroll\Advances\Index as PayrollAdvancesIndex;
+use App\Livewire\Portal\OrderCreate as PortalOrderCreate;
+use App\Livewire\Portal\Orders as PortalOrders;
+use App\Livewire\Portal\OrderShow as PortalOrderShow;
+use App\Livewire\Portal\Statement as PortalStatement;
 use App\Livewire\Payroll\Bonuses\Index as PayrollBonusesIndex;
 use App\Livewire\Payroll\Entries\Create as PayrollEntryCreate;
 use App\Livewire\Payroll\Entries\Index as PayrollEntryIndex;
@@ -90,7 +96,12 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
     Route::get('/', [AuthController::class, 'showLogin'])->name('login');
-    Route::post('/login', [AuthController::class, 'login'])->name('login.attempt');
+    Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:10,1')->name('login.attempt');
+
+    Route::get('/forgot-password', [PasswordResetController::class, 'showRequest'])->name('password.request');
+    Route::post('/forgot-password', [PasswordResetController::class, 'sendRequest'])->middleware('throttle:5,1')->name('password.email');
+    Route::get('/reset-password/{token}', [PasswordResetController::class, 'showReset'])->name('password.reset');
+    Route::post('/reset-password', [PasswordResetController::class, 'reset'])->middleware('throttle:5,1')->name('password.update');
 });
 
 Route::middleware('auth')->group(function () {
@@ -100,12 +111,21 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard/retailer', RetailerDashboard::class)->name('dashboard.retailer');
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
+    Route::get('/search', \App\Livewire\GlobalSearch::class)->name('search');
     Route::get('/notifications', NotificationsIndex::class)->name('notifications.index');
     Route::get('/notifications/{notification}/open', [NotificationController::class, 'open'])->name('notifications.open');
 
     Route::get('/account/change-password', ChangePassword::class)->name('account.change-password');
     Route::get('/account/notification-settings', NotificationSettings::class)->name('account.notification-settings');
     Route::get('/account/profile', AccountProfile::class)->name('account.profile');
+
+    Route::middleware('can:portal.access')->prefix('portal')->name('portal.')->group(function () {
+        Route::get('/orders', PortalOrders::class)->name('orders');
+        Route::get('/orders/new', PortalOrderCreate::class)->name('orders.create');
+        Route::get('/orders/{salesOrder}', PortalOrderShow::class)->name('orders.show');
+        Route::get('/statement', PortalStatement::class)->name('statement');
+        Route::get('/invoices/{deliveryInvoice}/pdf', [DeliveryInvoiceController::class, 'printForRetailer'])->name('invoices.print');
+    });
 
     Route::get('/business', BusinessIndex::class)->name('business.index');
     Route::get('/more', MoreIndex::class)->name('more.index');
@@ -114,6 +134,7 @@ Route::middleware('auth')->group(function () {
     Route::middleware('can:settings.manage')->group(function () {
         Route::get('/more/backup-restore', MoreBackupRestore::class)->name('more.backup-restore');
         Route::get('/more/backup-restore/download', [BackupController::class, 'download'])->name('more.backup.download');
+        Route::get('/more/backup-restore/stored/{name}', [BackupController::class, 'downloadStored'])->name('more.backup.stored');
     });
 
     Route::middleware('can:master-data.view')->prefix('master-data')->name('master-data.')->group(function () {
@@ -131,6 +152,7 @@ Route::middleware('auth')->group(function () {
     Route::middleware('can:inventory.view')->prefix('inventory')->name('inventory.')->group(function () {
         Route::get('/warehouses', Warehouses::class)->name('warehouses');
         Route::get('/areas', Areas::class)->name('areas');
+        Route::get('/adjustments', StockAdjustments::class)->name('adjustments');
     });
 
     Route::middleware('can:purchase.view')->prefix('purchase')->name('purchase.')->group(function () {

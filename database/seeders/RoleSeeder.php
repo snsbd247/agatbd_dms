@@ -29,7 +29,7 @@ class RoleSeeder extends Seeder
             'collection.view', 'collection.manage',
             'returns.view', 'returns.create',
         ],
-        'Retailer' => [],
+        'Retailer' => ['portal.access'],
     ];
 
     public function run(): void

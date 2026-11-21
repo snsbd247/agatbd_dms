@@ -21,6 +21,7 @@ class PermissionSeeder extends Seeder
         'payroll.view', 'payroll.manage',
         'reports.view',
         'settings.manage',
+        'portal.access',
     ];
 
     public function run(): void

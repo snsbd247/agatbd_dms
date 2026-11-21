@@ -18,6 +18,7 @@ class Index extends Component
             ['route' => 'purchase.returns.index', 'permission' => 'purchase.view', 'icon' => 'refresh', 'color' => 'orange', 'title' => 'Purchase Returns', 'description' => 'Stock returned to companies'],
             ['route' => 'inventory.warehouses', 'permission' => 'inventory.view', 'icon' => 'archive-box', 'color' => 'purple', 'title' => 'Warehouses', 'description' => 'Manage storage locations'],
             ['route' => 'inventory.areas', 'permission' => 'inventory.view', 'icon' => 'map-pin', 'color' => 'red', 'title' => 'Areas', 'description' => 'Manage coverage areas'],
+            ['route' => 'inventory.adjustments', 'permission' => 'inventory.view', 'icon' => 'refresh', 'color' => 'orange', 'title' => 'Stock Adjustments', 'description' => 'Damage, loss and count corrections'],
             ['route' => 'sales.orders.index', 'permission' => 'sales.view', 'icon' => 'shopping-bag', 'color' => 'blue', 'title' => 'Sales Orders', 'description' => 'Orders placed by retailers'],
             ['route' => 'delivery.index', 'permission' => 'delivery.view', 'icon' => 'truck', 'color' => 'green', 'title' => 'Deliveries', 'description' => 'Stock shipped to retailers'],
             ['route' => 'delivery.invoices.index', 'permission' => 'delivery.view', 'icon' => 'document-text', 'color' => 'indigo', 'title' => 'Delivery Invoices', 'description' => 'Printable invoice per delivery'],

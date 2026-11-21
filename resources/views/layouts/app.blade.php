@@ -17,6 +17,11 @@
 <body class="bg-slate-100 text-slate-900 overscroll-none">
     @php
         $navGroups = [
+            ['icon' => 'building-storefront', 'label' => 'My Account', 'role' => 'Retailer', 'permission' => 'portal.access', 'prefix' => ['portal.'], 'links' => [
+                ['route' => 'portal.orders', 'label' => 'My Orders', 'icon' => 'shopping-bag'],
+                ['route' => 'portal.orders.create', 'label' => 'New Order', 'icon' => 'shopping-cart'],
+                ['route' => 'portal.statement', 'label' => 'My Statement', 'icon' => 'book-open'],
+            ]],
             ['icon' => 'database', 'label' => 'Master Data', 'permission' => 'master-data.view', 'prefix' => ['master-data.'], 'links' => [
                 ['route' => 'master-data.companies', 'label' => 'Companies', 'icon' => 'building-storefront'],
                 ['route' => 'master-data.brands', 'label' => 'Brands', 'icon' => 'gift'],
@@ -32,6 +37,7 @@
             ['icon' => 'archive-box', 'label' => 'Inventory', 'permission' => 'inventory.view', 'prefix' => ['inventory.'], 'links' => [
                 ['route' => 'inventory.warehouses', 'label' => 'Warehouses', 'icon' => 'archive-box'],
                 ['route' => 'inventory.areas', 'label' => 'Areas', 'icon' => 'map-pin'],
+                ['route' => 'inventory.adjustments', 'label' => 'Stock Adjustments', 'icon' => 'refresh'],
             ]],
             ['icon' => 'shopping-bag', 'label' => 'Sales', 'permission' => 'sales.view', 'prefix' => ['sales.'], 'links' => [
                 ['route' => 'sales.orders.index', 'label' => 'Sales Orders', 'icon' => 'shopping-bag'],
@@ -109,7 +115,9 @@
         $businessTabActive = collect(['purchase.', 'inventory.', 'sales.', 'delivery.', 'collection.'])->contains(fn ($p) => request()->routeIs($p.'*'))
             || request()->routeIs('reports.stock') || request()->routeIs('business.*');
         $reportsTabActive = request()->routeIs('reports.*') && ! request()->routeIs('reports.stock');
-        $moreTabActive = ! $dashboardActive && ! $masterTabActive && ! $businessTabActive && ! $reportsTabActive;
+        $portalTabVisible = auth()->user()->hasRole('Retailer');
+        $portalTabActive = request()->routeIs('portal.*');
+        $moreTabActive = ! $dashboardActive && ! $masterTabActive && ! $businessTabActive && ! $reportsTabActive && ! $portalTabActive;
     @endphp
 
     <div class="min-h-screen flex" x-data="{ collapsed: localStorage.getItem('dms_sidebar_collapsed') === '1' }" x-init="$watch('collapsed', value => localStorage.setItem('dms_sidebar_collapsed', value ? '1' : '0'))">
@@ -144,7 +152,9 @@
                 @foreach($navGroups as $group)
                     @php
                         $perms = (array) $group['permission'];
-                        $visible = collect($perms)->contains(fn ($p) => auth()->user()->can($p));
+                        $visible = isset($group['role'])
+                            ? auth()->user()->hasRole($group['role'])
+                            : collect($perms)->contains(fn ($p) => auth()->user()->can($p));
                         $isActive = collect($group['prefix'])->contains(fn ($p) => request()->routeIs($p.'*'));
                     @endphp
                     @if($visible)
@@ -230,10 +240,14 @@
                     </div>
                 </div>
                 <div class="flex items-center gap-1.5 sm:gap-3 shrink-0">
-                    <div class="relative hidden md:block">
-                        <x-icon name="search" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-                        <input type="text" placeholder="Search anything..." class="pl-9 pr-3 py-2 border rounded-lg text-sm w-56 bg-slate-50 text-slate-400 cursor-not-allowed" disabled title="Global search isn't wired up yet">
-                    </div>
+                    @unless(request()->routeIs('search'))
+                        <div class="hidden md:block">
+                            <livewire:global-search />
+                        </div>
+                    @endunless
+                    <a href="{{ route('search') }}" class="md:hidden text-slate-500 hover:text-slate-900 p-1.5 rounded-lg hover:bg-slate-100" title="Search">
+                        <x-icon name="search" class="w-5 h-5" />
+                    </a>
 
                     {{ $headerActions ?? '' }}
 
@@ -308,6 +322,16 @@
                 <x-icon name="grid" class="w-5 h-5" />
                 <span class="text-[10px] font-medium">Home</span>
             </a>
+            @if($portalTabVisible)
+                <a href="{{ route('portal.orders') }}" class="flex-1 flex flex-col items-center justify-center gap-0.5 py-2 {{ $portalTabActive && ! request()->routeIs('portal.statement') ? 'text-indigo-600' : 'text-slate-500' }}">
+                    <x-icon name="shopping-bag" class="w-5 h-5" />
+                    <span class="text-[10px] font-medium">Orders</span>
+                </a>
+                <a href="{{ route('portal.statement') }}" class="flex-1 flex flex-col items-center justify-center gap-0.5 py-2 {{ request()->routeIs('portal.statement') ? 'text-indigo-600' : 'text-slate-500' }}">
+                    <x-icon name="book-open" class="w-5 h-5" />
+                    <span class="text-[10px] font-medium">Statement</span>
+                </a>
+            @endif
             @if($masterTabVisible)
                 <a href="{{ route('master-data.index') }}" class="flex-1 flex flex-col items-center justify-center gap-0.5 py-2 {{ $masterTabActive ? 'text-indigo-600' : 'text-slate-500' }}">
                     <x-icon name="database" class="w-5 h-5" />

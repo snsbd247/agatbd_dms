@@ -3,6 +3,13 @@
         <p class="text-sm text-indigo-200">{{ now()->format('l, d F Y') }}</p>
         <h2 class="mt-1 text-xl font-bold">Your account at a glance</h2>
         <p class="mt-1 text-sm text-indigo-200">See your orders, invoices, current due and credit usage in one place.</p>
+        @if($retailer)
+            <div class="mt-4 flex flex-wrap gap-2">
+                <a href="{{ route('portal.orders.create') }}" class="bg-white text-indigo-700 hover:bg-indigo-50 px-4 py-2 rounded-lg text-sm font-semibold">+ New Order</a>
+                <a href="{{ route('portal.orders') }}" class="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg text-sm font-medium">My Orders</a>
+                <a href="{{ route('portal.statement') }}" class="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg text-sm font-medium">My Statement</a>
+            </div>
+        @endif
     </div>
     @unless($retailer)
         <div class="bg-amber-50 border border-amber-200 text-amber-800 rounded-xl p-4 mb-6">

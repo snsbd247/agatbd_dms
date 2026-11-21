@@ -12,6 +12,7 @@ use App\Models\Unit;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
+use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -39,6 +40,7 @@ class Products extends Component
     public string $reorder_level = '0';
     public bool $active = true;
 
+    #[Url(except: '')]
     public string $search = '';
     public string $filter_category_id = '';
     public string $filter_brand_id = '';

@@ -27,15 +27,17 @@
 | **Dealer** | সবকিছু (`Gate::before` দিয়ে সব পারমিশন পায়) |
 | **Manager** | Payroll ও Settings বাদে সব মডিউল, সাথে Sales approve |
 | **Sales Representative** | রিটেইলার দেখা, Sales order তৈরি, Delivery, Collection, Return request |
-| **Retailer** | শুধু নিজের ড্যাশবোর্ড |
+| **Retailer** | শুধু নিজের পোর্টাল: ড্যাশবোর্ড, নিজের অর্ডার দেওয়া ও দেখা, ইনভয়েস PDF, হিসাব-বিবরণী (`portal.access`) |
 
-পারমিশন তালিকা: `master-data.*`, `purchase.*`, `inventory.*`, `retailers.*`, `representatives.*`, `sales.view/create/approve`, `delivery.*`, `collection.*`, `returns.view/create/manage`, `warranty.*`, `payroll.*`, `reports.view`, `settings.manage`।
+পারমিশন তালিকা: `master-data.*`, `purchase.*`, `inventory.*`, `retailers.*`, `representatives.*`, `sales.view/create/approve`, `delivery.*`, `collection.*`, `returns.view/create/manage`, `warranty.*`, `payroll.*`, `reports.view`, `settings.manage`, `portal.access`।
+
+> ২১ নভেম্বর ২০২৬ পর্যন্ত লাইভ ডাটাবেসে চারটা রোলেরই সব পারমিশন ছিল, কারণ RoleSeeder বদলানোর পর আর চালানো হয়নি। এখন seeder অনুযায়ী ঠিক করা হয়েছে। রোলের পারমিশন বদলালে `php artisan db:seed --class=RoleSeeder --force` আর `php artisan permission:cache-reset` চালাতে হবে।
 
 ## ৩. মডিউল ও অবস্থা
 
 | # | মডিউল | মূল ফিচার | অবস্থা |
 |---|---|---|---|
-| 1 | Auth | লগইন, লগআউট, লগইন হিস্টোরি | ✅ সম্পন্ন |
+| 1 | Auth | লগইন, লগআউট, লগইন হিস্টোরি, Forgot password (মেইল থাকলে ইমেইলে লিংক, না থাকলে অ্যাডমিনকে নোটিফিকেশন) | ✅ সম্পন্ন |
 | 2 | Dashboard | Dealer / Representative / Retailer আলাদা ড্যাশবোর্ড | ✅ সম্পন্ন |
 | 3 | Master Data | Company, Brand, Category (parent-child), Unit, Product, প্রাইস হিস্টোরি, CSV export | ✅ সম্পন্ন |
 | 4 | Inventory | Warehouse (central/branch), Area, Batch, Stock, Stock ledger, Adjustment | ✅ সম্পন্ন |
@@ -51,10 +53,12 @@
 | 14 | Reports | ১৪টা রিপোর্ট (Sales, Purchase, Stock, Expiry, Collection, Return, Warranty, Representative, Retailer, Company, Area, Product, Payroll, Profit & Loss), CSV export | ✅ সম্পন্ন |
 | 15 | Notifications | Low stock, pending sales order, return, warranty-র নোটিফিকেশন, ইউজার প্রেফারেন্স | ✅ সম্পন্ন |
 | 16 | Settings | Company profile, Numbering, Warranty policy, Users, Login history, Audit log | ✅ সম্পন্ন |
-| 17 | More | About, Backup ডাউনলোড | ✅ সম্পন্ন |
-| 18 | Global search | হেডারের সার্চ বক্স | ⏳ বাকি (এখন disabled) |
-| 19 | Help | হেডারের হেল্প বাটন | ⏳ বাকি |
-| 20 | Automated tests | Feature/Unit test | ⏳ বাকি (শুধু Laravel-এর example test আছে) |
+| 17 | More | About, Backup ডাউনলোড, সার্ভারের ব্যাকআপের তালিকা, Restore (পাসওয়ার্ড আর `RESTORE` লিখে নিশ্চিত করতে হয়, আগে safety backup নেয়) | ✅ সম্পন্ন |
+| 18 | Global search | হেডারে লাইভ সার্চ (মোবাইলে `/search`), পারমিশন অনুযায়ী ৯ ধরনের রেকর্ড | ✅ সম্পন্ন |
+| 19 | Stock Adjustment | নষ্ট, হারানো, গণনার ভুল বা পাওয়া স্টক ঠিক করা, batch বা FIFO অনুযায়ী, লেজারে লেখা হয় | ✅ সম্পন্ন |
+| 20 | Retailer Portal | `/portal`: নিজের অর্ডার দেওয়া, দেখা আর বাতিল করা, ইনভয়েস PDF, হিসাব-বিবরণী | ✅ সম্পন্ন |
+| 21 | Help | হেডারের হেল্প বাটন | ⏳ বাকি |
+| 22 | Automated tests | Feature/Unit test | ⏳ বাকি (শুধু Laravel-এর example test আছে) |
 
 ## ৪. মূল ব্যবসায়িক ফ্লো
 
@@ -99,25 +103,24 @@ Payroll:   Base salary + Commission + Bonus − Advance − Other = Net salary �
 
 ২১ নভেম্বর ২০২৬-এ শেষ হয়েছে: পাসওয়ার্ড বদলানো, HTTPS (self-signed), প্যাকেজের নিরাপত্তা আপডেট, প্রতিদিনের অটো-ব্যাকআপ, লোকাল git।
 
+২১ নভেম্বর ২০২৬-এ আরও শেষ হয়েছে: Stock Adjustment, Backup Restore, Forgot password, Retailer পোর্টাল, Global search, আর রোলের পারমিশন ঠিক করা।
+
 **অসম্পূর্ণ ফিচার**
-1. **Stock Adjustment পেজ** (টেবিল আছে, UI নেই)।
-2. **Backup থেকে Restore**।
-3. **Forgot password**।
-4. **Retailer পোর্টাল** (নিজে অর্ডার দেওয়া, লেজার দেখা)।
-5. **Global search** আর **Help পেজ**।
-6. Audit log-এ Sales, Purchase, Collection আর Stock-এর পরিবর্তন যোগ করা।
-7. ইনভয়েস PDF-এ কোম্পানির লোগো আর footer দেখানো, Delivery Invoice-এ ডিসকাউন্ট।
-8. SMS বা Email নোটিফিকেশন।
+1. **Help পেজ**।
+2. Audit log-এ Sales, Purchase, Collection আর Stock-এর পরিবর্তন যোগ করা।
+3. ইনভয়েস PDF-এ কোম্পানির লোগো আর footer দেখানো, Delivery Invoice-এ ডিসকাউন্ট।
+4. SMS বা Email নোটিফিকেশন (SMTP দিলে Forgot password-এর ইমেইল লিংকও চালু হবে)।
+5. Retailer পোর্টালে Return request আর Warranty claim।
 
 **মান ও স্থায়িত্ব**
-9. **Automated tests**: Inventory (FIFO), Payment allocation, Numbering, Sales credit hold, Delivery invoice।
-10. Timezone `Asia/Dhaka` করা।
-11. GitHub-এ push করা (রিপোর লিংক পেলে) আর অফসাইট ব্যাকআপ।
-12. ডোমেইন নিয়ে আসল SSL সার্টিফিকেট (এখন self-signed)।
-13. MySQL-এ নেওয়া (দরকার হলে)।
+6. **Automated tests**: Inventory (FIFO, adjustment), Payment allocation, Numbering, Sales credit hold, Delivery invoice, Portal isolation, Restore।
+7. Timezone `Asia/Dhaka` করা।
+8. GitHub-এ push করা (রিপোর লিংক পেলে) আর অফসাইট ব্যাকআপ।
+9. ডোমেইন নিয়ে আসল SSL সার্টিফিকেট (এখন self-signed)।
+10. MySQL-এ নেওয়া (দরকার হলে)।
 
 **ঐচ্ছিক**
-14. বাংলা ভাষা, ডার্ক মোড, রিপোর্টের PDF এক্সপোর্ট, Sales Invoice আর মানি রিসিট প্রিন্ট।
+11. বাংলা ভাষা, ডার্ক মোড, রিপোর্টের PDF এক্সপোর্ট, Sales Invoice আর মানি রিসিট প্রিন্ট।
 
 ## ৭. সার্ভার
 

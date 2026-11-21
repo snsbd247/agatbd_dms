@@ -100,6 +100,15 @@
 - **অটো-ব্যাকআপ:** নতুন কমান্ড `php artisan dms:backup --keep=30` ([BackupDatabase.php](app/Console/Commands/BackupDatabase.php))। এটা `VACUUM INTO` দিয়ে consistent কপি নেয়, তারপর ডাটাবেস আর `.env` zip করে `storage/backups/auto/`-এ রাখে। ৩০ দিনের পুরনো ব্যাকআপ নিজে থেকে মুছে যায়। Windows Task Scheduler-এর "DMS Daily Backup" task এটা প্রতিদিন রাত ২টায় SYSTEM অ্যাকাউন্টে চালায়, লগ যায় `storage/logs/backup.log`-এ।
 - **Git:** লোকালে git চালু করে প্রথম commit করা হলো (branch `main`)। `.env`, ডাটাবেস, ব্যাকআপ, `vendor` আর `node_modules` বাদ রাখা হয়েছে। এখনো কোনো remote নেই।
 
+### ২১ নভেম্বর ২০২৬ (তৃতীয় ধাপ): নতুন ফিচার
+- **Stock Adjustment:** নতুন পেজ `/inventory/adjustments` ([StockAdjustments.php](app/Livewire/Inventory/StockAdjustments.php)) আর `InventoryService::adjustStock()`। স্টক যোগ করলে বেছে নেওয়া batch-এ বাড়ে, batch না দিলে নতুন `ADJ-…` batch তৈরি হয়। বাদ দিলে বেছে নেওয়া batch থেকে, না দিলে FIFO-তে কাটে। স্টক, batch আর লেজার (`type=adjustment`, চিহ্নসহ পরিমাণ) একসাথে আপডেট হয়।
+- **Backup ও Restore:** নতুন [BackupService.php](app/Services/BackupService.php)। কমান্ড, ডাউনলোড আর restore তিনটাই এটা ব্যবহার করে। ডাউনলোড এখন JSON-এর বদলে zip (ডাটাবেস + `.env`)। Restore-এর ধাপ: integrity check, তারপর schema মেলানো (নতুন ভার্সনের ব্যাকআপ হলে আটকায়), তারপর safety backup, তারপর এক transaction-এ সব টেবিলের ডাটা কপি, শেষে foreign key check। `sessions`, `cache`, `jobs` আর `migrations` টেবিল restore হয় না। আপলোডের সীমা Livewire-এর ডিফল্ট ১২ MB।
+- **Forgot password:** [PasswordResetController.php](app/Http/Controllers/PasswordResetController.php)। মেইল থাকলে Laravel-এর স্ট্যান্ডার্ড রিসেট লিংক যায়। `MAIL_MAILER=log` থাকলে Dealer আর Manager-দের কাছে অ্যাপের ভেতরে নোটিফিকেশন যায় (একই ইউজারের জন্য ৩০ মিনিটে একবার)। লগইনে প্রতি মিনিটে ১০টা চেষ্টা, রিসেটে ৫টা।
+- **Retailer পোর্টাল:** `app/Livewire/Portal/*`, route `/portal/*`, পারমিশন `portal.access`। সব query `ForCurrentRetailer` trait দিয়ে লগইন করা রিটেইলারের নিজের ডাটায় সীমিত। অর্ডারের দাম সবসময় product master থেকে নেওয়া হয়। গুদাম হিসেবে central warehouse নেয়। রিটেইলার pending অর্ডার নিজে বাতিল করতে পারে। ইনভয়েস PDF: `DeliveryInvoiceController::printForRetailer()`।
+- **Global search:** [GlobalSearch.php](app/Livewire/GlobalSearch.php), হেডারে লাইভ ড্রপডাউন আর মোবাইলে `/search`। পারমিশন অনুযায়ী Sales Orders, Retailers, Products, Companies, Representatives, Delivery Invoices, Purchase Orders, Returns আর Warranty খোঁজে। রিটেইলার শুধু নিজের অর্ডার পায়। Products পেজ এখন `?search=` বোঝে।
+- **রোলের পারমিশন ঠিক করা হলো:** লাইভ ডাটাবেসে চারটা রোলেরই সব পারমিশন ছিল। আগে ব্যাকআপ নিয়ে PermissionSeeder আর RoleSeeder চালানো হলো। এখন Dealer ২৭টা, Manager ২৩টা, Sales Rep ৯টা আর Retailer ১টা পারমিশন পায়।
+- **টেস্ট:** চার রোল দিয়ে HTTPS-এ access matrix যাচাই করা হলো। portal isolation (অন্যের অর্ডারে 404, তালিকা বা সার্চে দেখা যায় না) আর রিটেইলারের অর্ডার দেওয়া ও বাতিল করা rollback-সহ টেস্ট হলো। restore ডাটাবেসের কপিতে টেস্ট হলো (৫৫টা টেবিল, ৪০২টা রেকর্ড ফিরেছে, foreign key ঠিক)। পুরো forgot ও reset ফ্লো আর সব পেজের smoke test-ও করা হলো।
+
 ---
 
 ## জানা সমস্যা (Known issues)
