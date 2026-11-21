@@ -45,7 +45,7 @@ class BackupService
         $sqliteCopy = $this->directory().DIRECTORY_SEPARATOR.$name.'.sqlite';
         $zipPath = $this->directory().DIRECTORY_SEPARATOR.$name.'.zip';
 
-        DB::statement('VACUUM INTO ?', [$sqliteCopy]);
+        $this->snapshot($sqliteCopy);
 
         $zip = new \ZipArchive();
 
@@ -64,6 +64,31 @@ class BackupService
         File::delete($sqliteCopy);
 
         return $zipPath;
+    }
+
+    /**
+     * Write a consistent copy of the live database to $target.
+     * VACUUM INTO needs SQLite 3.27+. Older builds (the cPanel server ships
+     * 3.26) copy the file while holding a write lock instead, so no other
+     * request can change it half-way through the copy.
+     */
+    private function snapshot(string $target): void
+    {
+        $pdo = DB::connection()->getPdo();
+
+        if (version_compare($pdo->query('select sqlite_version()')->fetchColumn(), '3.27.0', '>=')) {
+            DB::statement('VACUUM INTO ?', [$target]);
+
+            return;
+        }
+
+        $pdo->exec('BEGIN IMMEDIATE');
+
+        try {
+            File::copy(DB::connection()->getConfig('database'), $target);
+        } finally {
+            $pdo->exec('ROLLBACK');
+        }
     }
 
     /**
