@@ -407,7 +407,7 @@ class DemoTransactionsSeeder extends Seeder
 
         // 8. Notifications for the items left in a pending state (LowStockAlert already fired
         // naturally from InventoryService::consumeStock during the MERIL-BOX-50 delivery above).
-        $recipients = User::role(['Dealer', 'Manager'])->get();
+        $recipients = User::role(['Admin', 'Manager'])->get();
         Notification::send($recipients, new SalesOrderPending($pendingOrder));
         Notification::send($recipients, new ReturnRequestPending($return2));
         Notification::send($recipients, new WarrantyClaimPending($warrantyClaim));

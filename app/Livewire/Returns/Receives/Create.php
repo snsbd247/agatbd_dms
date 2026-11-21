@@ -34,7 +34,9 @@ class Create extends Component
         abort_unless($this->returnRequest->status === 'approved', 403);
 
         $this->returnRequest->load('items.product');
-        $this->warehouse_id = Warehouse::where('type', 'central')->value('id') ?? Warehouse::query()->value('id');
+        $seller = \App\Support\Staff::dealerOfRetailer($this->returnRequest->retailer_id);
+        $own = Warehouse::when($seller === null, fn ($q) => $q->whereNull('dealer_id'), fn ($q) => $q->where('dealer_id', $seller));
+        $this->warehouse_id = (clone $own)->where('type', 'central')->value('id') ?? $own->value('id');
 
         $this->lines = $this->returnRequest->items->map(fn ($item) => [
             'item_id' => $item->id,
@@ -57,6 +59,16 @@ class Create extends Component
             'warehouse_id' => 'required|exists:warehouses,id',
         ]);
 
+        // Goods come back into the store of whoever sold them.
+        $warehouseRow = Warehouse::find($this->warehouse_id);
+        $sellerId = \App\Support\Staff::dealerOfRetailer($this->returnRequest->retailer_id);
+
+        if (! $warehouseRow || (int) $warehouseRow->dealer_id !== (int) $sellerId) {
+            $this->addError('warehouse_id', __('Choose a warehouse of the same business as this customer.'));
+
+            return;
+        }
+
         foreach ($this->lines as $index => $line) {
             $qty = (float) ($line['quantity'] ?: 0);
 
@@ -73,6 +85,7 @@ class Create extends Component
             return;
         }
 
+        try {
         DB::transaction(function () use ($numbers, $inventory) {
             $receive = ReturnReceive::create([
                 'number' => $numbers->generate('return_receive'),
@@ -83,12 +96,18 @@ class Create extends Component
             ]);
 
             $retailerCredit = 0.0;
+            $account = \App\Support\Tenant::bypass(fn () => Retailer::find($this->returnRequest->retailer_id));
 
             foreach ($this->lines as $line) {
                 $qty = (float) $line['quantity'];
 
                 if ($qty <= 0) {
                     continue;
+                }
+
+                // A dealer sending goods back: they leave the dealer's own stock.
+                if ($account?->account_dealer_id) {
+                    app(\App\Services\DealerStockService::class)->returnToHeadOffice($account, (int) $line['product_id'], $qty, $receive);
                 }
 
                 $batchId = null;
@@ -158,6 +177,11 @@ class Create extends Component
 
             $this->returnRequest->update(['status' => 'received']);
         });
+        } catch (\RuntimeException $e) {
+            $this->addError('lines', $e->getMessage());
+
+            return;
+        }
 
         $this->redirect(route('returns.show', $this->returnRequest), navigate: false);
     }

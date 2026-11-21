@@ -22,6 +22,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'dealer_id',
         'notification_preferences',
     ];
 
@@ -52,6 +53,27 @@ class User extends Authenticatable
     public function representative()
     {
         return $this->hasOne(Representative::class);
+    }
+
+    /** A dealer's login belongs to that dealer; null for head office users. */
+    public function dealer()
+    {
+        return $this->belongsTo(Dealer::class);
+    }
+
+    /**
+     * The customer record this login buys through: a retailer's own record,
+     * or for a dealer's login the dealer's account with the head office.
+     */
+    public function customerAccount(): ?Retailer
+    {
+        if ($retailer = Retailer::withoutGlobalScope('tenant')->where('user_id', $this->id)->first()) {
+            return $retailer;
+        }
+
+        return $this->dealer_id
+            ? Retailer::withoutGlobalScope('tenant')->where('account_dealer_id', $this->dealer_id)->first()
+            : null;
     }
 
     public function retailer()

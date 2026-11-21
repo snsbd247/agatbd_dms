@@ -34,6 +34,13 @@ class Create extends Component
     {
         $this->authorize('sales.create');
         $this->order_date = today()->toDateString();
+
+        // e.g. "New order for this dealer" on the dealer page
+        if ($preset = request()->integer('retailer')) {
+            if (Retailer::whereKey($preset)->exists()) {
+                $this->retailer_id = $preset;
+            }
+        }
     }
 
     public function addProduct(int $productId): void
@@ -94,6 +101,17 @@ class Create extends Component
             'items.*.quantity' => 'required|numeric|min:0.001',
         ]);
 
+        // Both must be visible to this user, and the goods must leave the
+        // seller's own warehouse (head office or the customer's dealer).
+        $retailerRow = Retailer::find($data['retailer_id']);
+        $warehouseRow = Warehouse::find($data['warehouse_id']);
+
+        if (! $retailerRow || ! $warehouseRow || (int) $retailerRow->dealer_id !== (int) $warehouseRow->dealer_id) {
+            $this->addError('warehouse_id', __('Choose a warehouse of the same business as this customer.'));
+
+            return;
+        }
+
         $representative = Auth::user()->representative;
 
         $order = DB::transaction(function () use ($data, $numbers, $representative) {
@@ -134,7 +152,7 @@ class Create extends Component
         });
 
         if (in_array($order->status, ['pending', 'credit_hold'], true)) {
-            $recipients = User::role(['Dealer', 'Manager'])->get()->filter(fn (User $u) => $u->wantsNotification('sales_order_pending'));
+            $recipients = \App\Support\Staff::approvers(\App\Support\Staff::dealerOfRetailer($order->retailer_id), 'sales_order_pending');
             Notification::send($recipients, new SalesOrderPending($order));
         }
 
@@ -165,7 +183,11 @@ class Create extends Component
 
         return view('livewire.sales.orders.create', [
             'retailers' => $retailers,
-            'warehouses' => Warehouse::orderBy('name')->get(),
+            'warehouses' => Warehouse::where('active', true)
+                ->when($this->retailer_id && ($chosen = Retailer::find($this->retailer_id)), fn ($q) => $chosen->dealer_id === null
+                    ? $q->whereNull('dealer_id')
+                    : $q->where('dealer_id', $chosen->dealer_id))
+                ->orderBy('name')->get(),
             'categories' => Category::whereHas('products', fn ($query) => $query->where('active', true))->orderBy('name')->get(),
             'products' => $products,
             'cartProducts' => Product::whereIn('id', collect($this->items)->pluck('product_id')->filter())->get()->keyBy('id'),

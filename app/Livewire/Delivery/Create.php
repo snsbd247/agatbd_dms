@@ -172,6 +172,16 @@ class Create extends Component
                 'entry_date' => today(),
             ]);
 
+            // Delivered to a dealer: the same batches arrive in the dealer's warehouse.
+            if ($retailer->account_dealer_id) {
+                app(\App\Services\DealerStockService::class)->receiveFromHeadOffice(
+                    $retailer,
+                    $invoiceLineData,
+                    $invoiceTotal > 0 ? $discount / $invoiceTotal : 0.0,
+                    $deliveryNote,
+                );
+            }
+
             $deliveryInvoices->createDeliveryInvoice($deliveryNote, $discount);
             $smsInvoice = ['number' => $invoice->number, 'amount' => $netTotal, 'due' => (float) $retailer->current_due, 'phone' => $retailer->phone];
 

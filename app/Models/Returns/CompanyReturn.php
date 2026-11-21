@@ -9,6 +9,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class CompanyReturn extends Model
 {
+    use \App\Models\Concerns\BelongsToTenant;
+
+    /** Whose record this is: see BelongsToTenant. */
+    public const TENANT_PATH = 'warehouse_id';
+
     use Auditable;
 
     protected $fillable = ['number', 'company_id', 'warehouse_id', 'return_date', 'status'];

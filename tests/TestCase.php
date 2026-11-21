@@ -56,6 +56,12 @@ abstract class TestCase extends BaseTestCase
         return $app;
     }
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+        \App\Support\Tenant::reset();   // static state must not leak between tests
+    }
+
     protected function seedRoles(): void
     {
         $this->seed([PermissionSeeder::class, RoleSeeder::class]);

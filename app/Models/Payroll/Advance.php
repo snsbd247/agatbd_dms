@@ -8,6 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Advance extends Model
 {
+    use \App\Models\Concerns\BelongsToTenant;
+
+    /** Whose record this is: see BelongsToTenant. */
+    public const TENANT_PATH = 'representative_id';
+
     use Auditable;
 
     protected $fillable = ['representative_id', 'amount', 'advance_date', 'reason', 'deducted'];

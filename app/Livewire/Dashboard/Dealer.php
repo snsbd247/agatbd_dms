@@ -31,7 +31,7 @@ class Dealer extends Component
 
     public function mount(): void
     {
-        abort_unless(auth()->user()->hasRole('Dealer') || auth()->user()->hasRole('Manager'), 403);
+        abort_unless(auth()->user()->hasAnyRole(['Admin', 'Manager', 'Dealer']), 403);
 
         $this->rangeFrom = today()->toDateString();
         $this->rangeTo = today()->toDateString();
@@ -57,6 +57,13 @@ class Dealer extends Component
             'purchase_receipt_count' => GoodsReceipt::count(),
             'sales_invoice_count' => SalesInvoice::count(),
         ];
+
+        // A dealer buys from Agro Tech instead of from companies: show that side instead.
+        if ($account = auth()->user()->dealer_id ? auth()->user()->customerAccount() : null) {
+            $stats['owed_to_head_office'] = (float) $account->current_due;
+            $stats['staff_count'] = \App\Models\Representative::count();
+            $stats['head_office_orders'] = \App\Support\Tenant::bypass(fn () => SalesOrder::where('retailer_id', $account->id)->count());
+        }
 
         $trends = $this->dayOverDayTrends($from, $to, (float) $stats['range_sales'], (float) $stats['range_collection']);
 
@@ -156,7 +163,7 @@ class Dealer extends Component
             'expiringBatches' => $expiringBatches,
             'lowStockItems' => $lowStockItems,
             'recentActivities' => $recentActivities,
-        ]);
+        ])->title(auth()->user()->dealer_id ? __('Dealer Dashboard') : __('Head Office Dashboard'));
     }
 
     private function dayOverDayTrends(Carbon $from, Carbon $to, float $rangeSales, float $rangeCollection): array

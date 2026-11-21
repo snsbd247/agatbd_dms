@@ -58,7 +58,7 @@ class PrintAndSmsTemplateTest extends TestCase
     public function test_staff_can_print_sales_invoice_and_receipt_in_both_languages(): void
     {
         foreach (['en', 'bn'] as $locale) {
-            $user = $this->userWithRole('Dealer', ['locale' => $locale]);
+            $user = $this->userWithRole('Admin', ['locale' => $locale]);
             $this->actingAs($user);
 
             $this->assertPdf($this->get(route('sales.invoices.print', $this->invoice)));
@@ -68,7 +68,7 @@ class PrintAndSmsTemplateTest extends TestCase
 
     public function test_every_report_has_a_pdf(): void
     {
-        $this->actingAs($this->userWithRole('Dealer'));
+        $this->actingAs($this->userWithRole('Admin'));
 
         foreach (array_keys(PdfController::REPORTS) as $report) {
             $this->assertPdf($this->get(route('reports.pdf', $report)));
@@ -115,7 +115,7 @@ class PrintAndSmsTemplateTest extends TestCase
 
     public function test_sms_text_can_be_changed_and_reset(): void
     {
-        $this->actingAs($this->userWithRole('Dealer'));
+        $this->actingAs($this->userWithRole('Admin'));
         AppSetting::put(['sms_sender_name' => 'ACME']);
 
         $this->assertSame('ACME: Payment received: Tk 1,500.00. Thank you! Remaining due Tk 200.00.',

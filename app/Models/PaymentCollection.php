@@ -7,6 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class PaymentCollection extends Model
 {
+    use \App\Models\Concerns\BelongsToTenant;
+
+    /** Whose record this is: see BelongsToTenant. */
+    public const TENANT_PATH = 'retailer_id';
+
     use Auditable;
 
     protected $table = 'collections';

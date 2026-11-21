@@ -11,6 +11,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class SalesOrder extends Model
 {
+    use \App\Models\Concerns\BelongsToTenant;
+
+    /** Whose record this is: see BelongsToTenant. */
+    public const TENANT_PATH = 'retailer_id';
+
     use Auditable;
 
     protected $fillable = [

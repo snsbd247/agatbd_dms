@@ -40,7 +40,7 @@ class DocumentPrintController extends Controller
 
     private function abortUnlessOwnRetailer(?int $retailerId): void
     {
-        $retailer = auth()->user()?->retailer;
+        $retailer = auth()->user()?->customerAccount();
         abort_unless($retailer && $retailerId === $retailer->id, 404);
     }
 

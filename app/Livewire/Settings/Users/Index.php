@@ -69,7 +69,7 @@ class Index extends Component
             'name' => 'required|string|max:255',
             'email' => ['required', 'email', 'max:255', Rule::unique('users', 'email')->ignore($this->editingId)],
             'password' => $this->editingId ? 'nullable|string|min:8' : 'required|string|min:8',
-            'form_role' => 'required|in:Dealer,Manager',
+            'form_role' => 'required|in:Admin,Manager',
         ]);
 
         if ($this->editingId) {
@@ -103,7 +103,7 @@ class Index extends Component
                 'email' => $data['email'],
                 'password' => Hash::make($data['password']),
             ]);
-            $user->assignRole($data['form_role']);
+            $user->syncRoles([$data['form_role']]);   // a fresh user has exactly this role
 
             AuditLog::create([
                 'user_id' => Auth::id(),
@@ -131,8 +131,8 @@ class Index extends Component
 
         $user = User::findOrFail($id);
 
-        if ($user->hasRole('Dealer') && User::role('Dealer')->count() <= 1) {
-            $this->addError('delete', 'Cannot delete the last remaining Dealer account.');
+        if ($user->hasRole('Admin') && User::role('Admin')->whereNull('dealer_id')->count() <= 1) {
+            $this->addError('delete', __('Cannot delete the last remaining Admin account.'));
 
             return;
         }
@@ -153,7 +153,7 @@ class Index extends Component
 
     public function render()
     {
-        $users = User::role(['Dealer', 'Manager'])
+        $users = User::role(['Admin', 'Manager'])->whereNull('dealer_id')
             ->with('roles')
             ->when($this->search, fn ($q) => $q->where('name', 'like', "%{$this->search}%")->orWhere('email', 'like', "%{$this->search}%"))
             ->when($this->filter_role, fn ($q) => $q->role($this->filter_role))
@@ -161,10 +161,10 @@ class Index extends Component
             ->paginate(10);
 
         $summary = [
-            'total' => User::role(['Dealer', 'Manager'])->count(),
-            'dealers' => User::role('Dealer')->count(),
+            'total' => User::role(['Admin', 'Manager'])->whereNull('dealer_id')->count(),
+            'dealers' => User::role('Admin')->whereNull('dealer_id')->count(),
             'managers' => User::role('Manager')->count(),
-            'new_this_month' => User::role(['Dealer', 'Manager'])->where('created_at', '>=', today()->startOfMonth())->count(),
+            'new_this_month' => User::role(['Admin', 'Manager'])->whereNull('dealer_id')->where('created_at', '>=', today()->startOfMonth())->count(),
         ];
 
         return view('livewire.settings.users.index', [

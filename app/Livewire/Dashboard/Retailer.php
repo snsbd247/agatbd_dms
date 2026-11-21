@@ -21,7 +21,7 @@ class Retailer extends Component
 
     public function render()
     {
-        $retailer = Auth::user()->retailer;
+        $retailer = Auth::user()->customerAccount();
 
         if (! $retailer) {
             return view('livewire.dashboard.retailer', [

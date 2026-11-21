@@ -20,6 +20,7 @@ class PermissionSeeder extends Seeder
         'warranty.view', 'warranty.manage',
         'payroll.view', 'payroll.manage',
         'reports.view',
+        'dealers.view', 'dealers.manage',
         'settings.manage',
         'portal.access',
     ];

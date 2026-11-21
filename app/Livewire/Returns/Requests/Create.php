@@ -90,7 +90,7 @@ class Create extends Component
             return $request;
         });
 
-        $recipients = User::role(['Dealer', 'Manager'])->get()->filter(fn (User $u) => $u->wantsNotification('return_request_pending'));
+        $recipients = \App\Support\Staff::approvers(\App\Support\Staff::dealerOfRetailer($request->retailer_id), 'return_request_pending');
         Notification::send($recipients, new ReturnRequestPending($request));
 
         $this->redirect(route('returns.show', $request), navigate: false);

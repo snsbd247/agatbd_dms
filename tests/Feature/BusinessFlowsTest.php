@@ -44,7 +44,7 @@ class BusinessFlowsTest extends TestCase
         parent::setUp();
         $this->seedRoles();
         $this->warehouse();
-        $this->actingAs($this->userWithRole('Dealer'));
+        $this->actingAs($this->userWithRole('Admin'));
     }
 
     private function stockOf($product): float

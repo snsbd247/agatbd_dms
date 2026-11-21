@@ -26,6 +26,11 @@ class Factories extends Component
     public ?int $manager_user_id = null;
     public bool $active = true;
 
+    public function mount(): void
+    {
+        abort_if(auth()->user()->dealer_id, 403);   // factories belong to the head office
+    }
+
     public function create(): void
     {
         $this->authorize('inventory.manage');
@@ -93,7 +98,7 @@ class Factories extends Component
     {
         return view('livewire.inventory.factories', [
             'factories' => Factory::with(['manager', 'warehouses'])->orderBy('name')->get(),
-            'managers' => User::role(['Dealer', 'Manager'])->orderBy('name')->get(['id', 'name']),
+            'managers' => User::role(['Admin', 'Manager'])->whereNull('dealer_id')->orderBy('name')->get(['id', 'name']),
         ]);
     }
 }

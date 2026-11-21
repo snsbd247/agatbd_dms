@@ -30,6 +30,7 @@ class PdfController extends Controller
         'profit' => 'Profit & Loss Report',
         'expiry' => 'Expiry Report',
         'areas' => 'Area Report',
+        'dealers' => 'Dealer Sales Report',
     ];
 
     /** Columns that are numbers but must not be added up. */
@@ -38,6 +39,8 @@ class PdfController extends Controller
     public function show(Request $request, string $report)
     {
         abort_unless(isset(self::REPORTS[$report]), 404);
+        // Head office only reports (their pages and CSV are closed to dealer logins too).
+        abort_if(in_array($report, ['purchase', 'companies', 'payroll'], true) && $request->user()->dealer_id !== null, 403);
 
         $response = app(ExportController::class)->{$report}($request);
         abort_unless($response instanceof StreamedResponse, 500);

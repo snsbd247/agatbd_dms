@@ -106,8 +106,9 @@ class Index extends Component
                     'name' => $data['name'],
                     'email' => $this->login_email,
                     'password' => $this->login_password,
+                    'dealer_id' => \App\Support\Tenant::dealerId(),   // a dealer's own staff work in the dealer's panel
                 ]);
-                $user->assignRole('Sales Representative');
+                $user->syncRoles(['Sales Representative']);   // a fresh user has exactly this role
                 $userId = $user->id;
             }
 

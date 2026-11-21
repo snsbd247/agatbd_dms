@@ -9,6 +9,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class DeliveryNote extends Model
 {
+    use \App\Models\Concerns\BelongsToTenant;
+
+    /** Whose record this is: see BelongsToTenant. */
+    public const TENANT_PATH = 'sales_order_id';
+
     use Auditable;
 
     protected $fillable = ['number', 'sales_order_id', 'delivery_type', 'delivered_by', 'delivery_date', 'status'];

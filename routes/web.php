@@ -25,6 +25,8 @@ use App\Livewire\Delivery\Index as DeliveryIndex;
 use App\Livewire\Delivery\Invoices\Index as DeliveryInvoiceIndex;
 use App\Livewire\Delivery\Invoices\Create as DeliveryInvoiceCreate;
 use App\Livewire\Delivery\Invoices\Show as DeliveryInvoiceShow;
+use App\Livewire\Dealers\Index as DealersIndex;
+use App\Livewire\Dealers\Show as DealersShow;
 use App\Livewire\Inventory\Areas;
 use App\Livewire\Inventory\Factories;
 use App\Livewire\Inventory\StockAdjustments;
@@ -62,6 +64,7 @@ use App\Livewire\Purchase\Receipts\Index as GoodsReceiptIndex;
 use App\Livewire\Representatives\Index as RepresentativesIndex;
 use App\Livewire\Representatives\Show as RepresentativesShow;
 use App\Livewire\Reports\Areas as ReportsAreas;
+use App\Livewire\Reports\Dealers as ReportsDealers;
 use App\Livewire\Reports\Collections as ReportsCollections;
 use App\Livewire\Reports\Companies as ReportsCompanies;
 use App\Livewire\Reports\Expiry as ReportsExpiry;
@@ -118,7 +121,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', DashboardController::class)->name('dashboard');
     Route::get('/dashboard/dealer', DealerDashboard::class)->name('dashboard.dealer');
     Route::get('/dashboard/representative', RepresentativeDashboard::class)->name('dashboard.representative');
-    Route::get('/dashboard/retailer', RetailerDashboard::class)->name('dashboard.retailer');
+    Route::get('/dashboard/retailer', RetailerDashboard::class)->middleware('tenant.off')->name('dashboard.retailer');
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
     Route::get('/search', \App\Livewire\GlobalSearch::class)->name('search');
@@ -130,7 +133,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/account/notification-settings', NotificationSettings::class)->name('account.notification-settings');
     Route::get('/account/profile', AccountProfile::class)->name('account.profile');
 
-    Route::middleware('can:portal.access')->prefix('portal')->name('portal.')->group(function () {
+    Route::middleware(['can:portal.access', 'tenant.off'])->prefix('portal')->name('portal.')->group(function () {
         Route::get('/orders', PortalOrders::class)->name('orders');
         Route::get('/orders/new', PortalOrderCreate::class)->name('orders.create');
         Route::get('/orders/{salesOrder}', PortalOrderShow::class)->name('orders.show');
@@ -164,10 +167,15 @@ Route::middleware('auth')->group(function () {
         Route::get('/products/export', ProductExportController::class)->name('products.export');
     });
 
+    Route::middleware('can:dealers.view')->prefix('dealers')->name('dealers.')->group(function () {
+        Route::get('/', DealersIndex::class)->name('index');
+        Route::get('/{dealer}', DealersShow::class)->name('show');
+    });
+
     Route::middleware('can:inventory.view')->prefix('inventory')->name('inventory.')->group(function () {
-        Route::get('/factories', Factories::class)->name('factories');
+        Route::get('/factories', Factories::class)->middleware('head.office')->name('factories');
         Route::get('/warehouses', Warehouses::class)->name('warehouses');
-        Route::get('/areas', Areas::class)->name('areas');
+        Route::get('/areas', Areas::class)->middleware('head.office')->name('areas');
         Route::get('/adjustments', StockAdjustments::class)->name('adjustments');
     });
 
@@ -238,15 +246,16 @@ Route::middleware('auth')->group(function () {
         Route::get('/collections', ReportsCollections::class)->name('collections');
         Route::get('/returns', ReportsReturns::class)->name('returns');
         Route::get('/representatives', ReportsRepresentatives::class)->name('representatives');
-        Route::get('/purchase', ReportsPurchase::class)->name('purchase');
-        Route::get('/companies', ReportsCompanies::class)->name('companies');
+        Route::get('/purchase', ReportsPurchase::class)->middleware('head.office')->name('purchase');
+        Route::get('/companies', ReportsCompanies::class)->middleware('head.office')->name('companies');
         Route::get('/products', ReportsProducts::class)->name('products');
         Route::get('/retailers', ReportsRetailers::class)->name('retailers');
         Route::get('/warranty', ReportsWarranty::class)->name('warranty');
-        Route::get('/payroll', ReportsPayrollSummary::class)->name('payroll');
+        Route::get('/payroll', ReportsPayrollSummary::class)->middleware('head.office')->name('payroll');
         Route::get('/profit', ReportsProfit::class)->name('profit');
         Route::get('/expiry', ReportsExpiry::class)->name('expiry');
         Route::get('/areas', ReportsAreas::class)->name('areas');
+        Route::get('/dealers', ReportsDealers::class)->middleware('can:dealers.view')->name('dealers');
 
         Route::get('/pdf/{report}', [ReportPdfController::class, 'show'])->name('pdf');
 
@@ -256,15 +265,16 @@ Route::middleware('auth')->group(function () {
             Route::get('/collections', [ReportExportController::class, 'collections'])->name('collections');
             Route::get('/returns', [ReportExportController::class, 'returns'])->name('returns');
             Route::get('/representatives', [ReportExportController::class, 'representatives'])->name('representatives');
-            Route::get('/purchase', [ReportExportController::class, 'purchase'])->name('purchase');
-            Route::get('/companies', [ReportExportController::class, 'companies'])->name('companies');
+            Route::get('/purchase', [ReportExportController::class, 'purchase'])->middleware('head.office')->name('purchase');
+            Route::get('/companies', [ReportExportController::class, 'companies'])->middleware('head.office')->name('companies');
             Route::get('/products', [ReportExportController::class, 'products'])->name('products');
             Route::get('/retailers', [ReportExportController::class, 'retailers'])->name('retailers');
             Route::get('/warranty', [ReportExportController::class, 'warranty'])->name('warranty');
-            Route::get('/payroll', [ReportExportController::class, 'payroll'])->name('payroll');
+            Route::get('/payroll', [ReportExportController::class, 'payroll'])->middleware('head.office')->name('payroll');
             Route::get('/profit', [ReportExportController::class, 'profit'])->name('profit');
             Route::get('/expiry', [ReportExportController::class, 'expiry'])->name('expiry');
             Route::get('/areas', [ReportExportController::class, 'areas'])->name('areas');
+            Route::get('/dealers', [ReportExportController::class, 'dealers'])->middleware('can:dealers.view')->name('dealers');
         });
     });
 

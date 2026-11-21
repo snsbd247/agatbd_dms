@@ -7,6 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class RepresentativeTarget extends Model
 {
+    use \App\Models\Concerns\BelongsToTenant;
+
+    /** Whose record this is: see BelongsToTenant. */
+    public const TENANT_PATH = 'representative_id';
+
     protected $fillable = ['representative_id', 'period', 'target_amount', 'achieved_amount'];
 
     protected function casts(): array

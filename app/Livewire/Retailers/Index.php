@@ -115,7 +115,7 @@ class Index extends Component
                     'email' => $this->login_email,
                     'password' => $this->login_password,
                 ]);
-                $user->assignRole('Retailer');
+                $user->syncRoles(['Retailer']);   // a fresh user has exactly this role
                 $userId = $user->id;
             }
 

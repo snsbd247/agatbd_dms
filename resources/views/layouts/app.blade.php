@@ -31,7 +31,7 @@
 <body class="bg-slate-100 text-slate-900 overscroll-none">
     @php
         $navGroups = [
-            ['icon' => 'building-storefront', 'label' => 'My Account', 'role' => 'Retailer', 'permission' => 'portal.access', 'prefix' => ['portal.'], 'links' => [
+            ['icon' => 'building-storefront', 'label' => auth()->user()->dealer_id ? 'Buy from Agro Tech' : 'My Account', 'role' => ['Retailer', 'Dealer'], 'permission' => 'portal.access', 'prefix' => ['portal.'], 'links' => [
                 ['route' => 'portal.orders', 'label' => 'My Orders', 'icon' => 'shopping-bag'],
                 ['route' => 'portal.orders.create', 'label' => 'New Order', 'icon' => 'shopping-cart'],
                 ['route' => 'portal.statement', 'label' => 'My Statement', 'icon' => 'book-open'],
@@ -51,9 +51,9 @@
                 ['route' => 'purchase.returns.index', 'label' => 'Purchase Returns', 'icon' => 'refresh'],
             ]],
             ['icon' => 'archive-box', 'label' => 'Inventory', 'permission' => 'inventory.view', 'prefix' => ['inventory.'], 'links' => [
-                ['route' => 'inventory.factories', 'label' => 'Factories', 'icon' => 'factory'],
+                ['route' => 'inventory.factories', 'label' => 'Factories', 'icon' => 'factory', 'headOffice' => true],
                 ['route' => 'inventory.warehouses', 'label' => 'Warehouses', 'icon' => 'archive-box'],
-                ['route' => 'inventory.areas', 'label' => 'Areas', 'icon' => 'map-pin'],
+                ['route' => 'inventory.areas', 'label' => 'Areas', 'icon' => 'map-pin', 'headOffice' => true],
                 ['route' => 'inventory.adjustments', 'label' => 'Stock Adjustments', 'icon' => 'refresh'],
             ]],
             ['icon' => 'shopping-bag', 'label' => 'Sales', 'permission' => 'sales.view', 'prefix' => ['sales.'], 'links' => [
@@ -74,12 +74,15 @@
             ['icon' => 'building-storefront', 'label' => 'Retailer', 'permission' => 'retailers.view', 'prefix' => ['retailers.'], 'links' => [
                 ['route' => 'retailers.index', 'label' => 'Retailers', 'icon' => 'building-storefront'],
             ]],
+            ['icon' => 'building-storefront', 'label' => 'Dealers', 'permission' => 'dealers.view', 'prefix' => ['dealers.'], 'links' => [
+                ['route' => 'dealers.index', 'label' => 'Dealers', 'icon' => 'building-storefront'],
+            ]],
             ['icon' => 'user-group', 'label' => 'Representative', 'permission' => 'representatives.view', 'prefix' => ['representatives.'], 'links' => [
                 ['route' => 'representatives.index', 'label' => 'Representatives', 'icon' => 'user-group'],
             ]],
             ['icon' => 'chart-bar', 'label' => 'Reports', 'permission' => 'reports.view', 'prefix' => ['reports.'], 'links' => [
                 ['route' => 'reports.sales', 'label' => 'Sales Report', 'icon' => 'chart-bar'],
-                ['route' => 'reports.purchase', 'label' => 'Purchase Report', 'icon' => 'shopping-cart'],
+                ['route' => 'reports.purchase', 'label' => 'Purchase Report', 'icon' => 'shopping-cart', 'headOffice' => true],
                 ['route' => 'reports.stock', 'label' => 'Stock Report', 'icon' => 'archive-box'],
                 ['route' => 'reports.expiry', 'label' => 'Expiry Report', 'icon' => 'clock'],
                 ['route' => 'reports.collections', 'label' => 'Collections & Due', 'icon' => 'banknotes'],
@@ -87,10 +90,11 @@
                 ['route' => 'reports.warranty', 'label' => 'Warranty Report', 'icon' => 'shield-exclamation'],
                 ['route' => 'reports.representatives', 'label' => 'Representative Performance', 'icon' => 'user-group'],
                 ['route' => 'reports.retailers', 'label' => 'Retailer Report', 'icon' => 'building-storefront'],
-                ['route' => 'reports.companies', 'label' => 'Company Report', 'icon' => 'gift'],
+                ['route' => 'reports.companies', 'label' => 'Company Report', 'icon' => 'gift', 'headOffice' => true],
+                ['route' => 'reports.dealers', 'label' => 'Dealer Sales Report', 'icon' => 'building-storefront', 'permission' => 'dealers.view'],
                 ['route' => 'reports.areas', 'label' => 'Area Report', 'icon' => 'map-pin'],
                 ['route' => 'reports.products', 'label' => 'Product Performance', 'icon' => 'trending-up'],
-                ['route' => 'reports.payroll', 'label' => 'Payroll & Commission', 'icon' => 'wallet'],
+                ['route' => 'reports.payroll', 'label' => 'Payroll & Commission', 'icon' => 'wallet', 'headOffice' => true],
                 ['route' => 'reports.profit', 'label' => 'Profit & Loss', 'icon' => 'credit-card'],
             ]],
             ['icon' => 'wallet', 'label' => 'Payroll', 'permission' => 'payroll.view', 'prefix' => ['payroll.'], 'links' => [
@@ -153,7 +157,7 @@
                 </div>
                 <div x-show="!collapsed" x-cloak>
                     <p class="text-base font-bold text-white leading-tight truncate max-w-[10.5rem]" title="{{ \App\Support\Brand::name() }}">{{ \App\Support\Brand::name() }}</p>
-                    <p class="text-[11px] text-slate-500">{{ __('Dealer Management System') }}</p>
+                    <p class="text-[11px] text-slate-500 truncate max-w-[10.5rem]">{{ auth()->user()->dealer?->name ?? __('Dealer Management System') }}</p>
                 </div>
             </div>
 
@@ -187,6 +191,7 @@
                             <div class="pl-4 mt-1 space-y-0.5 border-l border-slate-800 ml-6" x-show="open && !collapsed" x-cloak>
                                 @foreach($group['links'] as $link)
                                     @continue(isset($link['permission']) && ! auth()->user()->can($link['permission']))
+                                    @continue(! empty($link['headOffice']) && auth()->user()->dealer_id)
                                     @php $linkActive = request()->routeIs($link['route']); @endphp
                                     <a href="{{ route($link['route']) }}" class="flex items-center gap-2 pl-3 pr-3 py-1.5 rounded-lg text-sm {{ $linkActive ? 'bg-indigo-600/20 text-white border-l-2 border-indigo-500 -ml-px' : 'text-slate-400 hover:bg-slate-800/70 hover:text-slate-200' }}">
                                         <x-icon :name="$link['icon'] ?? 'chevron-right'" class="w-4 h-4 shrink-0" />

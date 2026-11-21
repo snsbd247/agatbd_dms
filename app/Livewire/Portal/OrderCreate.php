@@ -39,7 +39,12 @@ class OrderCreate extends Component
 
     private function warehouseId(): ?int
     {
+        // The seller's warehouse: the customer's dealer, or the head office.
+        $owner = $this->retailer()->dealer_id;
+
         return Warehouse::where('active', true)
+            ->when($owner === null, fn ($q) => $q->whereNull('dealer_id'), fn ($q) => $q->where('dealer_id', $owner))
+            ->where('purpose', 'general')
             ->orderByRaw("CASE WHEN type = 'central' THEN 0 ELSE 1 END")
             ->orderBy('id')
             ->value('id');
@@ -135,7 +140,7 @@ class OrderCreate extends Component
             return $order;
         });
 
-        $recipients = User::role(['Dealer', 'Manager'])->get()->filter(fn (User $u) => $u->wantsNotification('sales_order_pending'));
+        $recipients = \App\Support\Staff::approvers(\App\Support\Staff::dealerOfRetailer($order->retailer_id), 'sales_order_pending');
         Notification::send($recipients, new SalesOrderPending($order));
 
         session()->flash('status', "Order {$order->number} was placed and is waiting for the dealer's approval.");

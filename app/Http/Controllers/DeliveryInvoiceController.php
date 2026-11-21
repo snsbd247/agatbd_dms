@@ -33,7 +33,7 @@ class DeliveryInvoiceController extends Controller
      */
     public function printForRetailer(DeliveryInvoice $deliveryInvoice)
     {
-        $retailer = auth()->user()?->retailer;
+        $retailer = auth()->user()?->customerAccount();
         abort_unless($retailer && $deliveryInvoice->retailer_id === $retailer->id, 404);
 
         $invoice = $deliveryInvoice->load(self::RELATIONS);

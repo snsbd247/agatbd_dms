@@ -6,7 +6,7 @@
 
 FK-এর পাশের চিহ্ন: **null** = parent মুছলে NULL হয়, **cascade** = parent মুছলে row-ও মোছে, কিছু না লেখা থাকলে restrict।
 
-> সর্বশেষ আপডেট: ২২ নভেম্বর ২০২৬ (সর্বশেষ migration: `2026_11_22_000001_add_manufacturing_foundation`)
+> সর্বশেষ আপডেট: ২২ নভেম্বর ২০২৬ (সর্বশেষ migration: `2026_11_22_000003_remove_orphan_role_assignments`)
 
 ---
 
@@ -39,6 +39,22 @@ FK-এর পাশের চিহ্ন: **null** = parent মুছলে NUL
 | password | string | hashed |
 | remember_token | string | nullable |
 | notification_preferences | json | nullable (migration `2026_07_29`) |
+| dealer_id | FK dealers | nullable, null = হেড অফিসের লগইন; সেট থাকলে ওই ডিলারের লগইন (migration `2026_11_22_000002`) |
+
+### dealers (ডিলার)
+| কলাম | টাইপ | নোট |
+|---|---|---|
+| code | string(20) | unique |
+| name, owner_name | string | owner_name nullable |
+| phone | string(30) | |
+| email, address | string | nullable |
+| area_id | FK areas | nullable, null |
+| active | boolean | default true |
+
+ডিলারের ক্রেডিট লিমিট আর বকেয়া থাকে তার হেড অফিস অ্যাকাউন্টে (`retailers.account_dealer_id`)।
+
+### dealer_representative
+হেড অফিসের প্রতিনিধি যে ডিলারদের কাছে বসানো: `dealer_id`, `representative_id` (দুটো মিলে primary key, দুটোই cascade)।
 
 Laravel-এর ডিফল্ট টেবিলও আছে: `password_reset_tokens`, `sessions`, `cache`, `cache_locks`, `jobs`, `job_batches`, `failed_jobs`।
 
@@ -182,6 +198,7 @@ Unique: (`key`, `year`)
 | name | string | |
 | type | enum | `central`, `branch` |
 | factory_id | FK factories | nullable, null; কারখানার স্টোর হলে |
+| dealer_id | FK dealers | nullable, null = হেড অফিসের গুদাম; সেট থাকলে ডিলারের গুদাম |
 | purpose | string(20) | `general` (default), `raw_material`, `production`, `finished_goods`, `damage` |
 | address | string | nullable |
 | active | boolean | default true |
@@ -240,6 +257,7 @@ Unique: (`warehouse_id`, `product_id`)
 ### representatives
 | কলাম | টাইপ | নোট |
 |---|---|---|
+| dealer_id | FK dealers | nullable, null = Agro Tech-এর কর্মচারী; সেট থাকলে ডিলারের নিজের লোক (নিয়োগকর্তা) |
 | user_id | FK users | nullable, null (লগইন অ্যাকাউন্ট) |
 | employee_code | string | unique |
 | name | string | |
@@ -251,8 +269,12 @@ Unique: (`warehouse_id`, `product_id`)
 | active | boolean | default true |
 
 ### retailers
+হেড অফিস বা কোনো ডিলারের গ্রাহক। ডিলারের হেড অফিস অ্যাকাউন্টও এখানে থাকে।
+
 | কলাম | টাইপ | নোট |
 |---|---|---|
+| dealer_id | FK dealers | nullable, null = হেড অফিসের গ্রাহক; সেট থাকলে ওই ডিলারের গ্রাহক |
+| account_dealer_id | FK dealers | nullable, unique; সেট থাকলে এই সারিটাই ওই ডিলারের হেড অফিস অ্যাকাউন্ট |
 | user_id | FK users | nullable, null |
 | representative_id | FK representatives | nullable, null |
 | area_id | FK areas | |

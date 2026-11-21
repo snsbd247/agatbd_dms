@@ -26,7 +26,7 @@ class SalesFlowTest extends TestCase
     {
         parent::setUp();
         $this->seedRoles();
-        $this->actingAs($this->userWithRole('Dealer'));
+        $this->actingAs($this->userWithRole('Admin'));
     }
 
     private function placeOrder($retailer, $product, float $qty): SalesOrder

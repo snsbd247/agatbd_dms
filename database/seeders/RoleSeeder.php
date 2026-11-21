@@ -7,8 +7,13 @@ use Spatie\Permission\Models\Role;
 
 class RoleSeeder extends Seeder
 {
+    /**
+     * Admin = Agro Tech head office, can do everything (Gate::before).
+     * Dealer = a dealer's own login: its panel, limited to its own records
+     * by App\Support\Tenant, plus ordering from Agro Tech through the portal.
+     */
     public const ROLE_PERMISSIONS = [
-        'Dealer' => PermissionSeeder::PERMISSIONS,
+        'Admin' => PermissionSeeder::PERMISSIONS,
         'Manager' => [
             'master-data.view', 'master-data.manage',
             'purchase.view', 'purchase.manage',
@@ -20,7 +25,20 @@ class RoleSeeder extends Seeder
             'collection.view', 'collection.manage',
             'returns.view', 'returns.create', 'returns.manage',
             'warranty.view', 'warranty.manage',
+            'dealers.view', 'dealers.manage',
             'reports.view',
+        ],
+        'Dealer' => [
+            'inventory.view', 'inventory.manage',
+            'retailers.view', 'retailers.manage',
+            'representatives.view', 'representatives.manage',
+            'sales.view', 'sales.create', 'sales.approve',
+            'delivery.view', 'delivery.manage',
+            'collection.view', 'collection.manage',
+            'returns.view', 'returns.create', 'returns.manage',
+            'warranty.view', 'warranty.manage',
+            'reports.view',
+            'portal.access',
         ],
         'Sales Representative' => [
             'retailers.view',

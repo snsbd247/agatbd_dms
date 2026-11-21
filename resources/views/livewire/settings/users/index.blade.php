@@ -1,7 +1,7 @@
 <div>
     <div class="grid grid-cols-2 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-4">
         <x-stat-card icon="user-group" color="blue" label="Total Users" :value="$summary['total']" />
-        <x-stat-card icon="shield-check" color="green" label="Dealers" :value="$summary['dealers']" />
+        <x-stat-card icon="shield-check" color="green" label="Admins" :value="$summary['dealers']" />
         <x-stat-card icon="user" color="purple" label="Managers" :value="$summary['managers']" />
         <x-stat-card icon="database" color="orange" label="New This Month" :value="$summary['new_this_month']" />
     </div>
@@ -10,7 +10,7 @@
         <div class="flex flex-wrap items-center gap-3">
             <select wire:model="filter_role" class="border rounded-lg px-3 py-2 text-sm bg-white w-full sm:w-auto">
                 <option value="">{{ __('All Roles') }}</option>
-                <option value="Dealer">{{ __('Dealer') }}</option>
+                <option value="Admin">{{ __('Admin') }}</option>
                 <option value="Manager">{{ __('Manager') }}</option>
             </select>
             <input wire:model="search" type="text" placeholder="{{ __('Search by name or email...') }}" class="border rounded-lg px-3 py-2 text-sm w-full sm:w-auto sm:min-w-[200px]">
@@ -82,7 +82,7 @@
                     <div>
                         <label class="text-sm text-slate-500">{{ __('Role') }}</label>
                         <select wire:model="form_role" class="w-full border rounded-lg p-2 mt-1">
-                            <option value="Dealer">{{ __('Dealer') }}</option>
+                            <option value="Admin">{{ __('Admin') }}</option>
                             <option value="Manager">{{ __('Manager') }}</option>
                         </select>
                         @error('form_role') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror

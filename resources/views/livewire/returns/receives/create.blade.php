@@ -50,6 +50,8 @@
             @endforeach
         </div>
 
+        @error('lines') <p class="mt-4 bg-red-50 border border-red-200 text-red-700 rounded-lg p-3 text-sm">{{ $message }}</p> @enderror
+
         <div class="mt-6 flex justify-end gap-2">
             <a href="{{ route('returns.show', $returnRequest) }}" class="px-4 py-2 rounded-lg text-slate-600">{{ __('Cancel') }}</a>
             <button wire:click="save" class="px-4 py-2 rounded-lg bg-green-600 text-white font-medium">{{ __('Confirm Receipt') }}</button>

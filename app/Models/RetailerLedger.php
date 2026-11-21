@@ -6,6 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class RetailerLedger extends Model
 {
+    use \App\Models\Concerns\BelongsToTenant;
+
+    /** Whose record this is: see BelongsToTenant. */
+    public const TENANT_PATH = 'retailer_id';
+
     protected $table = 'retailer_ledger';
 
     protected $fillable = [

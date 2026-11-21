@@ -124,7 +124,7 @@ class InventoryService
             && $beforeQuantity > (float) $afterStock->reorder_level
             && (float) $afterStock->quantity <= (float) $afterStock->reorder_level
         ) {
-            $recipients = User::role(['Dealer', 'Manager'])->get()->filter(fn (User $u) => $u->wantsNotification('low_stock_alert'));
+            $recipients = \App\Support\Staff::approvers(\App\Support\Staff::dealerOfWarehouse($afterStock->warehouse_id), 'low_stock_alert');
             Notification::send($recipients, new LowStockAlert($afterStock->load(['product', 'warehouse'])));
         }
 

@@ -6,6 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Stock extends Model
 {
+    use \App\Models\Concerns\BelongsToTenant;
+
+    /** Whose record this is: see BelongsToTenant. */
+    public const TENANT_PATH = 'warehouse_id';
+
     protected $fillable = ['warehouse_id', 'product_id', 'quantity', 'reorder_level'];
 
     protected function casts(): array

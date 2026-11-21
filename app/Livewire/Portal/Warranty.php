@@ -115,7 +115,7 @@ class Warranty extends Component
             'status' => 'pending',
         ]);
 
-        $recipients = User::role(['Dealer', 'Manager'])->get()->filter(fn (User $u) => $u->wantsNotification('warranty_claim_pending'));
+        $recipients = \App\Support\Staff::approvers(\App\Support\Staff::dealerOfRetailer($claim->retailer_id), 'warranty_claim_pending');
         \Illuminate\Support\Facades\Notification::send($recipients, new WarrantyClaimPending($claim));
 
         $this->showForm = false;

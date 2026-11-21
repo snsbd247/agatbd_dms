@@ -7,12 +7,46 @@ use Illuminate\Database\Eloquent\Model;
 
 class Representative extends Model
 {
+    use \App\Models\Concerns\BelongsToTenant;
+
+    /** Whose record this is: see BelongsToTenant. */
+    public const TENANT_PATH = 'dealer_id';
+
     use Auditable;
 
     protected $fillable = [
-        'user_id', 'employee_code', 'name', 'phone', 'area_id',
+        'user_id', 'dealer_id', 'employee_code', 'name', 'phone', 'area_id',
         'salary_base', 'commission_rate', 'target_amount', 'active',
     ];
+
+    /** Employer: null = Agro Tech head office, otherwise the dealer. */
+    public function dealer()
+    {
+        return $this->belongsTo(Dealer::class);
+    }
+
+    /** Dealers a head office representative is placed with. */
+    public function placedWithDealers()
+    {
+        return $this->belongsToMany(Dealer::class, 'dealer_representative');
+    }
+
+    /**
+     * Staff a dealer can see: its own, plus head office staff placed with it.
+     * Head office users see head office staff only.
+     */
+    public function scopeTenantOwner(\Illuminate\Database\Eloquent\Builder $query, string $table, array $allowed): void
+    {
+        $dealerIds = array_values(array_filter($allowed, fn ($id) => $id !== null));
+
+        $query->where(function ($w) use ($table, $allowed, $dealerIds) {
+            \App\Support\Tenant::apply($w, "{$table}.dealer_id", $allowed);
+
+            if ($dealerIds !== []) {
+                $w->orWhereIn("{$table}.id", fn ($s) => $s->select('representative_id')->from('dealer_representative')->whereIn('dealer_id', $dealerIds));
+            }
+        });
+    }
 
     protected function casts(): array
     {

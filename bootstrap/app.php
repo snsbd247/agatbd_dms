@@ -12,6 +12,9 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->web(append: [\App\Http\Middleware\SetLocale::class]);
+        $middleware->alias(['tenant.off' => \App\Http\Middleware\TenantOff::class, 'head.office' => \App\Http\Middleware\HeadOfficeOnly::class]);
+        // Route-model binding must already see the portal's records with the dealer filter off.
+        $middleware->prependToPriorityList(before: \Illuminate\Routing\Middleware\SubstituteBindings::class, prepend: \App\Http\Middleware\TenantOff::class);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

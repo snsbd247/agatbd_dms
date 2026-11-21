@@ -8,6 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Commission extends Model
 {
+    use \App\Models\Concerns\BelongsToTenant;
+
+    /** Whose record this is: see BelongsToTenant. */
+    public const TENANT_PATH = 'representative_id';
+
     protected $fillable = [
         'representative_id', 'sales_invoice_id', 'period',
         'delivered_amount', 'commission_rate', 'commission_amount', 'return_adjustment',

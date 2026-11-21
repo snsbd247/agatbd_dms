@@ -8,6 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Warehouse extends Model
 {
+    use \App\Models\Concerns\BelongsToTenant;
+
+    /** Whose record this is: see BelongsToTenant. */
+    public const TENANT_PATH = 'dealer_id';
+
     use Auditable;
     use HasFactory;
 
@@ -20,7 +25,13 @@ class Warehouse extends Model
         'damage' => 'Damage store',
     ];
 
-    protected $fillable = ['name', 'type', 'factory_id', 'purpose', 'address', 'active'];
+    protected $fillable = ['name', 'type', 'factory_id', 'dealer_id', 'purpose', 'address', 'active'];
+
+    /** Null = head office. */
+    public function dealer()
+    {
+        return $this->belongsTo(Dealer::class);
+    }
 
     protected function casts(): array
     {

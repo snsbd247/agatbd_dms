@@ -22,7 +22,7 @@ class PasswordResetTest extends TestCase
     public function test_without_mail_the_admins_are_notified_and_the_answer_is_the_same_for_unknown_emails(): void
     {
         Notification::fake();
-        $dealer = $this->userWithRole('Dealer');
+        $dealer = $this->userWithRole('Admin');
         $rep = $this->userWithRole('Sales Representative', ['email' => 'rep@example.com']);
 
         $known = $this->post(route('password.email'), ['email' => 'rep@example.com'])->getSession()->get('status');

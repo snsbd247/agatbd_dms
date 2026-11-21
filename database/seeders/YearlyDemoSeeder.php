@@ -351,7 +351,7 @@ class YearlyDemoSeeder extends Seeder
         }
 
         if ($pendingOrder) {
-            $recipients = User::role(['Dealer', 'Manager'])->get()->filter(fn (User $u) => $u->wantsNotification('sales_order_pending'));
+            $recipients = User::role(['Admin', 'Manager'])->get()->filter(fn (User $u) => $u->wantsNotification('sales_order_pending'));
             Notification::send($recipients, new SalesOrderPending($pendingOrder));
         }
 
@@ -534,7 +534,7 @@ class YearlyDemoSeeder extends Seeder
         $returnRequest->update(['status' => 'received']);
 
         if ($isCurrentMonth) {
-            $recipients = User::role(['Dealer', 'Manager'])->get()->filter(fn (User $u) => $u->wantsNotification('return_request_pending'));
+            $recipients = User::role(['Admin', 'Manager'])->get()->filter(fn (User $u) => $u->wantsNotification('return_request_pending'));
             Notification::send($recipients, new ReturnRequestPending($returnRequest));
         }
     }
@@ -573,7 +573,7 @@ class YearlyDemoSeeder extends Seeder
         ]);
 
         if ($isCurrentMonth) {
-            $recipients = User::role(['Dealer', 'Manager'])->get()->filter(fn (User $u) => $u->wantsNotification('warranty_claim_pending'));
+            $recipients = User::role(['Admin', 'Manager'])->get()->filter(fn (User $u) => $u->wantsNotification('warranty_claim_pending'));
             Notification::send($recipients, new WarrantyClaimPending($claim));
         }
     }

@@ -24,12 +24,20 @@
 
 | রোল | কী করতে পারে |
 |---|---|
-| **Dealer** | সবকিছু (`Gate::before` দিয়ে সব পারমিশন পায়) |
-| **Manager** | Payroll ও Settings বাদে সব মডিউল, সাথে Sales approve |
+| **Admin** | Agro Tech হেড অফিস, সবকিছু করতে পারে (`Gate::before` দিয়ে সব পারমিশন পায়)। ২২ নভেম্বর ২০২৬-এর আগে এই রোলের নাম ছিল "Dealer" |
+| **Manager** | হেড অফিস। Payroll ও Settings বাদে সব মডিউল, সাথে Sales approve আর Dealers |
+| **Dealer** | একজন ডিলারের লগইন (`users.dealer_id`)। নিজের প্যানেলে শুধু নিজের গ্রাহক, গুদাম, স্টাফ, বিক্রি, ডেলিভারি, আদায়, ফেরত আর রিপোর্ট। সাথে পোর্টাল থেকে Agro Tech-এ অর্ডার আর নিজের হিসাব (`portal.access`) |
 | **Sales Representative** | রিটেইলার দেখা, Sales order তৈরি, Delivery, Collection, Return request |
 | **Retailer** | শুধু নিজের পোর্টাল: ড্যাশবোর্ড, নিজের অর্ডার দেওয়া ও দেখা, ইনভয়েস PDF, হিসাব-বিবরণী (`portal.access`) |
 
-পারমিশন তালিকা: `master-data.*`, `purchase.*`, `inventory.*`, `retailers.*`, `representatives.*`, `sales.view/create/approve`, `delivery.*`, `collection.*`, `returns.view/create/manage`, `warranty.*`, `payroll.*`, `reports.view`, `settings.manage`, `portal.access`।
+পারমিশন তালিকা: `master-data.*`, `purchase.*`, `inventory.*`, `retailers.*`, `representatives.*`, `sales.view/create/approve`, `delivery.*`, `collection.*`, `returns.view/create/manage`, `warranty.*`, `payroll.*`, `reports.view`, `dealers.view/manage`, `settings.manage`, `portal.access`।
+
+**কে কার ডাটা দেখে** ([Tenant](app/Support/Tenant.php), [BelongsToTenant](app/Models/Concerns/BelongsToTenant.php)):
+- হেড অফিসের লগইন দেখে শুধু হেড অফিসের ডাটা।
+- ডিলারের লগইন দেখে শুধু নিজের ডাটা।
+- কোনো ডিলারের কাছে বসানো হেড অফিসের প্রতিনিধি দেখে হেড অফিস আর ওই ডিলারদের ডাটা।
+- রিটেইলারের লগইন শুধু নিজের পোর্টাল দেখে।
+- কিছু পেজ শুধু হেড অফিসের, যেমন কারখানা, এলাকা, ক্রয়, কোম্পানি আর বেতনের রিপোর্ট। এগুলো `head.office` middleware দিয়ে বন্ধ।
 
 > ২১ নভেম্বর ২০২৬ পর্যন্ত লাইভ ডাটাবেসে চারটা রোলেরই সব পারমিশন ছিল, কারণ RoleSeeder বদলানোর পর আর চালানো হয়নি। এখন seeder অনুযায়ী ঠিক করা হয়েছে। রোলের পারমিশন বদলালে `php artisan db:seed --class=RoleSeeder --force` আর `php artisan permission:cache-reset` চালাতে হবে।
 
@@ -62,9 +70,11 @@
 | 23 | Discount | approve-এর আগে অর্ডারে ৳ বা % ডিসকাউন্ট, ডেলিভারিগুলোতে অনুপাতে ভাগ হয়, ইনভয়েস আর লেজারে ডিসকাউন্টের পরের মূল্য | ✅ সম্পন্ন |
 | 24 | Email ও SMS | Settings → Email & SMS: SMTP আর যেকোনো HTTP SMS gateway, test বাটন, SMS লগ, SMS-এর লেখা বদলানো যায় (বাংলাও); রিটেইলার approve, ডেলিভারি আর পেমেন্টে SMS পায়; স্টাফ নোটিফিকেশন ইমেইলেও পায় | ✅ সম্পন্ন (SMTP আর gateway-এর তথ্য দেওয়া বাকি) |
 | 25 | PDF | Delivery Invoice, Sales Invoice, Money Receipt (দুই কপি, কথায় টাকার অঙ্ক), আর ১৪টা রিপোর্টের PDF; লোগো, ঠিকানা আর footer; ইউজারের ভাষা অনুযায়ী বাংলা বা ইংরেজি | ✅ সম্পন্ন |
-| 26 | Automated tests | ৬৬টা Feature test (বিক্রয়, ক্রয়, ফেরত, ওয়ারেন্টি, বেতন, রিপোর্ট, পোর্টাল, PDF, ব্যাকআপ, পারমিশন…) | ✅ সম্পন্ন |
+| 26 | Automated tests | ৮৮টা Feature test (SQLite আর MySQL দুটোতেই চলে) (বিক্রয়, ক্রয়, ফেরত, ওয়ারেন্টি, বেতন, রিপোর্ট, পোর্টাল, PDF, ব্যাকআপ, পারমিশন…) | ✅ সম্পন্ন |
 | 27 | বাংলা / English | পুরো UI, ভুল-বার্তা আর PDF; প্রত্যেক ইউজারের নিজের ভাষা | ✅ সম্পন্ন |
 | 28 | ডার্ক মোড | হেডারের চাঁদ/সূর্য বোতাম; প্রতিটা ডিভাইসে আলাদা মনে রাখে, প্রথমবার ডিভাইসের সেটিং মেনে চলে | ✅ সম্পন্ন |
+| 29 | ERP ধাপ ০: ভিত | ইউনিটের ধরন আর রূপান্তর, পণ্যের ধরন/মেয়াদ/প্যাক, কারখানা, গুদামের কাজ, অর্থবছর, MySQL, দুই ডাটাবেসে ব্যাকআপ | ✅ সম্পন্ন (২২ নভেম্বর ২০২৬) |
+| 30 | ERP ধাপ ১: ডিলার কাঠামো | Dealers পেজ (অ্যাকাউন্ট, গুদাম, লগইন), ডিলার প্যানেল আর ডাটা আলাদা রাখা, হেড অফিস → ডিলার বিক্রিতে একই ব্যাচ ডিলারের গুদামে, ডিলারের ফেরতে ডিলারের মজুদ কমা, Agro Tech-এর প্রতিনিধি ডিলারের কাছে বসানো, নোটিফিকেশন মালিকের কাছে, Dealer Sales Report (প্রাইমারি/সেকেন্ডারি) | ✅ সম্পন্ন (২২ নভেম্বর ২০২৬) |
 
 ## ৪. মূল ব্যবসায়িক ফ্লো
 

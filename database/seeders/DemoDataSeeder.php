@@ -33,7 +33,7 @@ class DemoDataSeeder extends Seeder
             ['email' => 'admin@dms.local'],
             ['name' => 'DMS Dealer', 'password' => $this->demoPassword()]
         );
-        $admin->assignRole('Dealer');
+        $admin->assignRole('Admin');
 
         $manager = User::firstOrCreate(
             ['email' => 'manager@dms.local'],

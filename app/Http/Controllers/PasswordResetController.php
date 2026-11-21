@@ -52,10 +52,10 @@ class PasswordResetController extends Controller
                     ->exists();
 
                 if (! $alreadyAsked) {
-                    $admins = User::role(['Dealer', 'Manager'])->whereKeyNot($user->id)->get();
+                    $admins = User::role(['Admin', 'Manager'])->whereKeyNot($user->id)->get();
 
                     if ($admins->isEmpty()) {
-                        $admins = User::role('Dealer')->get();
+                        $admins = User::role('Admin')->get();
                     }
 
                     Notification::send($admins, new PasswordResetRequested($user, $request->ip()));

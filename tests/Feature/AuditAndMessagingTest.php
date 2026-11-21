@@ -18,7 +18,7 @@ class AuditAndMessagingTest extends TestCase
     public function test_changes_are_audited_with_old_and_new_values(): void
     {
         $this->seedRoles();
-        $this->actingAs($this->userWithRole('Dealer'));
+        $this->actingAs($this->userWithRole('Admin'));
 
         $p = $this->product(['sale_price' => 100]);
         $p->update(['sale_price' => 120]);

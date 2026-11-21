@@ -20,9 +20,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Gate::before(fn ($user, string $ability) => $user->hasRole('Dealer') ? true : null);
+        Gate::before(fn ($user, string $ability) => $user->hasRole('Admin') ? true : null);
 
         // SMTP settings saved in Settings → Email & SMS override the .env mailer.
         \App\Services\MailSettings::apply();
+
+        // Portal pages switch the dealer filter off; keep it off for their Livewire updates too.
+        \Livewire\Livewire::addPersistentMiddleware([\App\Http\Middleware\TenantOff::class]);
     }
 }

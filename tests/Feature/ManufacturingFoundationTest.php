@@ -38,7 +38,7 @@ class ManufacturingFoundationTest extends TestCase
     {
         parent::setUp();
         $this->seedRoles();
-        $this->actingAs($this->userWithRole('Dealer'));
+        $this->actingAs($this->userWithRole('Admin'));
 
         $this->kg = Unit::create(['name' => 'Kilogram', 'short_code' => 'kg', 'kind' => 'weight']);
         $this->g = Unit::create(['name' => 'Gram', 'short_code' => 'g', 'kind' => 'weight']);

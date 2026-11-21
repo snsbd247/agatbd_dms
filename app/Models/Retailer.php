@@ -7,12 +7,35 @@ use Illuminate\Database\Eloquent\Model;
 
 class Retailer extends Model
 {
+    use \App\Models\Concerns\BelongsToTenant;
+
+    /** Whose record this is: see BelongsToTenant. */
+    public const TENANT_PATH = 'dealer_id';
+
     use Auditable;
 
     protected $fillable = [
-        'user_id', 'representative_id', 'area_id', 'code', 'name',
+        'dealer_id', 'account_dealer_id', 'user_id', 'representative_id', 'area_id', 'code', 'name',
         'shop_name', 'phone', 'address', 'credit_limit', 'current_due', 'active',
     ];
+
+
+    /** Null = head office. */
+    public function dealer()
+    {
+        return $this->belongsTo(Dealer::class);
+    }
+
+    /** Set when this customer record is a dealer's account with the head office. */
+    public function accountDealer()
+    {
+        return $this->belongsTo(Dealer::class, 'account_dealer_id');
+    }
+
+    public function isDealerAccount(): bool
+    {
+        return $this->account_dealer_id !== null;
+    }
 
     protected function casts(): array
     {

@@ -469,4 +469,23 @@ class ExportController extends Controller
             fclose($out);
         }, "area-report-{$from}-to-{$to}.csv", ['Content-Type' => 'text/csv']);
     }
+
+    /** Head office only: primary and secondary sales per dealer. */
+    public function dealers(Request $request)
+    {
+        abort_unless($request->user()->can('dealers.view'), 403);
+
+        $from = $request->query('from') ?: today()->startOfMonth()->toDateString();
+        $to = $request->query('to') ?: today()->toDateString();
+        $rows = app(\App\Services\Reports\DealerSalesReport::class)->rows(Carbon::parse($from)->startOfDay(), Carbon::parse($to)->endOfDay());
+
+        return response()->streamDownload(function () use ($rows) {
+            $out = fopen('php://output', 'w');
+            fputcsv($out, ['Dealer', 'Bought from Agro Tech', 'Paid to Agro Tech', 'Owes Agro Tech', 'Sold to customers', 'Collected', 'Customers owe', 'Stock value']);
+            foreach ($rows as $r) {
+                fputcsv($out, [$r['name'], $r['bought'] ?? '', $r['paid'] ?? '', $r['owes'] ?? '', $r['sold'], $r['collected'], $r['customers_owe'], $r['stock_value'] ?? '']);
+            }
+            fclose($out);
+        }, "dealer-sales-{$from}-to-{$to}.csv", ['Content-Type' => 'text/csv']);
+    }
 }
