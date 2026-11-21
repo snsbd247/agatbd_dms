@@ -60,6 +60,7 @@ class Create extends Component
             ]);
 
             $allocator->allocate($retailer, (float) $data['amount'], $collection);
+            app(\App\Services\Accounts\AutoPosting::class)->collection($collection);
         });
 
         $retailer->refresh();

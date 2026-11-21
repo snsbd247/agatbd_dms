@@ -236,6 +236,7 @@ class InventoryService
                 'adjusted_by' => $userId,
                 'adjustment_date' => $date,
             ]);
+            app(\App\Services\Accounts\AutoPosting::class)->stockAdjustment($adjustment);
 
             StockLedger::create([
                 'product_id' => $productId,

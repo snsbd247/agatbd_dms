@@ -128,6 +128,7 @@ class Create extends Component
             }
 
             $receipt->update(['total_amount' => $total]);
+            app(\App\Services\Accounts\AutoPosting::class)->goodsReceipt($receipt);
 
             $this->purchaseOrder->refresh();
             $allReceived = $this->purchaseOrder->items()->whereColumn('received_quantity', '<', 'quantity')->doesntExist();

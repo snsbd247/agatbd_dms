@@ -22,7 +22,10 @@ class Show extends Component
             return;
         }
 
-        $this->payrollEntry->update(['status' => 'paid', 'paid_at' => now()]);
+        \Illuminate\Support\Facades\DB::transaction(function () {
+            $this->payrollEntry->update(['status' => 'paid', 'paid_at' => now()]);
+            app(\App\Services\Accounts\AutoPosting::class)->payrollPaid($this->payrollEntry);
+        });
     }
 
     public function render()

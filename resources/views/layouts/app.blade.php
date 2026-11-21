@@ -80,6 +80,21 @@
             ['icon' => 'user-group', 'label' => 'Representative', 'permission' => 'representatives.view', 'prefix' => ['representatives.'], 'links' => [
                 ['route' => 'representatives.index', 'label' => 'Representatives', 'icon' => 'user-group'],
             ]],
+            ['icon' => 'book-open', 'label' => 'Accounts', 'permission' => 'accounts.view', 'prefix' => ['accounts.'], 'links' => [
+                ['route' => 'accounts.vouchers.index', 'label' => 'Vouchers', 'icon' => 'document-text'],
+                ['route' => 'accounts.expenses', 'label' => 'Expenses', 'icon' => 'banknotes'],
+                ['route' => 'accounts.supplier-payments', 'label' => 'Supplier Payments', 'icon' => 'credit-card', 'headOffice' => true],
+                ['route' => 'accounts.chart', 'label' => 'Chart of Accounts', 'icon' => 'database'],
+                ['route' => 'accounts.ledger', 'label' => 'General Ledger', 'icon' => 'book-open'],
+                ['route' => 'accounts.reports', 'params' => ['report' => 'trial-balance'], 'label' => 'Trial Balance', 'icon' => 'chart-bar'],
+                ['route' => 'accounts.reports', 'params' => ['report' => 'profit-loss'], 'label' => 'Profit & Loss Account', 'icon' => 'trending-up'],
+                ['route' => 'accounts.reports', 'params' => ['report' => 'balance-sheet'], 'label' => 'Balance Sheet', 'icon' => 'archive-box'],
+                ['route' => 'accounts.reports', 'params' => ['report' => 'cash-flow'], 'label' => 'Cash Flow Statement', 'icon' => 'wallet'],
+                ['route' => 'accounts.reports', 'params' => ['report' => 'receivables'], 'label' => 'Receivables & Payables', 'icon' => 'clock'],
+                ['route' => 'accounts.bank', 'label' => 'Bank Reconciliation', 'icon' => 'shield-check'],
+                ['route' => 'accounts.opening', 'label' => 'Opening Balances', 'icon' => 'calendar'],
+                ['route' => 'accounts.year-closing', 'label' => 'Year Closing', 'icon' => 'lock-closed'],
+            ]],
             ['icon' => 'chart-bar', 'label' => 'Reports', 'permission' => 'reports.view', 'prefix' => ['reports.'], 'links' => [
                 ['route' => 'reports.sales', 'label' => 'Sales Report', 'icon' => 'chart-bar'],
                 ['route' => 'reports.purchase', 'label' => 'Purchase Report', 'icon' => 'shopping-cart', 'headOffice' => true],
@@ -192,8 +207,8 @@
                                 @foreach($group['links'] as $link)
                                     @continue(isset($link['permission']) && ! auth()->user()->can($link['permission']))
                                     @continue(! empty($link['headOffice']) && auth()->user()->dealer_id)
-                                    @php $linkActive = request()->routeIs($link['route']); @endphp
-                                    <a href="{{ route($link['route']) }}" class="flex items-center gap-2 pl-3 pr-3 py-1.5 rounded-lg text-sm {{ $linkActive ? 'bg-indigo-600/20 text-white border-l-2 border-indigo-500 -ml-px' : 'text-slate-400 hover:bg-slate-800/70 hover:text-slate-200' }}">
+                                    @php $linkActive = isset($link['params']) ? request()->routeIs($link['route']) && request()->route('report') === $link['params']['report'] : request()->routeIs($link['route']); @endphp
+                                    <a href="{{ route($link['route'], $link['params'] ?? []) }}" class="flex items-center gap-2 pl-3 pr-3 py-1.5 rounded-lg text-sm {{ $linkActive ? 'bg-indigo-600/20 text-white border-l-2 border-indigo-500 -ml-px' : 'text-slate-400 hover:bg-slate-800/70 hover:text-slate-200' }}">
                                         <x-icon :name="$link['icon'] ?? 'chevron-right'" class="w-4 h-4 shrink-0" />
                                         <span>{{ __($link['label']) }}</span>
                                     </a>

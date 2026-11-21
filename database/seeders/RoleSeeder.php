@@ -26,6 +26,13 @@ class RoleSeeder extends Seeder
             'returns.view', 'returns.create', 'returns.manage',
             'warranty.view', 'warranty.manage',
             'dealers.view', 'dealers.manage',
+            'accounts.view',
+            'reports.view',
+        ],
+        'Accountant' => [
+            'master-data.view',
+            'purchase.view', 'inventory.view', 'sales.view', 'collection.view', 'returns.view',
+            'accounts.view', 'accounts.manage', 'accounts.approve',
             'reports.view',
         ],
         'Dealer' => [
@@ -38,6 +45,7 @@ class RoleSeeder extends Seeder
             'returns.view', 'returns.create', 'returns.manage',
             'warranty.view', 'warranty.manage',
             'reports.view',
+            'accounts.view', 'accounts.manage', 'accounts.approve',
             'portal.access',
         ],
         'Sales Representative' => [

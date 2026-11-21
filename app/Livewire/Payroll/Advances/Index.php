@@ -59,13 +59,16 @@ class Index extends Component
             'reason' => 'nullable|string|max:255',
         ]);
 
-        Advance::create([
-            'representative_id' => $data['form_representative_id'],
-            'amount' => $data['amount'],
-            'advance_date' => $data['advance_date'],
-            'reason' => $data['reason'],
-            'deducted' => false,
-        ]);
+        \Illuminate\Support\Facades\DB::transaction(function () use ($data) {
+            $advance = Advance::create([
+                'representative_id' => $data['form_representative_id'],
+                'amount' => $data['amount'],
+                'advance_date' => $data['advance_date'],
+                'reason' => $data['reason'],
+                'deducted' => false,
+            ]);
+            app(\App\Services\Accounts\AutoPosting::class)->advance($advance);
+        });
 
         $this->showModal = false;
         $this->resetForm();

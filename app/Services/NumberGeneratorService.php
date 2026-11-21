@@ -21,6 +21,13 @@ class NumberGeneratorService
         'return_receive' => 'RCV',
         'company_return' => 'CRT',
         'purchase_return' => 'PRT',
+        'journal_voucher' => 'JV',
+        'payment_voucher' => 'PV',
+        'receipt_voucher' => 'RV',
+        'contra_voucher' => 'CV',
+        'opening_voucher' => 'OB',
+        'auto_journal' => 'AJ',
+        'closing_voucher' => 'YC',
     ];
 
     public function generate(string $type): string

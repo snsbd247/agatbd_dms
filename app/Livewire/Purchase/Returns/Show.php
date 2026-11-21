@@ -31,6 +31,7 @@ class Show extends Component
             }
 
             $this->purchaseReturn->update(['status' => 'sent']);
+            app(\App\Services\Accounts\AutoPosting::class)->purchaseReturn($this->purchaseReturn);
         });
     }
 

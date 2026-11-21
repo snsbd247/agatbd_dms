@@ -183,6 +183,7 @@ class Create extends Component
             }
 
             $deliveryInvoices->createDeliveryInvoice($deliveryNote, $discount);
+            app(\App\Services\Accounts\AutoPosting::class)->salesInvoice($invoice);
             $smsInvoice = ['number' => $invoice->number, 'amount' => $netTotal, 'due' => (float) $retailer->current_due, 'phone' => $retailer->phone];
 
             $this->salesOrder->refresh();

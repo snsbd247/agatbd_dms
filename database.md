@@ -6,7 +6,7 @@
 
 FK-এর পাশের চিহ্ন: **null** = parent মুছলে NULL হয়, **cascade** = parent মুছলে row-ও মোছে, কিছু না লেখা থাকলে restrict।
 
-> সর্বশেষ আপডেট: ২২ নভেম্বর ২০২৬ (সর্বশেষ migration: `2026_11_22_000003_remove_orphan_role_assignments`)
+> সর্বশেষ আপডেট: ২২ নভেম্বর ২০২৬ (সর্বশেষ migration: `2026_11_22_000004_create_accounting_tables`)
 
 ---
 
@@ -655,3 +655,48 @@ erDiagram
 | response | text | gateway-এর উত্তর (API key লুকানো) |
 
 > `audit_logs` এখন ২৫টা মডেল থেকে নিজে থেকে ভরে (`App\Models\Concerns\Auditable`)। `stock_adjustments` টেবিল এখন Inventory → Stock Adjustments পেজ থেকে ব্যবহার হয়।
+
+## ১৪. Accounts (দ্বি-তরফা হিসাব, migration `2026_11_22_000004`)
+
+### accounts (হিসাবের তালিকা)
+| কলাম | টাইপ | নোট |
+|---|---|---|
+| dealer_id | FK dealers | nullable; null = সবার জন্য একই তালিকা, সেট থাকলে শুধু সেই ডিলারের নিজের হিসাব (যেমন তার ব্যাংক) |
+| code | string(20) | unique |
+| name | string | |
+| type | string(10) | `asset`, `liability`, `equity`, `income`, `expense` |
+| parent_id | FK accounts | nullable; গ্রুপের অধীনে (একই type) |
+| is_group | boolean | গ্রুপে সরাসরি এন্ট্রি হয় না |
+| system_key | string(30) | nullable, unique; স্বয়ংক্রিয় এন্ট্রির হিসাব: `cash`, `bank`, `mobile`, `ar`, `ap`, `inventory`, `employee_advance`, `vat_input`, `vat_output`, `capital`, `retained_earnings`, `opening_equity`, `sales`, `sales_discount`, `sales_return`, `other_income`, `stock_gain`, `cogs`, `salary`, `commission`, `bonus`, `stock_loss` |
+| is_cash, is_bank | boolean | টাকার হিসাব (পরিশোধ/প্রাপ্তি/ব্যাংক মিলানো) |
+| bank_name, bank_branch, bank_account_no | string | nullable |
+| description | text | nullable |
+| active | boolean | |
+
+ডিফল্ট তালিকা `ChartOfAccountsSeeder` থেকে, migration নিজেই চালায়।
+
+### journal_entries (ভাউচার)
+| কলাম | টাইপ | নোট |
+|---|---|---|
+| number | string | unique; JV/PV/RV/CV/OB/AJ/YC-বছর-ক্রমিক |
+| dealer_id | FK dealers | nullable; কার খাতা (null = হেড অফিস) |
+| type | string(20) | `journal`, `payment`, `receipt`, `contra`, `opening`, `auto`, `closing` |
+| entry_date | date | |
+| narration | text | nullable |
+| status | string(10) | `draft` (হিসাবে ধরা হয় না) বা `posted` |
+| source_type, source_id, source_event | | স্বয়ংক্রিয় এন্ট্রির উৎস; তিনটা মিলে unique (একই ঘটনা দুবার পোস্ট হয় না) |
+| reversal_of_id | FK journal_entries | nullable; উল্টানো ভাউচার |
+| created_by, approved_by, approved_at | | |
+
+### journal_lines
+| কলাম | টাইপ | নোট |
+|---|---|---|
+| journal_entry_id | FK | cascade |
+| account_id | FK accounts | গ্রুপ নয় |
+| debit, credit | decimal(16,2) | একটি লাইনে একটিই |
+| party_type, party_id | | `retailer`, `company`, `head_office` (ডিলারের দেনা), `representative`; `ar`/`ap` লাইনে বাধ্যতামূলক |
+| narration | string | nullable |
+| cleared_at | date | nullable; ব্যাংক মিলানোয় টিক দেওয়া |
+
+### fiscal_year_closings
+`dealer_id`, `label` (যেমন 2025-26), `start_date`, `end_date`, `journal_entry_id` (সমাপনী ভাউচার), `closed_by`। বন্ধ বছরের তারিখে হাতে লেখা ভাউচার নেওয়া হয় না।

@@ -176,6 +176,7 @@ class Create extends Component
             }
 
             $this->returnRequest->update(['status' => 'received']);
+            app(\App\Services\Accounts\AutoPosting::class)->returnReceive($receive);
         });
         } catch (\RuntimeException $e) {
             $this->addError('lines', $e->getMessage());

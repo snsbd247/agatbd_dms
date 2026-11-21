@@ -167,6 +167,22 @@ Route::middleware('auth')->group(function () {
         Route::get('/products/export', ProductExportController::class)->name('products.export');
     });
 
+    Route::middleware('can:accounts.view')->prefix('accounts')->name('accounts.')->group(function () {
+        Route::get('/chart', \App\Livewire\Accounts\ChartOfAccounts::class)->name('chart');
+        Route::get('/vouchers', \App\Livewire\Accounts\Vouchers\Index::class)->name('vouchers.index');
+        Route::get('/vouchers/new', \App\Livewire\Accounts\Vouchers\Create::class)->name('vouchers.create');
+        Route::get('/vouchers/{entry}', \App\Livewire\Accounts\Vouchers\Show::class)->name('vouchers.show');
+        Route::get('/vouchers/{entry}/pdf', [\App\Http\Controllers\AccountsPdfController::class, 'voucher'])->name('vouchers.pdf');
+        Route::get('/expenses', \App\Livewire\Accounts\Expenses::class)->name('expenses');
+        Route::get('/supplier-payments', \App\Livewire\Accounts\SupplierPayments::class)->middleware('head.office')->name('supplier-payments');
+        Route::get('/opening-balances', \App\Livewire\Accounts\OpeningBalances::class)->name('opening');
+        Route::get('/bank-reconciliation', \App\Livewire\Accounts\BankReconciliation::class)->name('bank');
+        Route::get('/year-closing', \App\Livewire\Accounts\YearClosings::class)->name('year-closing');
+        Route::get('/ledger', \App\Livewire\Accounts\Reports::class)->defaults('report', 'ledger')->name('ledger');
+        Route::get('/reports/{report}', \App\Livewire\Accounts\Reports::class)->name('reports');
+        Route::get('/reports/{report}/pdf', [\App\Http\Controllers\AccountsPdfController::class, 'report'])->name('reports.pdf');
+    });
+
     Route::middleware('can:dealers.view')->prefix('dealers')->name('dealers.')->group(function () {
         Route::get('/', DealersIndex::class)->name('index');
         Route::get('/{dealer}', DealersShow::class)->name('show');
