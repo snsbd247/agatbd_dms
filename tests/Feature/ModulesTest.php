@@ -32,7 +32,8 @@ class ModulesTest extends TestCase
         foreach (['production', 'hr', 'dealers', 'warranty', 'vat', 'attendance_devices'] as $m) {
             $this->assertTrue(Modules::enabled($m), $m);
         }
-        $this->assertFalse(Modules::enabled('costing'), 'not built yet');
+        $this->assertTrue(Modules::enabled('costing'));
+        $this->assertTrue(Modules::enabled('kits'));
         $this->get(route('settings.modules'))->assertOk();
     }
 

@@ -9,6 +9,11 @@ class DashboardController extends Controller
 {
     public function __invoke()
     {
+        // A brand-new install: the admin sets it up first.
+        if (Auth::user()->can('settings.manage') && \App\Livewire\Setup\Wizard::needed()) {
+            return redirect()->route('settings.setup');
+        }
+
         return redirect()->route(self::homeRoute(Auth::user()));
     }
 

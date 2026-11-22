@@ -167,6 +167,17 @@
                         <label class="text-sm text-slate-500">{{ __('Address / Territory') }}</label>
                         <input wire:model="address" type="text" class="w-full border rounded-lg p-2 mt-1">
                     </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="text-sm text-slate-500">{{ __('Country') }}</label>
+                            <input wire:model="country" type="text" placeholder="{{ __('Bangladesh if empty') }}" class="w-full border rounded-lg p-2 mt-1">
+                        </div>
+                        <div>
+                            <label class="text-sm text-slate-500">{{ __('Currency') }}</label>
+                            <input wire:model="currency" type="text" maxlength="3" class="w-full border rounded-lg p-2 mt-1 uppercase">
+                            @error('currency') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
+                        </div>
+                    </div>
                     <label class="flex items-center gap-2 text-sm">
                         <input wire:model="active" type="checkbox" class="rounded"> {{ __('Active') }}
                     </label>

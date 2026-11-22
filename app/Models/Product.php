@@ -30,7 +30,7 @@ class Product extends Model
     protected $fillable = [
         'company_id', 'brand_id', 'category_id', 'unit_id', 'type',
         'sku', 'barcode', 'name', 'description', 'image_path',
-        'purchase_price', 'sale_price', 'vat_rate', 'reorder_level', 'shelf_life_days', 'active',
+        'purchase_price', 'sale_price', 'dealer_price', 'mrp', 'hs_code', 'vat_rate', 'reorder_level', 'shelf_life_days', 'active',
     ];
 
     protected function casts(): array
@@ -38,10 +38,30 @@ class Product extends Model
         return [
             'purchase_price' => 'decimal:2',
             'sale_price' => 'decimal:2',
+            'dealer_price' => 'decimal:2',
+            'mrp' => 'decimal:2',
             'reorder_level' => 'decimal:3',
             'active' => 'boolean',
             'shelf_life_days' => 'integer',
         ];
+    }
+
+    /**
+     * The price for a customer: a dealer buying from the head office pays the
+     * dealer price (when one is set), everyone else the sale (retailer) price.
+     */
+    public function priceFor(?\App\Models\Retailer $customer): float
+    {
+        if ($customer?->account_dealer_id && (float) $this->dealer_price > 0) {
+            return (float) $this->dealer_price;
+        }
+
+        return (float) $this->sale_price;
+    }
+
+    public function costSheets()
+    {
+        return $this->hasMany(\App\Models\Costing\CostSheet::class);
     }
 
     public function typeLabel(): string

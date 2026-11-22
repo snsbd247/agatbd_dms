@@ -31,7 +31,7 @@
                         <div class="flex h-14 items-center justify-center rounded-lg bg-slate-100 text-lg font-bold text-slate-400">{{ strtoupper(substr($product->name, 0, 2)) }}</div>
                         <p class="mt-2 text-sm font-semibold text-slate-800 line-clamp-2">{{ $product->name }}</p>
                         <div class="mt-2 flex items-end justify-between gap-1">
-                            <span class="text-sm font-bold text-indigo-700">৳ {{ number_format($product->sale_price, 2) }}<span class="text-[10px] font-normal text-slate-400">/{{ $product->unit?->short_code }}</span></span>
+                            <span class="text-sm font-bold text-indigo-700">৳ {{ number_format($product->priceFor($retailer), 2) }}<span class="text-[10px] font-normal text-slate-400">/{{ $product->unit?->short_code }}</span></span>
                             <span class="rounded px-1.5 py-0.5 text-[10px] font-semibold {{ $stocked ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-500' }}">{{ $stocked ? 'In stock' : 'Out of stock' }}</span>
                         </div>
                     </button>
@@ -52,7 +52,7 @@
                     <div wire:key="ci-{{ $item['product_id'] }}" class="flex items-center gap-3 px-4 py-3">
                         <div class="min-w-0 flex-1">
                             <p class="truncate text-sm font-medium">{{ $p?->name }}</p>
-                            <p class="text-xs text-slate-500">৳ {{ number_format($p?->sale_price ?? 0, 2) }} × {{ $fmt($item['quantity']) }} = <span class="font-semibold text-slate-700">৳ {{ number_format((float) $item['quantity'] * (float) ($p?->sale_price ?? 0), 2) }}</span></p>
+                            <p class="text-xs text-slate-500">৳ {{ number_format($p?->priceFor($retailer) ?? 0, 2) }} × {{ $fmt($item['quantity']) }} = <span class="font-semibold text-slate-700">৳ {{ number_format((float) $item['quantity'] * ($p?->priceFor($retailer) ?? 0), 2) }}</span></p>
                             @error("items.{$index}.quantity") <p class="text-xs text-red-600">{{ $message }}</p> @enderror
                         </div>
                         <div class="flex items-center rounded-lg border">

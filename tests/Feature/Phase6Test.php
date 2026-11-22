@@ -225,6 +225,7 @@ class Phase6Test extends TestCase
 
     public function test_each_role_lands_on_a_dashboard_it_can_open(): void
     {
+        AppSetting::put([\App\Livewire\Setup\Wizard::DONE => true]);   // not a fresh install
         $cases = [
             'Admin' => 'dashboard.dealer',
             'Factory Manager' => 'dashboard.factory',

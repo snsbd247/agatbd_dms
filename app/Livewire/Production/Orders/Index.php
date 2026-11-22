@@ -65,7 +65,7 @@ class Index extends Component
     public function updatedProductId(): void
     {
         $this->bom_id = $this->product_id
-            ? Bom::where('product_id', $this->product_id)->where('active', true)->orderByDesc('is_default')->orderByDesc('version')->value('id')
+            ? Bom::where('product_id', $this->product_id)->where('kind', 'production')->where('active', true)->orderByDesc('is_default')->orderByDesc('version')->value('id')
             : null;
         if ($this->bom_id && $this->planned_quantity === '') {
             $this->planned_quantity = (string) (float) Bom::find($this->bom_id)->output_quantity;
@@ -114,7 +114,7 @@ class Index extends Component
             'counts' => $counts,
             'factories' => Factory::orderBy('name')->get(),
             'products' => Product::with('unit')->whereIn('type', ['finished_good', 'semi_finished'])->whereHas('boms', fn ($b) => $b->where('active', true))->orderBy('name')->get(),
-            'boms' => $this->product_id ? Bom::where('product_id', $this->product_id)->where('active', true)->orderByDesc('version')->get() : collect(),
+            'boms' => $this->product_id ? Bom::where('product_id', $this->product_id)->where('kind', 'production')->where('active', true)->orderByDesc('version')->get() : collect(),
             'machines' => $this->factory_id ? Machine::where('factory_id', $this->factory_id)->where('active', true)->orderBy('code')->get() : collect(),
             'chosen' => $this->product_id ? Product::with('unit')->find($this->product_id) : null,
         ]);

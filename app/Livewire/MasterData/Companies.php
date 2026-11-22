@@ -22,6 +22,8 @@ class Companies extends Component
     public string $phone = '';
     public string $email = '';
     public string $address = '';
+    public string $country = '';
+    public string $currency = 'BDT';
     public bool $active = true;
 
     public string $search = '';
@@ -56,6 +58,8 @@ class Companies extends Component
         $this->phone = (string) $company->phone;
         $this->email = (string) $company->email;
         $this->address = (string) $company->address;
+        $this->country = (string) $company->country;
+        $this->currency = (string) ($company->currency ?: 'BDT');
         $this->active = $company->active;
         $this->showModal = true;
     }
@@ -70,8 +74,12 @@ class Companies extends Component
             'phone' => 'nullable|string|max:30',
             'email' => 'nullable|email|max:255',
             'address' => 'nullable|string|max:255',
+            'country' => 'nullable|string|max:60',
+            'currency' => 'required|string|size:3',
             'active' => 'boolean',
         ]);
+        $data['currency'] = strtoupper($data['currency']);
+        $data['country'] = $data['country'] ?: null;
 
         Company::updateOrCreate(['id' => $this->editingId], $data);
 
@@ -87,7 +95,7 @@ class Companies extends Component
 
     public function resetForm(): void
     {
-        $this->reset(['editingId', 'name', 'code', 'phone', 'email', 'address']);
+        $this->reset(['editingId', 'name', 'code', 'phone', 'email', 'address', 'country', 'currency']);
         $this->active = true;
         $this->resetErrorBag();
     }

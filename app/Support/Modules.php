@@ -74,9 +74,10 @@ class Modules
             'vat' => self::m('VAT (Mushak)', 'VAT inside sale prices, Mushak 6.3 invoices and the monthly VAT report.', 'tax', on: $all),
 
             // coming
-            'costing' => self::m('Costing & Price Declaration', 'Cost sheet (purchase or formula + overheads + margin), dealer / retailer / MRP prices, Mushak 4.3.', 'coming', on: $all, coming: '7b'),
-            'import' => self::m('Import (LC & Landed Cost)', 'Proforma, LC, shipment, customs duties, C&F and landed cost into stock.', 'coming', on: $all, coming: '7c'),
-            'kits' => self::m('Kits & Repacking', 'Make a pack or kit from several products, or repack bulk goods into small packs.', 'coming', available: $trade, on: $trade, coming: '7d'),
+            // pricing & buying abroad
+            'costing' => self::m('Costing & Price Declaration', 'Cost sheet (purchase or formula + overheads + margin), dealer / retailer / MRP prices, Mushak 4.3.', 'pricing', on: $all, perms: ['costing.']),
+            'import' => self::m('Import (LC & Landed Cost)', 'Proforma, LC, shipment, customs duties, C&F and landed cost into stock.', 'pricing', on: $all, perms: ['import.']),
+            'kits' => self::m('Kits & Repacking', 'Make a pack or kit from several products, or repack bulk goods into small packs.', 'making', available: $trade, on: $trade, perms: ['kits.']),
         ];
     }
 
@@ -86,6 +87,7 @@ class Modules
         'making' => 'Factory & stock care',
         'people' => 'People',
         'tax' => 'Tax',
+        'pricing' => 'Pricing & import',
         'coming' => 'Coming next',
     ];
 

@@ -67,7 +67,7 @@ class Planning extends Component
         // The planned list, using each product's default formula.
         foreach ($this->plan as $row) {
             if ($row['product_id'] && is_numeric($row['quantity']) && (float) $row['quantity'] > 0) {
-                $bom = Bom::with('items')->where('product_id', $row['product_id'])->where('active', true)->orderByDesc('is_default')->orderByDesc('version')->first();
+                $bom = Bom::with('items')->where('product_id', $row['product_id'])->where('kind', 'production')->where('active', true)->orderByDesc('is_default')->orderByDesc('version')->first();
                 foreach ($bom?->requirements((float) $row['quantity']) ?? [] as $pid => $q) {
                     $add($pid, $q, 'planned');
                 }
@@ -103,7 +103,7 @@ class Planning extends Component
 
         return view('livewire.production.planning', [
             'factories' => Factory::where('active', true)->orderBy('name')->get(),
-            'makeable' => Product::whereIn('type', ['finished_good', 'semi_finished'])->whereHas('boms', fn ($b) => $b->where('active', true))->orderBy('name')->get(),
+            'makeable' => Product::whereIn('type', ['finished_good', 'semi_finished'])->whereHas('boms', fn ($b) => $b->where('kind', 'production')->where('active', true))->orderBy('name')->get(),
             'rows' => $rows,
             'openCount' => $open->count(),
             'raw' => $raw,

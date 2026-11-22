@@ -100,7 +100,7 @@ class Formulas extends Component
         DB::transaction(function () {
             $version = (int) Bom::where('product_id', $this->product_id)->max('version') + 1;
             if ($this->is_default) {
-                Bom::where('product_id', $this->product_id)->update(['is_default' => false]);
+                Bom::where('product_id', $this->product_id)->where('kind', 'production')->update(['is_default' => false]);
             }
             $bom = Bom::create([
                 'product_id' => $this->product_id,
@@ -109,7 +109,7 @@ class Formulas extends Component
                 'output_quantity' => $this->output_quantity,
                 'expected_yield' => $this->expected_yield,
                 'notes' => $this->notes ?: null,
-                'is_default' => $this->is_default || ! Bom::where('product_id', $this->product_id)->where('is_default', true)->exists(),
+                'is_default' => $this->is_default || ! Bom::where('product_id', $this->product_id)->where('kind', 'production')->where('is_default', true)->exists(),
                 'active' => true,
                 'created_by' => auth()->id(),
             ]);
@@ -131,7 +131,7 @@ class Formulas extends Component
         $this->authorize('production.manage');
         $bom = Bom::findOrFail($id);
         DB::transaction(function () use ($bom) {
-            Bom::where('product_id', $bom->product_id)->update(['is_default' => false]);
+            Bom::where('product_id', $bom->product_id)->where('kind', $bom->kind)->update(['is_default' => false]);
             $bom->update(['is_default' => true, 'active' => true]);
         });
     }
@@ -145,7 +145,7 @@ class Formulas extends Component
 
     public function render()
     {
-        $boms = Bom::with(['product.unit', 'items.product.unit'])
+        $boms = Bom::with(['product.unit', 'items.product.unit'])->where('kind', 'production')
             ->when($this->search, fn ($q) => $q->whereHas('product', fn ($p) => $p->where('name', 'like', "%{$this->search}%")->orWhere('sku', 'like', "%{$this->search}%")))
             ->orderBy('product_id')->orderByDesc('version')->get()
             ->groupBy('product_id');

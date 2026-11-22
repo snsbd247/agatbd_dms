@@ -763,4 +763,23 @@ erDiagram
 | attendance_devices | serial_no (unique), name, location, active, last_seen_at, last_ip, punch_count | অচেনা মেশিন বন্ধ অবস্থায় যোগ হয় |
 | attendance_punches | attendance_device_id, device_user_id, punched_at, employee_id, processed | unique(device_user_id, punched_at); মেলেনি = processed false |
 
+## ১৯. কস্টিং, আমদানি, কিট (migration `2026_11_22_000009`)
+
+| টেবিল / কলাম | মূল কলাম | নোট |
+|---|---|---|
+| products | dealer_price, mrp, hs_code | sale_price = রিটেইলার মূল্য |
+| product_prices | dealer_price, mrp, cost_sheet_id | |
+| companies | country, currency (ডিফল্ট BDT) | বিদেশি সরবরাহকারী |
+| boms.kind | `production` / `kit` / `repack` | |
+| cost_heads | name, code, basis (`percent`/`amount`), default_value, applies_to (`all`/`trading`/`manufacturing`), sort, active | ডিফল্ট ৬টা migration-এ |
+| cost_sheets | number (CS-…), product_id, version, basis (`purchase`/`import`/`formula`/`kit`), bom_id, base_cost, overhead_cost, total_cost, company/dealer/retailer_margin, dealer_price, retailer_price, mrp, vat_rate, effective_from, first_supply_date, status (`draft`/`approved`/`applied`/`superseded`/`rejected`), approved_by/at, applied_at | unique(product_id, version) |
+| cost_sheet_items | kind (`material`/`overhead`), product_id, cost_head_id, description, quantity (অপচয়সহ, প্রতি এককে), wastage_percent, unit_cost, basis, rate, amount | |
+| import_shipments | number (IMP-…), company_id, warehouse_id, proforma_no/date, currency, exchange_rate, lc_no/date, lc_bank_account_id, lc_margin, bl_no, shipment_date, eta, arrival_date, port, allocation_basis (`value`/`quantity`/`weight`), status (`draft`/`lc_opened`/`shipped`/`arrived`/`received`/`cancelled`), received_date | |
+| import_items | product_id, quantity, unit_price_fc, weight_kg, batch_no, expiry_date, landed_unit_cost, batch_id | |
+| import_costs | type (`cd`,`rd`,`sd`,`vat`,`at`,`ait`,`cnf`,`port`,`transport`,`insurance`,`bank`,`other`), amount, cost_date, paid_from_account_id, note | ভাউচারের উৎস `ImportCost` (`paid`) |
+| assembly_orders | number (ASM-…), kind, bom_id, product_id, warehouse_id, quantity, assembly_date, batch_no, expiry_date, material_cost, labour_cost, paid_from_account_id, unit_cost, output_batch_id | |
+| assembly_order_items | product_id, batch_id, quantity, unit_cost | ব্যবহৃত উপকরণ |
+
+হিসাব: 1175 `advance_tax`, 1185 `goods_in_transit`, 1186 `lc_margin`। ভাউচারের উৎস: `ImportShipment` (`lc_margin`, `received`), `ImportCost` (`paid`), `AssemblyOrder` (`labour`)। সেটিং `setup_done`।
+
 সেটিং (`app_settings`): `vat_enabled` ('1'/'0'), `vat_bin`, আর ধাপ ৭ক থেকে `business_type` (`trading`/`manufacturing`/`both`) ও `modules_off` (বন্ধ মডিউলের JSON তালিকা, [Modules](app/Support/Modules.php))। ভাউচারে Output VAT = system key `vat_output` (2130)। `attendances.source` এখন `device`-ও হয়।

@@ -114,8 +114,8 @@ class OrderCreate extends Component
             foreach ($this->items as $item) {
                 $product = Product::whereKey($item['product_id'])->where('active', true)->sellable()->firstOrFail();
                 $quantity = (float) $item['quantity'];
-                $lines[] = ['product_id' => $product->id, 'quantity' => $quantity, 'unit_price' => (float) $product->sale_price];
-                $total += $quantity * (float) $product->sale_price;
+                $lines[] = ['product_id' => $product->id, 'quantity' => $quantity, 'unit_price' => $product->priceFor($retailer)];
+                $total += $quantity * $product->priceFor($retailer);
             }
 
             $status = ((float) $retailer->current_due + $total) > (float) $retailer->credit_limit ? 'credit_hold' : 'pending';
@@ -167,7 +167,7 @@ class OrderCreate extends Component
             ->get();
 
         $cartProducts = Product::with('unit')->whereIn('id', collect($this->items)->pluck('product_id'))->get()->keyBy('id');
-        $total = collect($this->items)->sum(fn ($i) => (float) $i['quantity'] * (float) ($cartProducts->get($i['product_id'])?->sale_price ?? 0));
+        $total = collect($this->items)->sum(fn ($i) => (float) $i['quantity'] * ($cartProducts->get($i['product_id'])?->priceFor($retailer) ?? 0));
         $available = max(0, (float) $retailer->credit_limit - (float) $retailer->current_due);
 
         return view('livewire.portal.order-create', [

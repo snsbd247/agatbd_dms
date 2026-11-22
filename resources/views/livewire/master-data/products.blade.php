@@ -195,6 +195,12 @@
                     @endif
                     <div class="flex justify-between py-1.5 border-b"><span class="text-slate-500">{{ __('Purchase Price') }}</span><span class="font-medium">৳ {{ number_format($viewingProduct->purchase_price, 2) }}</span></div>
                     <div class="flex justify-between py-1.5 border-b"><span class="text-slate-500">{{ __('Sale Price') }}</span><span class="font-medium">৳ {{ number_format($viewingProduct->sale_price, 2) }}</span></div>
+                    @if((float) $viewingProduct->dealer_price > 0)
+                        <div class="flex justify-between py-1.5 border-b"><span class="text-slate-500">{{ __('Dealer price') }}</span><span class="font-medium">৳ {{ number_format($viewingProduct->dealer_price, 2) }}</span></div>
+                    @endif
+                    @if((float) $viewingProduct->mrp > 0)
+                        <div class="flex justify-between py-1.5 border-b"><span class="text-slate-500">{{ __('MRP') }}</span><span class="font-medium">৳ {{ number_format($viewingProduct->mrp, 2) }}</span></div>
+                    @endif
                     @if((float) $viewingProduct->vat_rate > 0)
                         <div class="flex justify-between py-1.5 border-b"><span class="text-slate-500">{{ __('VAT rate (%)') }}</span><span class="font-medium">{{ rtrim(rtrim((string) $viewingProduct->vat_rate, '0'), '.') }}%</span></div>
                     @endif
@@ -265,6 +271,21 @@
                         <input wire:model="shelf_life_days" type="number" min="1" step="1" placeholder="{{ __('e.g. 365') }}" class="w-full border rounded-lg p-2 mt-1">
                         @error('shelf_life_days') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
                         <p class="text-xs text-slate-400 mt-1">{{ __('Default expiry of a batch made in the factory.') }}</p>
+                    </div>
+                    <div>
+                        <label class="text-sm text-slate-500">{{ __('Dealer price') }}</label>
+                        <input wire:model="dealer_price" type="number" min="0" step="0.01" class="w-full border rounded-lg p-2 mt-1">
+                        @error('dealer_price') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
+                        <p class="text-xs text-slate-400 mt-1">{{ __('What dealers pay the head office. 0 = same as the sale price.') }}</p>
+                    </div>
+                    <div>
+                        <label class="text-sm text-slate-500">{{ __('MRP') }}</label>
+                        <input wire:model="mrp" type="number" min="0" step="0.01" class="w-full border rounded-lg p-2 mt-1">
+                        @error('mrp') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
+                    </div>
+                    <div>
+                        <label class="text-sm text-slate-500">{{ __('HS code') }}</label>
+                        <input wire:model="hs_code" type="text" maxlength="20" class="w-full border rounded-lg p-2 mt-1">
                     </div>
                     <div>
                         <label class="text-sm text-slate-500">{{ __('VAT rate (%)') }}</label>

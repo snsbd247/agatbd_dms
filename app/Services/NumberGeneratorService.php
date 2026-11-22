@@ -34,6 +34,9 @@ class NumberGeneratorService
         'stock_transfer' => 'TRF',
         'damage_record' => 'DMG',
         'repair_job' => 'RPR',
+        'cost_sheet' => 'CS',
+        'import_shipment' => 'IMP',
+        'assembly_order' => 'ASM',
     ];
 
     public function generate(string $type): string

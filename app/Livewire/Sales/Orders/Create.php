@@ -56,7 +56,7 @@ class Create extends Component
             return;
         }
 
-        $this->items[] = ['product_id' => $product->id, 'quantity' => 1, 'unit_price' => (string) $product->sale_price];
+        $this->items[] = ['product_id' => $product->id, 'quantity' => 1, 'unit_price' => (string) $product->priceFor($this->customer())];
     }
 
     public function incrementQuantity(int $index): void
@@ -125,8 +125,9 @@ class Create extends Component
             $total = 0;
             foreach ($data['items'] as $index => $item) {
                 $product = Product::whereKey($item['product_id'])->where('active', true)->sellable()->firstOrFail();
-                $this->items[$index]['unit_price'] = (string) $product->sale_price;
-                $total += $item['quantity'] * (float) $product->sale_price;
+                $price = $product->priceFor($this->customer());
+                $this->items[$index]['unit_price'] = (string) $price;
+                $total += $item['quantity'] * $price;
             }
 
             $status = ($retailer->current_due + $total) > $retailer->credit_limit ? 'credit_hold' : 'pending';
@@ -164,6 +165,12 @@ class Create extends Component
         $this->redirect(route('sales.orders.show', $order), navigate: false);
     }
 
+    /** The chosen customer, for its price tier. */
+    private function customer(): ?Retailer
+    {
+        return $this->retailer_id ? Retailer::find($this->retailer_id) : null;
+    }
+
     public function render()
     {
         $user = Auth::user();
@@ -195,6 +202,7 @@ class Create extends Component
                 ->orderBy('name')->get(),
             'categories' => Category::whereHas('products', fn ($query) => $query->where('active', true))->orderBy('name')->get(),
             'products' => $products,
+            'customer' => $this->customer(),
             'cartProducts' => Product::whereIn('id', collect($this->items)->pluck('product_id')->filter())->get()->keyBy('id'),
         ]);
     }

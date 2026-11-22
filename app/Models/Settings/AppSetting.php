@@ -46,6 +46,12 @@ class AppSetting extends Model
         return self::$cache = $rows;
     }
 
+    /** Forget the cached rows (tests, long-running workers). */
+    public static function flush(): void
+    {
+        self::$cache = null;
+    }
+
     public static function get(string $key, ?string $default = null): ?string
     {
         $value = self::cached()[$key] ?? null;

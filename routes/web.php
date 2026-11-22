@@ -214,6 +214,23 @@ Route::middleware('auth')->group(function () {
         Route::get('/maintenance', \App\Livewire\Production\Maintenance::class)->name('maintenance');
     });
 
+    Route::middleware(['can:costing.view', 'head.office'])->prefix('costing')->name('costing.')->group(function () {
+        Route::get('/', \App\Livewire\Costing\Index::class)->name('index');
+        Route::get('/heads', \App\Livewire\Costing\Heads::class)->name('heads');
+        Route::get('/new', \App\Livewire\Costing\Sheet::class)->name('sheets.create');
+        Route::get('/{sheet}', \App\Livewire\Costing\Sheet::class)->whereNumber('sheet')->name('sheets.show');
+        Route::get('/{sheet}/pdf', [\App\Http\Controllers\CostingPdfController::class, 'sheet'])->whereNumber('sheet')->name('sheets.pdf');
+    });
+
+    Route::middleware(['can:import.view', 'head.office'])->prefix('import')->name('import.')->group(function () {
+        Route::get('/', \App\Livewire\Import\Index::class)->name('index');
+        Route::get('/{shipment}', \App\Livewire\Import\Show::class)->whereNumber('shipment')->name('show');
+    });
+
+    Route::middleware(['can:kits.view', 'head.office'])->prefix('kits')->name('kits.')->group(function () {
+        Route::get('/', \App\Livewire\Kits\Index::class)->name('index');
+    });
+
     Route::middleware('can:damage.view')->prefix('damage')->name('damage.')->group(function () {
         Route::get('/', \App\Livewire\Damage\Index::class)->name('index');
         Route::get('/repairs', \App\Livewire\Damage\Repairs::class)->name('repairs');
@@ -345,6 +362,7 @@ Route::middleware('auth')->group(function () {
     Route::middleware('can:settings.manage')->prefix('settings')->name('settings.')->group(function () {
         Route::get('/company-profile', SettingsCompanyProfile::class)->name('company-profile');
         Route::get('/modules', \App\Livewire\Settings\ModuleSettings::class)->name('modules');
+        Route::get('/setup', \App\Livewire\Setup\Wizard::class)->name('setup');
         Route::get('/numbering', SettingsNumbering::class)->name('numbering');
         Route::get('/email-sms', \App\Livewire\Settings\Messaging::class)->name('messaging');
         Route::get('/warranty-policies', SettingsWarrantyPoliciesIndex::class)->middleware('module:warranty')->name('warranty-policies');

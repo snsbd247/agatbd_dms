@@ -12,7 +12,9 @@ class Bom extends Model
 {
     use Auditable;
 
-    protected $fillable = ['product_id', 'version', 'name', 'output_quantity', 'expected_yield', 'notes', 'is_default', 'active', 'created_by'];
+    public const KINDS = ['production' => 'Production formula', 'kit' => 'Kit / pack', 'repack' => 'Repacking'];
+
+    protected $fillable = ['product_id', 'kind', 'version', 'name', 'output_quantity', 'expected_yield', 'notes', 'is_default', 'active', 'created_by'];
 
     protected function casts(): array
     {

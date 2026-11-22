@@ -42,6 +42,9 @@ class Products extends Component
     public string $type = 'trading';
     public string $shelf_life_days = '';
     public string $vat_rate = '0';
+    public string $dealer_price = '0';
+    public string $mrp = '0';
+    public string $hs_code = '';
     public bool $active = true;
 
     /** Extra packs: [['unit_id' => int|null, 'factor' => string], …] */
@@ -97,6 +100,9 @@ class Products extends Component
         $this->type = $product->type ?? 'trading';
         $this->shelf_life_days = (string) ($product->shelf_life_days ?? '');
         $this->vat_rate = rtrim(rtrim((string) $product->vat_rate, '0'), '.') ?: '0';
+        $this->dealer_price = (string) $product->dealer_price;
+        $this->mrp = (string) $product->mrp;
+        $this->hs_code = (string) $product->hs_code;
         $this->active = $product->active;
         $this->packs = $product->units()->get()
             ->map(fn (ProductUnit $u) => ['unit_id' => $u->unit_id, 'factor' => rtrim(rtrim(number_format((float) $u->factor, 6, '.', ''), '0'), '.')])
@@ -124,6 +130,9 @@ class Products extends Component
             'type' => 'required|in:'.implode(',', array_keys(Product::TYPES)),
             'shelf_life_days' => 'nullable|integer|min:1|max:3650',
             'vat_rate' => 'required|numeric|min:0|max:100',
+            'dealer_price' => 'required|numeric|min:0',
+            'mrp' => 'required|numeric|min:0',
+            'hs_code' => 'nullable|string|max:20',
             'active' => 'boolean',
             'packs' => 'array',
             'packs.*.unit_id' => 'required|distinct|exists:units,id|different:form_unit_id',
@@ -151,13 +160,18 @@ class Products extends Component
             'type' => $data['type'],
             'shelf_life_days' => $data['shelf_life_days'] !== '' ? (int) $data['shelf_life_days'] : null,
             'vat_rate' => $data['vat_rate'],
+            'dealer_price' => $data['dealer_price'],
+            'mrp' => $data['mrp'],
+            'hs_code' => $data['hs_code'] ?: null,
             'active' => $data['active'],
         ];
 
         $existing = $this->editingId ? Product::find($this->editingId) : null;
         $priceChanged = ! $existing
             || bccomp((string) $existing->purchase_price, (string) $productData['purchase_price'], 2) !== 0
-            || bccomp((string) $existing->sale_price, (string) $productData['sale_price'], 2) !== 0;
+            || bccomp((string) $existing->sale_price, (string) $productData['sale_price'], 2) !== 0
+            || bccomp((string) $existing->dealer_price, (string) $productData['dealer_price'], 2) !== 0
+            || bccomp((string) $existing->mrp, (string) $productData['mrp'], 2) !== 0;
 
         $product = Product::updateOrCreate(['id' => $this->editingId], $productData);
 
@@ -177,6 +191,8 @@ class Products extends Component
                 'product_id' => $product->id,
                 'purchase_price' => $productData['purchase_price'],
                 'sale_price' => $productData['sale_price'],
+                'dealer_price' => $productData['dealer_price'],
+                'mrp' => $productData['mrp'],
                 'effective_from' => today(),
                 'created_by' => Auth::id(),
             ]);
@@ -204,6 +220,9 @@ class Products extends Component
         $this->type = 'trading';
         $this->shelf_life_days = '';
         $this->vat_rate = '0';
+        $this->dealer_price = '0';
+        $this->mrp = '0';
+        $this->hs_code = '';
         $this->packs = [];
         $this->active = true;
         $this->resetErrorBag();

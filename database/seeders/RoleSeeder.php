@@ -30,6 +30,9 @@ class RoleSeeder extends Seeder
             'hr.view',
             'production.view',
             'damage.view', 'damage.manage', 'damage.approve',
+            'costing.view', 'costing.manage',
+            'import.view', 'import.manage',
+            'kits.view', 'kits.manage',
             'reports.view',
         ],
         'Factory Manager' => [
@@ -37,6 +40,8 @@ class RoleSeeder extends Seeder
             'inventory.view', 'inventory.manage',
             'production.view', 'production.manage', 'production.qc',
             'damage.view', 'damage.manage', 'damage.approve',
+            'costing.view', 'costing.manage',
+            'kits.view', 'kits.manage',
             'reports.view',
         ],
         'HR Manager' => [
@@ -49,6 +54,9 @@ class RoleSeeder extends Seeder
             'accounts.view', 'accounts.manage', 'accounts.approve',
             'hr.view', 'hr.payroll',
             'production.view', 'damage.view',
+            'costing.view', 'costing.approve',
+            'import.view', 'import.manage',
+            'kits.view',
             'reports.view',
         ],
         'Dealer' => [

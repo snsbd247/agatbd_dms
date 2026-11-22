@@ -66,6 +66,16 @@
                 ['route' => 'production.maintenance', 'label' => 'Machine Maintenance', 'icon' => 'cog', 'headOffice' => true],
                 ['route' => 'production.report', 'label' => 'Production Report', 'icon' => 'chart-bar', 'headOffice' => true],
             ]],
+            ['icon' => 'trending-up', 'label' => 'Costing & Prices', 'permission' => 'costing.view', 'prefix' => ['costing.'], 'links' => [
+                ['route' => 'costing.index', 'label' => 'Cost Sheets', 'icon' => 'document-text', 'headOffice' => true],
+                ['route' => 'costing.heads', 'label' => 'Cost Heads', 'icon' => 'cog', 'headOffice' => true],
+            ]],
+            ['icon' => 'globe', 'label' => 'Import', 'permission' => 'import.view', 'prefix' => ['import.'], 'links' => [
+                ['route' => 'import.index', 'label' => 'Import Shipments', 'icon' => 'globe', 'headOffice' => true],
+            ]],
+            ['icon' => 'gift', 'label' => 'Kits & Repacking', 'permission' => 'kits.view', 'prefix' => ['kits.'], 'links' => [
+                ['route' => 'kits.index', 'label' => 'Kits & Repacking', 'icon' => 'gift', 'headOffice' => true],
+            ]],
             ['icon' => 'exclamation-triangle', 'label' => 'Damage & Repair', 'permission' => 'damage.view', 'prefix' => ['damage.'], 'links' => [
                 ['route' => 'damage.index', 'label' => 'Damage Register', 'icon' => 'exclamation-triangle'],
                 ['route' => 'damage.repairs', 'label' => 'Repair Jobs', 'icon' => 'cog'],

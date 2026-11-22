@@ -59,6 +59,7 @@ abstract class TestCase extends BaseTestCase
     protected function setUp(): void
     {
         parent::setUp();
+        \App\Models\Settings\AppSetting::flush();   // a static cache must not carry one test's settings into the next
         \App\Support\Tenant::reset();   // static state must not leak between tests
     }
 

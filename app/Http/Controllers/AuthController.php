@@ -40,6 +40,12 @@ class AuthController extends Controller
 
         $request->session()->regenerate();
 
+        // A language picked on the login page becomes the user's own, if they had none yet.
+        $picked = $request->session()->get('locale');
+        if (! Auth::user()->locale && array_key_exists((string) $picked, \App\Http\Middleware\SetLocale::SUPPORTED)) {
+            Auth::user()->forceFill(['locale' => $picked])->save();
+        }
+
         LoginHistory::create([
             'user_id' => Auth::id(),
             'ip_address' => $request->ip(),

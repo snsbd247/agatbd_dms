@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class ProductPrice extends Model
 {
-    protected $fillable = ['product_id', 'purchase_price', 'sale_price', 'effective_from', 'created_by'];
+    protected $fillable = ['product_id', 'purchase_price', 'sale_price', 'dealer_price', 'mrp', 'cost_sheet_id', 'effective_from', 'created_by'];
 
     protected function casts(): array
     {

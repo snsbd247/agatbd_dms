@@ -61,6 +61,10 @@ class AccessTest extends TestCase
             'factory dashboard' => ['dashboard.factory',    200,   200,   403,   403, 403],
             'accounts dashboard' => ['dashboard.accounts',  200,   200,   200,   403, 403],
             'hr dashboard' => ['dashboard.hr',              200,   200,   403,   403, 403],
+            'cost sheets' => ['costing.index',              200,   200,   403,   403, 403],
+            'import shipments' => ['import.index',          200,   200,   403,   403, 403],
+            'kits & repacking' => ['kits.index',            200,   200,   403,   403, 403],
+            'module settings' => ['settings.modules',       200,   403,   403,   403, 403],
             'help' => ['help',                               200,   200,   200,   200, 200],
         ];
     }

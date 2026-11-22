@@ -36,6 +36,13 @@ use App\Models\Unit;
 use App\Services\NumberGeneratorService;
 use App\Services\PaymentAllocationService;
 use App\Services\Vat\VatService;
+use App\Models\Import\ImportShipment;
+use App\Models\Settings\AppSetting;
+use App\Livewire\Setup\Wizard;
+use App\Services\Costing\CostingService;
+use App\Services\Import\ImportService;
+use App\Services\Kits\AssemblyService;
+use App\Support\Modules;
 use App\Models\User;
 use App\Models\Warehouse;
 use App\Services\Accounts\AutoPosting;
@@ -114,7 +121,7 @@ class ErpDemoSeeder extends Seeder
             $this->setUpHr($start);
             app(LedgerService::class)->post(
                 ['type' => 'receipt', 'entry_date' => now()->toDateString(), 'narration' => 'Capital brought in for the factory (demo)'],
-                [['account' => 'bank', 'debit' => 5000000], ['account' => 'cash', 'debit' => 1000000], ['account' => 'opening_equity', 'credit' => 6000000]],
+                [['account' => 'bank', 'debit' => 6000000], ['account' => 'cash', 'debit' => 1000000], ['account' => 'opening_equity', 'credit' => 7000000]],
             );
 
             for ($m = 0; $m < self::MONTHS; $m++) {
@@ -131,6 +138,8 @@ class ErpDemoSeeder extends Seeder
 
             $this->travel($realToday->copy()->setTime(now()->hour, now()->minute));
             $this->attendanceMachine($realToday);
+            $this->importCostingAndKits($realToday);
+            AppSetting::put([Modules::TYPE => 'both', Wizard::DONE => true]);
         } finally {
             Carbon::setTestNow();
         }
@@ -663,6 +672,102 @@ class ErpDemoSeeder extends Seeder
         $svc->approve($run->fresh());
         $this->travel($monthStart->copy()->addMonth()->addDays(4)->setTime(15, 0));
         $svc->pay($run->fresh(), 'bank');
+    }
+
+    /**
+     * Phase 7: one import of potash received at landed cost, cost sheets for
+     * the factory's products (the dealer / retailer / MRP prices in use), and
+     * a seasonal combo kit plus a repacked 5 kg fertiliser pack.
+     */
+    private function importCostingAndKits(Carbon $realToday): void
+    {
+        $bank = Account::bySystemKey('bank')->id;
+        $supplier = Company::firstOrCreate(['code' => 'BLR-K'], ['name' => 'Belaruskali Trading (demo)', 'country' => 'Belarus', 'currency' => 'USD', 'active' => true]);
+        $imports = app(ImportService::class);
+
+        $start = $realToday->copy()->subMonths(4)->startOfMonth()->addDays(2);
+        $this->travel($start->copy()->setTime(11, 0));
+        $s = ImportShipment::create(['number' => app(NumberGeneratorService::class)->generate('import_shipment'), 'company_id' => $supplier->id,
+            'warehouse_id' => $this->raw->id, 'proforma_no' => 'PI-BK-2026-114', 'proforma_date' => $start->toDateString(), 'currency' => 'USD',
+            'exchange_rate' => 121.5, 'allocation_basis' => 'value', 'status' => 'draft', 'created_by' => $this->admin->id]);
+        $s->items()->create(['product_id' => $this->rm['MOP']->id, 'quantity' => 20000, 'unit_price_fc' => 0.27, 'weight_kg' => 20000]);
+        $s->items()->create(['product_id' => $this->rm['ZNSO4']->id, 'quantity' => 2000, 'unit_price_fc' => 0.68, 'weight_kg' => 2000]);
+        $imports->openLc($s, 'LC-0457-26', $start->toDateString(), $bank, 140000);
+
+        $this->travel($start->copy()->addDays(9)->setTime(12, 0));
+        $imports->shipped($s->fresh(), 'MSCU-4471209', today()->toDateString(), today()->addDays(24)->toDateString());
+        $this->travel($start->copy()->addDays(33)->setTime(10, 0));
+        $imports->arrived($s->fresh(), today()->toDateString(), 'Chattogram');
+        foreach ([['cd', 33100], ['rd', 0], ['vat', 116900], ['at', 38900], ['ait', 32400], ['cnf', 18500], ['port', 12600], ['transport', 24000], ['bank', 9800]] as [$type, $amount]) {
+            $amount > 0 && $imports->addCost($s->fresh(), $type, $amount, today()->toDateString(), $bank, null);
+        }
+        $this->travel($start->copy()->addDays(36)->setTime(15, 0));
+        $imports->receive($s->fresh(), today()->toDateString(), []);
+
+        // A second import still on the water.
+        $this->travel($realToday->copy()->subDays(12)->setTime(11, 0));
+        $s2 = ImportShipment::create(['number' => app(NumberGeneratorService::class)->generate('import_shipment'), 'company_id' => $supplier->id,
+            'warehouse_id' => $this->raw->id, 'proforma_no' => 'PI-BK-2026-139', 'proforma_date' => today()->toDateString(), 'currency' => 'USD',
+            'exchange_rate' => 122.0, 'allocation_basis' => 'value', 'status' => 'draft', 'created_by' => $this->admin->id]);
+        $s2->items()->create(['product_id' => $this->rm['MOP']->id, 'quantity' => 25000, 'unit_price_fc' => 0.28, 'weight_kg' => 25000]);
+        $imports->openLc($s2, 'LC-0512-26', today()->toDateString(), $bank, 170000);
+        $this->travel($realToday->copy()->subDays(4)->setTime(11, 0));
+        $imports->shipped($s2->fresh(), 'MSCU-5530871', today()->toDateString(), today()->addDays(22)->toDateString());
+
+        // Cost sheets for the factory's products, approved two months ago.
+        $this->travel($realToday->copy()->subMonths(2)->startOfMonth()->setTime(10, 0));
+        $costing = app(CostingService::class);
+        foreach ($this->fgProducts as $key => $p) {
+            $m = $costing->materials($p, 'formula');
+            $c = $costing->compute($m['lines'], $costing->defaultOverheads('formula'), 8, 6, 8);
+            $sheet = $costing->save($p, ['basis' => 'formula', 'bom_id' => $m['bom_id'], 'materials' => $m['lines'], 'overheads' => $costing->defaultOverheads('formula'),
+                'company_margin' => 8, 'dealer_margin' => 6, 'retailer_margin' => 8, 'dealer_price' => $c['dealer_price'], 'retailer_price' => $c['retailer_price'], 'mrp' => $c['mrp'],
+                'effective_from' => today()->toDateString(), 'first_supply_date' => today()->toDateString(), 'notes' => null]);
+            $costing->approve($sheet);
+        }
+        // A new version waiting for approval.
+        $p = $this->fgProducts['NPK'];
+        $m = $costing->materials($p, 'formula');
+        $this->travel($realToday->copy()->subDays(2)->setTime(16, 0));
+        $c = $costing->compute($m['lines'], $costing->defaultOverheads('formula'), 9, 6, 8);
+        $costing->save($p, ['basis' => 'formula', 'bom_id' => $m['bom_id'], 'materials' => $m['lines'], 'overheads' => $costing->defaultOverheads('formula'),
+            'company_margin' => 9, 'dealer_margin' => 6, 'retailer_margin' => 8, 'dealer_price' => $c['dealer_price'], 'retailer_price' => $c['retailer_price'], 'mrp' => $c['mrp'],
+            'effective_from' => $realToday->copy()->addDays(10)->toDateString(), 'first_supply_date' => null, 'notes' => 'Potash price went up']);
+
+        // Kits and repacking in the depot.
+        $pack5 = Product::firstOrCreate(['sku' => 'AGT-NPK5'], ['name' => 'Agro Mix NPK 5 kg pack', 'type' => 'trading', 'company_id' => $p->company_id,
+            'category_id' => $p->category_id, 'unit_id' => Unit::where('short_code', 'PCS')->value('id'), 'purchase_price' => 160, 'sale_price' => 250, 'active' => true, 'reorder_level' => 0, 'vat_rate' => 0]);
+        $pouch = Product::firstOrCreate(['sku' => 'RM-POUCH5'], ['name' => 'Printed pouch 5 kg', 'type' => 'packaging', 'company_id' => $p->company_id,
+            'category_id' => $this->rm['BAG50']->category_id, 'unit_id' => Unit::where('short_code', 'PCS')->value('id'), 'purchase_price' => 6, 'sale_price' => 6, 'active' => true, 'reorder_level' => 0, 'vat_rate' => 0]);
+        $combo = Product::firstOrCreate(['sku' => 'AGT-RABI-KIT'], ['name' => 'Rabi season combo (NPK + Zinc)', 'type' => 'trading', 'company_id' => $p->company_id,
+            'category_id' => $p->category_id, 'unit_id' => Unit::where('short_code', 'PCS')->value('id'), 'purchase_price' => 3000, 'sale_price' => 3500, 'active' => true, 'reorder_level' => 0, 'vat_rate' => 0]);
+
+        // 10 packs of 5 kg from one 50 kg bag.
+        $repack = Bom::create(['product_id' => $pack5->id, 'kind' => 'repack', 'version' => 1, 'name' => '50 kg bag into 10 × 5 kg', 'output_quantity' => 10,
+            'expected_yield' => 100, 'is_default' => true, 'active' => true, 'created_by' => $this->admin->id]);
+        $repack->items()->create(['product_id' => $this->fgProducts['NPK']->id, 'quantity' => 1, 'wastage_percent' => 0, 'sort' => 0]);
+        $repack->items()->create(['product_id' => $pouch->id, 'quantity' => 10, 'wastage_percent' => 2, 'sort' => 1]);
+        $kit = Bom::create(['product_id' => $combo->id, 'kind' => 'kit', 'version' => 1, 'name' => 'One NPK bag + one zinc bag', 'output_quantity' => 1,
+            'expected_yield' => 100, 'is_default' => true, 'active' => true, 'created_by' => $this->admin->id]);
+        $kit->items()->create(['product_id' => $this->fgProducts['NPK']->id, 'quantity' => 1, 'wastage_percent' => 0, 'sort' => 0]);
+        $kit->items()->create(['product_id' => $this->fgProducts['ZN']->id, 'quantity' => 1, 'wastage_percent' => 0, 'sort' => 1]);
+
+        $this->travel($realToday->copy()->subDays(20)->setTime(10, 0));
+        app(InventoryService::class)->receiveStock(productId: $pouch->id, warehouseId: $this->depot->id, batchNo: 'POUCH-'.today()->format('ym'),
+            expiryDate: null, costPrice: 6, quantity: 500, reference: $pouch);
+        app(LedgerService::class)->post(['type' => 'payment', 'entry_date' => today()->toDateString(), 'narration' => 'Printed pouches (demo)'],
+            [['account' => 'inventory', 'debit' => 3000], ['account' => 'cash', 'credit' => 3000]]);
+
+        $assembly = app(AssemblyService::class);
+        $cash = Account::bySystemKey('cash')->id;
+        foreach ([[$repack, 100, 400], [$kit, 20, 200]] as [$bom, $qty, $labour]) {
+            try {
+                $assembly->assemble($bom, $qty, $this->depot->id, today()->toDateString(), $labour, $cash);
+            } catch (\RuntimeException $e) {
+                $this->command?->warn('  skipped '.$bom->kind.': '.$e->getMessage());
+            }
+            $this->travel(now()->addDays(3));
+        }
     }
 
     /** A machine at the factory gate that sent the last few days' punches. */
