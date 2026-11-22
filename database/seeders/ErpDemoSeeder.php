@@ -147,7 +147,8 @@ class ErpDemoSeeder extends Seeder
             $this->travel($realToday->copy()->setTime(now()->hour, now()->minute));
             $this->attendanceMachine($realToday);
             $this->importCostingAndKits($realToday);
-            AppSetting::put([Modules::TYPE => 'both', Wizard::DONE => true]);
+            // Every module on, so the demo shows all of them.
+            AppSetting::put([Modules::TYPE => 'both', Modules::OFF => '[]', Wizard::DONE => true]);
         } finally {
             Carbon::setTestNow();
         }
