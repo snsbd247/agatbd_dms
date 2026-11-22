@@ -446,7 +446,7 @@ $P artisan db:seed --class=PermissionSeeder --force && $P artisan db:seed --clas
 $P artisan optimize
 ```
 
-**ডেমো ডাটা:** বর্তমান ইনস্টলে নেই। পুরো ডেমো (`DemoDataSeeder` → `YearlyDemoSeeder` → `YearlyExtrasSeeder` → `AccountingBackfillSeeder` → `ErpDemoSeeder`) খালি ডাটাবেসেই চালানো উচিত; শুধু কারখানা-HR অংশ চাইলে `php artisan db:seed --class=ErpDemoSeeder`।
+**ডেমো ডাটা:** ২২ নভেম্বর ২০২৬-এ ব্যবহারকারীর অনুরোধে লাইভে পুরো এক বছরের ডেমো ডাটা দেওয়া হয়েছে (সব মডিউল চালু, ধরন `both`, মূসক চালু ডেমো বিআইএন `000000000-0000` দিয়ে, ৩টা ডিলার)। আগের খালি ডাটাবেসের ব্যাকআপ `storage/backups/auto/dms-20261122-143244.zip`। ডেমো ইউজারদের (`*@dms.local`, `*.dealer@demo.local`) পাসওয়ার্ড র‍্যান্ডম। পুরো ডেমো (`DemoDataSeeder` → `YearlyDemoSeeder` → `YearlyExtrasSeeder` → `AccountingBackfillSeeder` → `ErpDemoSeeder`) খালি ডাটাবেসেই চালানো উচিত; শুধু কারখানা-HR অংশ চাইলে `php artisan db:seed --class=ErpDemoSeeder`।
 
 **হাজিরা মেশিন:** মেশিনের Cloud Server (ADMS) = `dms.agatbd.com`, পোর্ট 443, HTTPS। `/iclock/...` রুট session ছাড়া চলে।
 
