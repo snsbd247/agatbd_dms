@@ -29,12 +29,14 @@ class RoleSeeder extends Seeder
             'accounts.view',
             'hr.view',
             'production.view',
+            'damage.view', 'damage.manage', 'damage.approve',
             'reports.view',
         ],
         'Factory Manager' => [
             'master-data.view',
             'inventory.view', 'inventory.manage',
             'production.view', 'production.manage', 'production.qc',
+            'damage.view', 'damage.manage', 'damage.approve',
             'reports.view',
         ],
         'HR Manager' => [
@@ -46,7 +48,7 @@ class RoleSeeder extends Seeder
             'purchase.view', 'inventory.view', 'sales.view', 'collection.view', 'returns.view',
             'accounts.view', 'accounts.manage', 'accounts.approve',
             'hr.view', 'hr.payroll',
-            'production.view',
+            'production.view', 'damage.view',
             'reports.view',
         ],
         'Dealer' => [
@@ -58,6 +60,7 @@ class RoleSeeder extends Seeder
             'collection.view', 'collection.manage',
             'returns.view', 'returns.create', 'returns.manage',
             'warranty.view', 'warranty.manage',
+            'damage.view', 'damage.manage', 'damage.approve',
             'reports.view',
             'accounts.view', 'accounts.manage', 'accounts.approve',
             'portal.access',

@@ -34,9 +34,9 @@
                                 <option value="company_return">{{ __('Company Return') }}</option>
                             </select>
                         </div>
-                        @if($line['disposition'] === 'restock')
+                        @if(in_array($line['disposition'], ['restock', 'damage'], true))
                             <div>
-                                <label class="text-xs text-slate-500">{{ __('Batch No.') }}</label>
+                                <label class="text-xs text-slate-500">{{ $line['disposition'] === 'damage' ? __('Batch No. (if known)') : __('Batch No.') }}</label>
                                 <input wire:model="lines.{{ $index }}.batch_no" type="text" class="w-full border rounded-lg p-2 mt-1">
                                 @error("lines.{$index}.batch_no") <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
                             </div>

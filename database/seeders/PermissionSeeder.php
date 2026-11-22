@@ -24,6 +24,7 @@ class PermissionSeeder extends Seeder
         'accounts.view', 'accounts.manage', 'accounts.approve',
         'hr.view', 'hr.manage', 'hr.payroll',
         'production.view', 'production.manage', 'production.qc',
+        'damage.view', 'damage.manage', 'damage.approve',
         'settings.manage',
         'portal.access',
     ];

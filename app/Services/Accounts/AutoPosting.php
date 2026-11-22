@@ -275,6 +275,59 @@ class AutoPosting
         ]);
     }
 
+    /** Damaged stock destroyed, or written down to its recovery price for a discount sale. */
+    public function damageWriteOff(\App\Models\Damage\DamageAction $action, \App\Models\Damage\DamageRecord $record): void
+    {
+        $value = round((float) $action->written_off, 2);
+
+        $this->once($action, 'write_off', fn () => [
+            ['type' => 'auto', 'entry_date' => now(), 'dealer_id' => Staff::dealerOfWarehouse($record->warehouse_id),
+                'narration' => __('Damage :n: :a', ['n' => $record->number, 'a' => $action->label()])],
+            [
+                ['account' => 'stock_loss', 'debit' => $value],
+                ['account' => 'inventory', 'credit' => $value],
+            ],
+        ]);
+    }
+
+    /**
+     * A finished repair: what was paid for it goes into the repaired stock (or
+     * is an expense if nothing could be repaired); scrapped units are written off.
+     */
+    public function repairCompleted(\App\Models\Damage\RepairJob $job, float $scrapValue, bool $anyRepaired): void
+    {
+        $cost = round((float) $job->cost, 2);
+
+        $this->once($job, 'completed', fn () => [
+            ['type' => 'auto', 'entry_date' => $job->completed_date ?? now(), 'dealer_id' => Staff::dealerOfWarehouse($job->warehouse_id),
+                'narration' => __('Repair :n completed', ['n' => $job->number]).($job->vendor ? ' ('.$job->vendor.')' : '')],
+            [
+                ['account' => $anyRepaired ? 'inventory' : 'repairs', 'debit' => $cost],
+                ['account' => $job->paid_from_account_id ? (int) $job->paid_from_account_id : 'cash', 'credit' => $cost],
+                ['account' => 'stock_loss', 'debit' => $scrapValue],
+                ['account' => 'inventory', 'credit' => $scrapValue],
+            ],
+        ]);
+    }
+
+    /** Cost of servicing or repairing a machine. */
+    public function machineMaintenance(\App\Models\Production\MachineMaintenance $m): void
+    {
+        $cost = round((float) $m->cost, 2);
+        if ($cost <= 0 || ! $m->paid_from_account_id) {
+            return;
+        }
+
+        $this->once($m, 'cost', fn () => [
+            ['type' => 'auto', 'entry_date' => $m->maintenance_date, 'dealer_id' => null,
+                'narration' => __(':t: :m', ['t' => $m->typeLabel(), 'm' => $m->machine?->name])],
+            [
+                ['account' => 'repairs', 'debit' => $cost],
+                ['account' => (int) $m->paid_from_account_id, 'credit' => $cost],
+            ],
+        ]);
+    }
+
     /** Money lent or advanced to an employee. */
     public function loanIssued(\App\Models\Hr\EmployeeLoan $loan): void
     {

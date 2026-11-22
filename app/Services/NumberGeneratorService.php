@@ -32,6 +32,8 @@ class NumberGeneratorService
         'final_settlement' => 'FS',
         'production_order' => 'PRD',
         'stock_transfer' => 'TRF',
+        'damage_record' => 'DMG',
+        'repair_job' => 'RPR',
     ];
 
     public function generate(string $type): string

@@ -26,4 +26,9 @@ class Machine extends Model
     {
         return $this->hasMany(ProductionOrder::class);
     }
+
+    public function maintenances()
+    {
+        return $this->hasMany(MachineMaintenance::class)->latest('maintenance_date')->latest('id');
+    }
 }

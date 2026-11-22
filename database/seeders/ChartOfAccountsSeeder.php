@@ -71,7 +71,7 @@ class ChartOfAccountsSeeder extends Seeder
         ['5260', 'Transport & Delivery', 'expense', '5200', null, []],
         ['5270', 'Office Expenses', 'expense', '5200', null, []],
         ['5280', 'Marketing & Promotion', 'expense', '5200', null, []],
-        ['5290', 'Repairs & Maintenance', 'expense', '5200', null, []],
+        ['5290', 'Repairs & Maintenance', 'expense', '5200', 'repairs', []],
         ['5300', 'Bank Charges', 'expense', '5200', null, []],
         ['5310', 'Depreciation', 'expense', '5200', null, []],
         ['5320', 'Stock Loss & Damage', 'expense', '5200', 'stock_loss', []],

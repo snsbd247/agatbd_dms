@@ -124,6 +124,21 @@ class Create extends Component
                         reference: $receive,
                     );
                     $batchId = $batch->id;
+                } elseif ($line['disposition'] === 'damage'
+                    && ($store = \App\Services\Damage\DamageService::damageStoreFor(Warehouse::findOrFail($this->warehouse_id)))) {
+                    // Into the damage store at no value (the sale's cost stays in cost of goods sold), and on the damage register.
+                    $batch = $inventory->receiveStock(
+                        productId: $line['product_id'],
+                        warehouseId: $store->id,
+                        batchNo: ($line['batch_no'] ?? '') ?: $receive->number,
+                        expiryDate: ($line['expiry_date'] ?? '') ?: null,
+                        costPrice: 0,
+                        quantity: $qty,
+                        reference: $receive,
+                    );
+                    $batchId = $batch->id;
+                    app(\App\Services\Damage\DamageService::class)->registerInStore($batch, $qty, 'return',
+                        __('Damaged customer return :n', ['n' => $receive->number]), $receive);
                 } elseif ($line['disposition'] === 'company_return') {
                     $product = Product::find($line['product_id']);
 

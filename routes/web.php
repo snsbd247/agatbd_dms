@@ -207,6 +207,13 @@ Route::middleware('auth')->group(function () {
         Route::get('/planning', \App\Livewire\Production\Planning::class)->name('planning');
         Route::get('/trace', \App\Livewire\Production\Trace::class)->name('trace');
         Route::get('/report', \App\Livewire\Production\Report::class)->name('report');
+        Route::get('/maintenance', \App\Livewire\Production\Maintenance::class)->name('maintenance');
+    });
+
+    Route::middleware('can:damage.view')->prefix('damage')->name('damage.')->group(function () {
+        Route::get('/', \App\Livewire\Damage\Index::class)->name('index');
+        Route::get('/repairs', \App\Livewire\Damage\Repairs::class)->name('repairs');
+        Route::get('/{record}', \App\Livewire\Damage\Show::class)->name('show');
     });
 
     Route::middleware('can:dealers.view')->prefix('dealers')->name('dealers.')->group(function () {

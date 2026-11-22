@@ -63,7 +63,12 @@
                 ['route' => 'production.planning', 'label' => 'Material Planning', 'icon' => 'calendar', 'headOffice' => true],
                 ['route' => 'production.trace', 'label' => 'Batch Trace', 'icon' => 'search', 'headOffice' => true],
                 ['route' => 'production.machines', 'label' => 'Machines & Lines', 'icon' => 'cog', 'headOffice' => true],
+                ['route' => 'production.maintenance', 'label' => 'Machine Maintenance', 'icon' => 'cog', 'headOffice' => true],
                 ['route' => 'production.report', 'label' => 'Production Report', 'icon' => 'chart-bar', 'headOffice' => true],
+            ]],
+            ['icon' => 'exclamation-triangle', 'label' => 'Damage & Repair', 'permission' => 'damage.view', 'prefix' => ['damage.'], 'links' => [
+                ['route' => 'damage.index', 'label' => 'Damage Register', 'icon' => 'exclamation-triangle'],
+                ['route' => 'damage.repairs', 'label' => 'Repair Jobs', 'icon' => 'cog'],
             ]],
             ['icon' => 'shopping-bag', 'label' => 'Sales', 'permission' => 'sales.view', 'prefix' => ['sales.'], 'links' => [
                 ['route' => 'sales.orders.index', 'label' => 'Sales Orders', 'icon' => 'shopping-bag'],

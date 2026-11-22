@@ -237,7 +237,7 @@ class ProductionService
             }
             if ($rejected > 0 && $order->damage_warehouse_id) {
                 // Rejects keep the batch number for tracing; their cost is already in the good units.
-                $this->inventory->receiveStock(
+                $rejects = $this->inventory->receiveStock(
                     productId: $order->product_id,
                     warehouseId: $order->damage_warehouse_id,
                     batchNo: $order->batch_no.'-REJ',
@@ -246,6 +246,9 @@ class ProductionService
                     quantity: $rejected,
                     reference: $order,
                 );
+                // On the damage register, to be reprocessed or scrapped.
+                app(\App\Services\Damage\DamageService::class)->registerInStore($rejects, $rejected, 'production',
+                    __('Rejected in production, batch :b', ['b' => $order->batch_no]), $order);
             }
 
             $order->update([

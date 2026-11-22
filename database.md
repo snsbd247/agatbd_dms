@@ -736,3 +736,16 @@ erDiagram
 | stock_transfer_items | stock_transfer_id, product_id, batch_id (যেখান থেকে), to_batch_id (যেখানে), quantity | |
 
 নতুন হিসাব: `1155 Work in Process` (`wip`), `5110 Production Labour & Overhead Applied` (`production_applied`)। ভাউচারের `source_event`: `issue_N` (কাঁচামাল ইস্যু), `completed`।
+
+---
+
+## ১৭. ড্যামেজ ও মেরামত (migration `2026_11_22_000007`)
+
+| টেবিল | মূল কলাম | নোট |
+|---|---|---|
+| damage_records | number (DMG-…), source (`warehouse`/`transport`/`return`/`production`/`other`), damage_date, warehouse_id (এখন যেখানে; অনুমোদনের পর ড্যামেজ স্টোর), found_warehouse_id, product_id, batch_id (ড্যামেজ স্টোরের ব্যাচ), source_batch_id, batch_no, quantity, quantity_open (সিদ্ধান্ত বাকি), unit_cost, reason, reference (ফেরত বা উৎপাদন ব্যাচ), status (`reported`/`approved`/`rejected`/`closed`), reported_by, approved_by, approved_at, decision_note | মালিক `warehouse_id` দিয়ে |
+| damage_actions | damage_record_id, action (`repair`/`reprocess`/`discount_sale`/`destroy`), quantity, recovery_price, target_warehouse_id, repair_job_id, output_batch_id, written_off, notes, created_by | একটি রেকর্ডের ভাগে ভাগে সিদ্ধান্ত |
+| repair_jobs | number (RPR-…), damage_record_id, warehouse_id, product_id, batch_id, quantity, kind (`repair`/`reprocess`), mode (`in_house`/`outsourced`), vendor, sent_date, expected_date, completed_date, status (`open`/`completed`/`cancelled`), repaired_quantity, scrapped_quantity, estimated_cost, cost, paid_from_account_id, return_warehouse_id, output_batch_id, notes, created_by | মালিক `warehouse_id` দিয়ে |
+| machine_maintenances | machine_id, type (`preventive`/`breakdown`), maintenance_date, description, downtime_hours, vendor, cost, paid_from_account_id, next_due_date, created_by | |
+
+`5290 Repairs & Maintenance` এখন system key `repairs`। ভাউচারের উৎস: `DamageAction` (`write_off`), `RepairJob` (`completed`), `MachineMaintenance` (`cost`)।

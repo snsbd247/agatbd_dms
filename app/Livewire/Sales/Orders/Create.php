@@ -111,6 +111,11 @@ class Create extends Component
 
             return;
         }
+        if (in_array($warehouseRow->purpose, ['damage', 'raw_material'], true)) {
+            $this->addError('warehouse_id', __('Goods cannot be sold from a damage or raw material store.'));
+
+            return;
+        }
 
         $representative = Auth::user()->representative;
 
@@ -183,7 +188,7 @@ class Create extends Component
 
         return view('livewire.sales.orders.create', [
             'retailers' => $retailers,
-            'warehouses' => Warehouse::where('active', true)
+            'warehouses' => Warehouse::where('active', true)->whereNotIn('purpose', ['damage', 'raw_material'])
                 ->when($this->retailer_id && ($chosen = Retailer::find($this->retailer_id)), fn ($q) => $chosen->dealer_id === null
                     ? $q->whereNull('dealer_id')
                     : $q->where('dealer_id', $chosen->dealer_id))
