@@ -64,6 +64,12 @@ class Product extends Model
         return $query->whereIn('type', self::PURCHASABLE_TYPES);
     }
 
+    /** Formulas (bills of materials) for making this product. */
+    public function boms()
+    {
+        return $this->hasMany(\App\Models\Production\Bom::class);
+    }
+
     /** Extra packs of this product (bag, carton …) with their size in the base unit. */
     public function units()
     {

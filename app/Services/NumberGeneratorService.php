@@ -30,6 +30,8 @@ class NumberGeneratorService
         'closing_voucher' => 'YC',
         'salary_sheet' => 'SAL',
         'final_settlement' => 'FS',
+        'production_order' => 'PRD',
+        'stock_transfer' => 'TRF',
     ];
 
     public function generate(string $type): string

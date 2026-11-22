@@ -23,6 +23,7 @@ class ChartOfAccountsSeeder extends Seeder
         ['1130', 'Mobile Banking (bKash/Nagad)', 'asset', '1100', 'mobile', ['cash']],
         ['1140', 'Accounts Receivable (Customers)', 'asset', '1100', 'ar', []],
         ['1150', 'Inventory', 'asset', '1100', 'inventory', []],
+        ['1155', 'Work in Process', 'asset', '1100', 'wip', []],
         ['1160', 'Employee Advances', 'asset', '1100', 'employee_advance', []],
         ['1170', 'Input VAT (Receivable)', 'asset', '1100', 'vat_input', []],
         ['1180', 'Advance Paid to Suppliers', 'asset', '1100', null, []],
@@ -58,6 +59,7 @@ class ChartOfAccountsSeeder extends Seeder
 
         ['5000', 'Expenses', 'expense', null, null, ['group']],
         ['5100', 'Cost of Goods Sold', 'expense', '5000', 'cogs', []],
+        ['5110', 'Production Labour & Overhead Applied', 'expense', '5000', 'production_applied', []],
         ['5200', 'Operating Expenses', 'expense', '5000', null, ['group']],
         ['5210', 'Salaries & Wages', 'expense', '5200', 'salary', []],
         ['5220', 'Sales Commission', 'expense', '5200', 'commission', []],

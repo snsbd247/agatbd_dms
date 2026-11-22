@@ -255,11 +255,39 @@ class InventoryService
 
     public function returnToSupplier(int $batchId, float $quantity, Model $reference): void
     {
-        DB::transaction(function () use ($batchId, $quantity, $reference) {
+        $this->takeFromBatch($batchId, $quantity, $reference, 'Insufficient batch quantity to return to supplier.');
+    }
+
+    /**
+     * Move part of a batch to another warehouse: it leaves this batch and
+     * arrives there as a batch with the same number, expiry and cost, so the
+     * batch can still be traced.
+     */
+    public function moveBatch(int $batchId, int $toWarehouseId, float $quantity, Model $reference): Batch
+    {
+        return DB::transaction(function () use ($batchId, $toWarehouseId, $quantity, $reference) {
+            $source = $this->takeFromBatch($batchId, $quantity, $reference);
+
+            return $this->receiveStock(
+                productId: $source->product_id,
+                warehouseId: $toWarehouseId,
+                batchNo: $source->batch_no,
+                expiryDate: $source->expiry_date ? \Carbon\Carbon::parse($source->expiry_date)->toDateString() : null,
+                costPrice: (float) $source->cost_price,
+                quantity: $quantity,
+                reference: $reference,
+            );
+        });
+    }
+
+    /** Take a quantity out of one particular batch (not FIFO). */
+    public function takeFromBatch(int $batchId, float $quantity, Model $reference, ?string $error = null): Batch
+    {
+        return DB::transaction(function () use ($batchId, $quantity, $reference, $error) {
             $batch = Batch::query()->whereKey($batchId)->lockForUpdate()->first();
 
             if (! $batch || bccomp((string) $batch->quantity_available, (string) $quantity, 3) < 0) {
-                throw new \RuntimeException('Insufficient batch quantity to return to supplier.');
+                throw new \RuntimeException($error ?? __('Not enough left in batch :b.', ['b' => $batch?->batch_no ?? $batchId]));
             }
 
             $batch->decrement('quantity_available', $quantity);
@@ -281,6 +309,8 @@ class InventoryService
                 'reference_id' => $reference->getKey(),
                 'balance_after' => $stock->quantity,
             ]);
+
+            return $batch;
         });
     }
 }

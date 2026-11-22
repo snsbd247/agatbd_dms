@@ -198,6 +198,17 @@ Route::middleware('auth')->group(function () {
         Route::get('/setup', \App\Livewire\Hr\Setup::class)->name('setup');
     });
 
+    Route::middleware(['can:production.view', 'head.office'])->prefix('production')->name('production.')->group(function () {
+        Route::get('/batches', \App\Livewire\Production\Orders\Index::class)->name('orders.index');
+        Route::get('/batches/{order}', \App\Livewire\Production\Orders\Show::class)->name('orders.show');
+        Route::get('/batches/{order}/record.pdf', [\App\Http\Controllers\ProductionPdfController::class, 'batch'])->name('orders.pdf');
+        Route::get('/formulas', \App\Livewire\Production\Formulas::class)->name('formulas');
+        Route::get('/machines', \App\Livewire\Production\Machines::class)->name('machines');
+        Route::get('/planning', \App\Livewire\Production\Planning::class)->name('planning');
+        Route::get('/trace', \App\Livewire\Production\Trace::class)->name('trace');
+        Route::get('/report', \App\Livewire\Production\Report::class)->name('report');
+    });
+
     Route::middleware('can:dealers.view')->prefix('dealers')->name('dealers.')->group(function () {
         Route::get('/', DealersIndex::class)->name('index');
         Route::get('/{dealer}', DealersShow::class)->name('show');
@@ -208,6 +219,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/warehouses', Warehouses::class)->name('warehouses');
         Route::get('/areas', Areas::class)->middleware('head.office')->name('areas');
         Route::get('/adjustments', StockAdjustments::class)->name('adjustments');
+        Route::get('/transfers', \App\Livewire\Production\Transfers::class)->name('transfers');
     });
 
     Route::middleware('can:purchase.view')->prefix('purchase')->name('purchase.')->group(function () {

@@ -236,6 +236,45 @@ class AutoPosting
         ]);
     }
 
+    /** Materials put into a production batch: they leave stock and become work in process. */
+    public function productionIssue(\App\Models\Production\ProductionOrder $order, int $issueNo, float $value): void
+    {
+        $this->once($order, 'issue_'.$issueNo, fn () => [
+            ['type' => 'auto', 'entry_date' => now(), 'dealer_id' => null,
+                'narration' => __('Materials issued to batch :b (:n)', ['b' => $order->batch_no, 'n' => $order->number])],
+            [
+                ['account' => 'wip', 'debit' => $value],
+                ['account' => 'inventory', 'credit' => $value],
+            ],
+        ]);
+    }
+
+    /**
+     * A finished batch: its full cost (materials + labour + overhead) goes
+     * into finished-goods stock; labour and overhead are credited to the
+     * "applied" account, because their actual cost is already an expense.
+     * A batch with no good output is written off.
+     */
+    public function productionComplete(\App\Models\Production\ProductionOrder $order): void
+    {
+        if ($order->status !== 'completed') {
+            return;
+        }
+
+        $applied = round((float) $order->labour_cost + (float) $order->overhead_cost, 2);
+        $total = round((float) $order->material_cost + $applied, 2);
+
+        $this->once($order, 'completed', fn () => [
+            ['type' => 'auto', 'entry_date' => $order->finished_at ?? now(), 'dealer_id' => null,
+                'narration' => __('Batch :b produced: :q', ['b' => $order->batch_no, 'q' => rtrim(rtrim(number_format((float) $order->good_quantity, 3, '.', ''), '0'), '.')])],
+            [
+                ['account' => (float) $order->good_quantity > 0 ? 'inventory' : 'stock_loss', 'debit' => $total],
+                ['account' => 'wip', 'credit' => (float) $order->material_cost],
+                ['account' => 'production_applied', 'credit' => $applied],
+            ],
+        ]);
+    }
+
     /** Money lent or advanced to an employee. */
     public function loanIssued(\App\Models\Hr\EmployeeLoan $loan): void
     {

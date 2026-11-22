@@ -55,6 +55,15 @@
                 ['route' => 'inventory.warehouses', 'label' => 'Warehouses', 'icon' => 'archive-box'],
                 ['route' => 'inventory.areas', 'label' => 'Areas', 'icon' => 'map-pin', 'headOffice' => true],
                 ['route' => 'inventory.adjustments', 'label' => 'Stock Adjustments', 'icon' => 'refresh'],
+                ['route' => 'inventory.transfers', 'label' => 'Stock Transfers', 'icon' => 'truck'],
+            ]],
+            ['icon' => 'factory', 'label' => 'Production', 'permission' => 'production.view', 'prefix' => ['production.'], 'links' => [
+                ['route' => 'production.orders.index', 'label' => 'Production Batches', 'icon' => 'factory', 'headOffice' => true],
+                ['route' => 'production.formulas', 'label' => 'Formulas', 'icon' => 'document-text', 'headOffice' => true],
+                ['route' => 'production.planning', 'label' => 'Material Planning', 'icon' => 'calendar', 'headOffice' => true],
+                ['route' => 'production.trace', 'label' => 'Batch Trace', 'icon' => 'search', 'headOffice' => true],
+                ['route' => 'production.machines', 'label' => 'Machines & Lines', 'icon' => 'cog', 'headOffice' => true],
+                ['route' => 'production.report', 'label' => 'Production Report', 'icon' => 'chart-bar', 'headOffice' => true],
             ]],
             ['icon' => 'shopping-bag', 'label' => 'Sales', 'permission' => 'sales.view', 'prefix' => ['sales.'], 'links' => [
                 ['route' => 'sales.orders.index', 'label' => 'Sales Orders', 'icon' => 'shopping-bag'],

@@ -300,6 +300,22 @@ migration: `2026_11_22_000005_create_hr_tables`। এটা ডিফল্ট 
   - গ্র্যাচুইটিসহ চূড়ান্ত পাওনা।
   - ডিলার HR-এ ঢুকতে পারে না।
 
+### ২২ নভেম্বর ২০২৬: ERP ধাপ ৪ (Factory ও উৎপাদন)
+migration: `2026_11_22_000006_create_manufacturing_tables`। এটা আগে ChartOfAccountsSeeder চালায়, ফলে নতুন হিসাব `1155 Work in Process` (`wip`) আর `5110 Production Labour & Overhead Applied` (`production_applied`) যোগ হয়।
+- **ফর্মুলা** (`App\Models\Production\Bom`): সেভ করলে সবসময় নতুন ভার্সন, পুরনো ব্যাচ পুরনো ফর্মুলা রাখে। `requirements($output)` অপচয় %-সহ প্রয়োজন দেয়; `standardCost()` বর্তমান দামে (হেড অফিসের সর্বশেষ ব্যাচের খরচ, না থাকলে ক্রয়মূল্য)।
+- **উৎপাদন** ([ProductionService](app/Services/Production/ProductionService.php)):
+  - `create`: ফ্যাক্টরির কাঁচামাল আর তৈরি পণ্যের স্টোর লাগে (গুদামের `purpose`)। ব্যাচ নং `SKU-yymmdd-NN`, মেয়াদ = উৎপাদন তারিখ + শেলফ লাইফ।
+  - `issue`: আগে মেয়াদ শেষ হবে এমন ব্যাচ আগে (মেয়াদ না থাকলে শেষে), প্রতিটি ব্যাচ আলাদা লাইনে `production_issues`-এ। স্টক কম পড়লে কিছুই ইস্যু হয় না। ভাউচার: Dr WIP / Cr Inventory।
+  - `qc`: পাস/ফেল/পুনরায় কাজ। সর্বশেষ QC পাস না হলে ভালো পণ্য স্টকে ওঠে না (একই সেকেন্ডের দুটো QC-তে `id` দিয়ে সর্বশেষ ঠিক হয়)।
+  - `complete`: ভালো পণ্য তৈরি পণ্যের স্টোরে নতুন ব্যাচ, খরচ = (কাঁচামাল + শ্রম + ওভারহেড) ÷ ভালো পরিমাণ (ব্যাচে ২ দশমিক পর্যন্ত)। বাতিল পণ্য ড্যামেজ স্টোরে `-REJ` ব্যাচ, খরচ ০। ভাউচার: Dr Inventory (ভালো পরিমাণ ০ হলে Stock Loss) / Cr WIP (কাঁচামাল) / Cr Production Applied (শ্রম + ওভারহেড)।
+  - `cancel`: শুধু কাঁচামাল ইস্যু না হওয়া পরিকল্পিত ব্যাচ।
+- **ট্রান্সফার** ([StockTransferService](app/Services/Production/StockTransferService.php)): একই মালিকের গুদামের মধ্যে, `InventoryService::moveBatch` দিয়ে, ব্যাচ নং/মেয়াদ/খরচ সাথে যায়। হিসাবের এন্ট্রি নেই। ডিলাররাও নিজেদের গুদামে ব্যবহার করতে পারে (`inventory.manage`)।
+- **ব্যাচ ট্রেস** ([BatchTrace](app/Services/Production/BatchTrace.php)): টেন্যান্ট বাইপাস করে (রিকলের জন্য সব ডিলারের ডেলিভারিও দেখায়), তাই পেজটা শুধু হেড অফিসের।
+- **কাঁচামাল পরিকল্পনা:** চলমান ব্যাচের বাকি প্রয়োজন + সামনে পরিকল্পিত উৎপাদন (ডিফল্ট ফর্মুলায়) − কাঁচামাল স্টোরের মজুদ − খোলা ক্রয় অর্ডারের বাকি = কিনতে হবে।
+- **পেজ:** Production মেনু (Production Batches, Formulas, Material Planning, Batch Trace, Machines & Lines, Production Report), শুধু হেড অফিস; Inventory → Stock Transfers। PDF: ব্যাচ রেকর্ড।
+- **পারমিশন:** `production.view/manage/qc`। নতুন রোল **Factory Manager** (মাস্টার ডাটা দেখা, ইনভেন্টরি, উৎপাদন, রিপোর্ট)। Manager আর Accountant শুধু দেখতে পারেন।
+- **টেস্ট:** `ProductionTest` (৭টা), মোট ১২৪টা। ফর্মুলা ভার্সন, FIFO-মেয়াদ ইস্যু, QC বাধা, খরচ আর ভাউচারের সংখ্যা হাতে হিসাব করে মেলানো, ০ ভালো পরিমাণে ক্ষতি, ট্রান্সফারে ব্যাচ ঠিক থাকা, দুই দিকে ট্রেস, অন্য মালিকের গুদামে ট্রান্সফার আটকানো, Factory Manager-এর অ্যাক্সেস।
+
 ---
 
 ## জানা সমস্যা (Known issues)

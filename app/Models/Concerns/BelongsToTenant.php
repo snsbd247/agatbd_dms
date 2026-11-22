@@ -38,6 +38,7 @@ trait BelongsToTenant
                 'warehouse_id' => $query->whereIn("{$table}.warehouse_id", fn ($s) => Tenant::apply($s->select('id')->from('warehouses'), 'warehouses.dealer_id', $allowed)),
                 'sales_order_id' => $query->whereIn("{$table}.sales_order_id", fn ($s) => $s->select('id')->from('sales_orders')
                     ->whereIn('sales_orders.retailer_id', fn ($r) => Tenant::apply($r->select('id')->from('retailers'), 'retailers.dealer_id', $allowed))),
+                'from_warehouse_id' => $query->whereIn("{$table}.from_warehouse_id", fn ($s) => Tenant::apply($s->select('id')->from('warehouses'), 'warehouses.dealer_id', $allowed)),
                 'employee_id' => $query->whereIn("{$table}.employee_id", fn ($s) => Tenant::apply($s->select('id')->from('employees'), 'employees.dealer_id', $allowed)),
                 'journal_entry_id' => $query->whereIn("{$table}.journal_entry_id", fn ($s) => Tenant::apply($s->select('id')->from('journal_entries'), 'journal_entries.dealer_id', $allowed)),
                 // Payroll follows the representative's employer, not where they are placed.

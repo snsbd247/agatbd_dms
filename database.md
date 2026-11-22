@@ -719,3 +719,20 @@ erDiagram
 | final_settlements | number (FS-…), employee_id (unique), exit_date, reason, salary_days/amount, leave_days, leave_encashment, service_years, gratuity, other_payable, loan_deduction, other_deduction, net, status (`draft`/`paid`), paid_from, paid_at, note | |
 
 নতুন হিসাব: `5235 Gratuity & Leave Encashment` (`gratuity`), `5236 Overtime` (`overtime`)। ভাউচার লাইনের নতুন পক্ষ: `employee`।
+
+---
+
+## ১৬. Factory ও উৎপাদন (migration `2026_11_22_000006`)
+
+| টেবিল | মূল কলাম | নোট |
+|---|---|---|
+| machines | factory_id, code (unique), name, kind (`line`/`machine`), capacity_per_hour, active | |
+| boms | product_id, version, name, output_quantity (এক ব্যাচে), expected_yield %, notes, is_default, active, created_by | (product_id, version) unique; বদলালে নতুন ভার্সন |
+| bom_items | bom_id, product_id (কাঁচামাল), quantity (প্রতি ব্যাচে), wastage_percent, sort | |
+| production_orders | number (PRD-…), factory_id, product_id, bom_id, machine_id, planned_quantity, batch_no, mfg_date, expiry_date, raw/output/damage_warehouse_id, status (`planned`/`in_progress`/`qc`/`completed`/`cancelled`), started_at, finished_at, good_quantity, rejected_quantity, standard_cost, material_cost, labour_cost, overhead_cost, total_cost, unit_cost, output_batch_id, created_by, completed_by | এক সারি = এক উৎপাদন ব্যাচ |
+| production_issues | production_order_id, issue_no, product_id, batch_id, quantity, unit_cost, issued_by | কোন কাঁচামালের কোন ব্যাচ কতটুকু গেল (ট্রেসের ভিত্তি) |
+| production_qc_checks | production_order_id, result (`pass`/`fail`/`rework`), parameters, notes, checked_by, checked_at | |
+| stock_transfers | number (TRF-…), from_warehouse_id, to_warehouse_id, transfer_date, notes, created_by | মালিক `from_warehouse_id` দিয়ে |
+| stock_transfer_items | stock_transfer_id, product_id, batch_id (যেখান থেকে), to_batch_id (যেখানে), quantity | |
+
+নতুন হিসাব: `1155 Work in Process` (`wip`), `5110 Production Labour & Overhead Applied` (`production_applied`)। ভাউচারের `source_event`: `issue_N` (কাঁচামাল ইস্যু), `completed`।
