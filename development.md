@@ -369,9 +369,9 @@ F:\Lovable\xampp\php\php.exe vendor\bin\phpunit   # সব টেস্ট প�
 
 Apache কনফিগ বদলালে: `F:\Lovable\xampp\apache\bin\httpd.exe -t`, তারপর `httpd.exe -k restart -n Apache2.4`।
 
-## লাইভ সার্ভার: https://dms.agatbd.com (সরানো হয়েছে)
+## লাইভ সার্ভার: https://dms.agatbd.com
 
-> **২২ নভেম্বর ২০২৬:** ব্যবহারকারীর কথায় cPanel থেকে পুরো DMS সরানো হয়েছে: সাবডোমেইন, DNS রেকর্ড, `~/dms.agatbd.com`, docroot symlink আর DMS-এর cron লাইন। agatbd.com-এ হাত দেওয়া হয়নি। শেষ ব্যাকআপ (ডেমো ডাটাসহ) আর ডেমোর আগের খালি ব্যাকআপ রাখা আছে এই পিসির `storage/backups/live-final/`-এ (git-এ যায় না)। আবার চালু করতে হলে নিচের ধাপগুলোই প্রযোজ্য: প্রথমে সাবডোমেইন বানাতে হবে, তারপর clone, composer, `.env`, symlink আর cron।
+> **২২ নভেম্বর ২০২৬:** ERP ধাপ ০–৫ সহ আবার ডেপ্লয় করা হয়েছে, এবার **MySQL (MariaDB 10.11)** ডাটাবেসে। খালি শুরু (ডেমো ডাটা নেই): রোল, হিসাবের তালিকা, স্ট্যান্ডার্ড ইউনিট, কোম্পানির নাম-লোগো আর একজন Admin (`admin@agatbd.com`)। আগের SQLite-এর শেষ ব্যাকআপ এই পিসির `storage/backups/live-final/`-এ আছে।
 
 একটা cPanel অ্যাকাউন্টে চলে (LiteSpeed, CloudLinux)। একই অ্যাকাউন্টে আরেকটা প্রজেক্টও আছে, agatbd.com (`~/public_html`)। ওটার কোনো ফাইলে, cron লাইনে বা `~/agatbd-deploy` ফোল্ডারে হাত দেওয়া যাবে না।
 
@@ -380,7 +380,7 @@ Apache কনফিগ বদলালে: `F:\Lovable\xampp\apache\bin\httpd.ex
 | অ্যাপের কোড (git clone) | `~/dms.agatbd.com` |
 | Web root | `~/public_html/dms.agatbd.com/public`। এটা আসলে `~/dms.agatbd.com/public`-এর symlink, কারণ cPanel শুধু `public_html`-এর ভেতরে web root দিতে দেয়। |
 | PHP | `/opt/cpanel/ea-php83/root/usr/bin/php` (CLI-র ডিফল্ট `php` 8.2, ওটা ব্যবহার করবেন না) |
-| ডাটাবেস | `~/dms.agatbd.com/database/database.sqlite` (SQLite 3.26, তাই ব্যাকআপ `VACUUM INTO` ছাড়া লক করে ফাইল কপি করে) |
+| ডাটাবেস | MySQL `sabagatbd_dms` (ইউজারও `sabagatbd_dms`), cPanel-এর uapi দিয়ে বানানো। পাসওয়ার্ড শুধু সার্ভারের `.env`-এ (chmod 600), কোথাও লেখা নেই। ব্যাকআপ `dms:backup` MySQL থেকে SQLite ফাইলে export করে zip করে। |
 | SSL | cPanel AutoSSL (Let's Encrypt), নিজে থেকে নবায়ন হয় |
 | Cron | crontab-এ `# >>> dms.agatbd.com` ব্লক: scheduler, queue, আর প্রতিদিন রাত ২টায় `dms:backup --keep=30` |
 
@@ -402,7 +402,7 @@ $P artisan migrate --force
 $P artisan optimize
 ```
 
-**ডেমো ডাটা (২১ নভেম্বর ২০২৬):** লাইভে পরীক্ষার জন্য এক বছরের ডেমো ডাটা দেওয়া আছে, ডিসেম্বর ২০২৫ থেকে নভেম্বর ২০২৬। এটা এসেছে `DemoDataSeeder` → `YearlyDemoSeeder` → `YearlyExtrasSeeder` থেকে। ডেমো ইউজারদের ইমেইল `@dms.local` দিয়ে শেষ হয়। ডাটা দেওয়ার আগের খালি অবস্থার ব্যাকআপ আছে `storage/backups/auto/dms-before-demo-data.zip`-এ। আসল কাজ শুরুর আগে More → Backup & Restore থেকে ওটা restore করলে ডেমো ডাটা মুছে যাবে। রোজকার `dms:backup --keep=30` ৩০ দিনের পুরনো ব্যাকআপ মুছে দেয়, তাই এই ফাইলটাও ২১ ডিসেম্বর ২০২৬-এর পর থাকবে না। রাখতে চাইলে তার আগেই ডাউনলোড করে নিন।
+**ডেমো ডাটা:** আগের (SQLite) ইনস্টলে এক বছরের ডেমো ডাটা ছিল (`DemoDataSeeder` → `YearlyDemoSeeder` → `YearlyExtrasSeeder`); বর্তমান ইনস্টলে নেই। ওই seeder-গুলো ERP ধাপ ০–৫-এর মডিউল (উৎপাদন, HR, ড্যামেজ…) ভরে না।
 
 crontab বদলাতে হলে প্রথমে `crontab -l > file` করে ফাইলটা এডিট করুন, তারপর `crontab file` চালান। `crontab -l | ... | crontab -` পাইপ ব্যবহার করবেন না। এই সার্ভারে একবার এভাবে agatbd.com-এর cron লাইন মুছে গিয়েছিল।
 
