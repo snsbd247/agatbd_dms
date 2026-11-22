@@ -32,6 +32,7 @@ use App\Models\Sales\SalesInvoiceItem;
 use App\Models\Sales\SalesOrder;
 use App\Models\Sales\SalesOrderItem;
 use App\Models\Stock;
+use App\Support\Tenant;
 use App\Models\Unit;
 use App\Services\NumberGeneratorService;
 use App\Services\PaymentAllocationService;
@@ -94,6 +95,9 @@ class ErpDemoSeeder extends Seeder
     /** @var array<string, Machine> */
     private array $machines = [];
 
+    /** @var array<int, array{dealer: \App\Models\Dealer, account: Retailer, warehouse: int, shops: \Illuminate\Support\Collection}> */
+    private array $dealers = [];
+
     private int $seed = 7;
 
     public function run(): void
@@ -119,9 +123,13 @@ class ErpDemoSeeder extends Seeder
             $this->travel($start->copy()->subDays(5)->setTime(10, 0));
             $this->setUpFactory();
             $this->setUpHr($start);
+            $this->setUpDealers();
+            // VAT on (demo BIN — put your own in Settings → Company Profile); zinc carries 5%.
+            AppSetting::put([VatService::ENABLED => true, VatService::BIN => '000000000-0000']);
+            $this->fgProducts['ZN']->update(['vat_rate' => 5]);
             app(LedgerService::class)->post(
                 ['type' => 'receipt', 'entry_date' => now()->toDateString(), 'narration' => 'Capital brought in for the factory (demo)'],
-                [['account' => 'bank', 'debit' => 6000000], ['account' => 'cash', 'debit' => 1000000], ['account' => 'opening_equity', 'credit' => 7000000]],
+                [['account' => 'bank', 'debit' => 10000000], ['account' => 'cash', 'debit' => 1000000], ['account' => 'opening_equity', 'credit' => 11000000]],
             );
 
             for ($m = 0; $m < self::MONTHS; $m++) {
@@ -179,11 +187,11 @@ class ErpDemoSeeder extends Seeder
         }
 
         $fgDefs = [
-            'NPK' => [['sku' => 'AGT-NPK50', 'name' => 'Agro Mix NPK 50 kg', 'category_id' => $catFert->id, 'sale_price' => 2300, 'purchase_price' => 1450, 'shelf_life_days' => 730],
+            'NPK' => [['sku' => 'AGT-NPK50', 'name' => 'Agro Mix NPK 50 kg', 'category_id' => $catFert->id, 'sale_price' => 2300, 'dealer_price' => 2050, 'mrp' => 2450, 'purchase_price' => 1450, 'shelf_life_days' => 730],
                 ['UREA' => [20, 2], 'TSP' => [15, 1], 'MOP' => [15, 1], 'BAG50' => [1, 0]]],
-            'ZN' => [['sku' => 'AGT-ZN25', 'name' => 'Agro Zinc Plus 25 kg', 'category_id' => $catFert->id, 'sale_price' => 1350, 'purchase_price' => 820, 'shelf_life_days' => 730],
+            'ZN' => [['sku' => 'AGT-ZN25', 'name' => 'Agro Zinc Plus 25 kg', 'category_id' => $catFert->id, 'sale_price' => 1350, 'dealer_price' => 1200, 'mrp' => 1450, 'purchase_price' => 820, 'shelf_life_days' => 730],
                 ['TSP' => [15, 1], 'ZNSO4' => [2, 0], 'UREA' => [8, 2], 'BAG25' => [1, 0]]],
-            'FEED' => [['sku' => 'AGT-LF50', 'name' => 'Agro Layer Feed 50 kg', 'category_id' => $catFeed->id, 'sale_price' => 2600, 'purchase_price' => 1900, 'shelf_life_days' => 120],
+            'FEED' => [['sku' => 'AGT-LF50', 'name' => 'Agro Layer Feed 50 kg', 'category_id' => $catFeed->id, 'sale_price' => 2600, 'dealer_price' => 2350, 'mrp' => 2750, 'purchase_price' => 1900, 'shelf_life_days' => 120],
                 ['MAIZE' => [30, 3], 'SOYM' => [15, 2], 'TSP' => [1, 0], 'BAG50' => [1, 0]]],
         ];
 
@@ -279,7 +287,11 @@ class ErpDemoSeeder extends Seeder
             $this->batch($b, $isCurrent && $i >= count($plan) - 3 ? count($plan) - 1 - $i : null);
         }
 
+        $this->dealerPurchases($monthStart, $isCurrent, $realToday);
         $this->sell($monthStart, $isCurrent, $realToday);
+        $this->dealerSales($monthStart, $isCurrent, $realToday);
+        $this->expenses($monthStart, $isCurrent, $realToday);
+        $this->paySuppliers($lastDay);
         $this->transportDamage($monthStart, $isCurrent, $realToday);
         $this->decideOpenDamage($monthStart, $isCurrent);
         $this->maintenance($monthStart, $isCurrent, $realToday);
@@ -303,7 +315,7 @@ class ErpDemoSeeder extends Seeder
             if ($isCurrent && $date->gte($realToday)) {
                 continue;
             }
-            $base = ['NPK' => 170, 'ZN' => 100, 'FEED' => 130][$key];
+            $base = ['NPK' => 215, 'ZN' => 125, 'FEED' => 165][$key];
             $fert = $key !== 'FEED';
             $plan[] = ['product' => $this->fgProducts[$key], 'qty' => (int) (round($base * ($fert ? $season : 1) * (0.85 + $this->rand(0, 30) / 100) / 10) * 10),
                 'date' => $date, 'machine' => $this->machines[$machine]];
@@ -576,10 +588,181 @@ class ErpDemoSeeder extends Seeder
         $customer->increment('current_due', $total);
         $customer->ledgerEntries()->create(['type' => 'invoice', 'reference_type' => $invoice->getMorphClass(), 'reference_id' => $invoice->getKey(),
             'debit' => $total, 'credit' => 0, 'balance_after' => $customer->fresh()->current_due, 'entry_date' => $date->toDateString()]);
+        // Sold to a dealer: the same batches arrive in the dealer's godown.
+        app(\App\Services\DealerStockService::class)->receiveFromHeadOffice($customer, $lines, 0.0, $note);
         $order->update(['status' => 'completed']);
         app(AutoPosting::class)->salesInvoice($invoice);
 
         return $invoice;
+    }
+
+    /** One order of these lines for a customer, delivered at once. */
+    private function order(Retailer $customer, int $warehouseId, array $lines, Carbon $date): SalesInvoice
+    {
+        $numbers = app(NumberGeneratorService::class);
+        $subtotal = array_sum(array_map(fn ($l) => $l['qty'] * $l['price'], $lines));
+        $order = SalesOrder::create([
+            'number' => $numbers->generate('sales_order'), 'order_type' => 'retailer', 'retailer_id' => $customer->id,
+            'representative_id' => $customer->representative_id, 'warehouse_id' => $warehouseId, 'status' => 'approved',
+            'order_date' => $date->toDateString(), 'subtotal' => $subtotal, 'discount' => 0, 'grand_total' => $subtotal,
+            'approved_by' => $this->admin->id, 'approved_at' => now(),
+        ]);
+        foreach ($lines as $l) {
+            SalesOrderItem::create(['sales_order_id' => $order->id, 'product_id' => $l['product']->id, 'quantity' => $l['qty'], 'unit_price' => $l['price']]);
+        }
+
+        return $this->deliver($order->fresh('items'), $date);
+    }
+
+    private function collect(Retailer $customer, float $amount, Carbon $date): void
+    {
+        if ($amount < 1) {
+            return;
+        }
+        $collection = PaymentCollection::create([
+            'number' => app(NumberGeneratorService::class)->generate('collection'), 'retailer_id' => $customer->id, 'collected_by' => $this->admin->id,
+            'collection_date' => $date->toDateString(), 'amount' => round($amount, 2), 'method' => 'bank', 'reference_no' => 'DEMO',
+        ]);
+        app(PaymentAllocationService::class)->allocate($customer->fresh(), round($amount, 2), $collection);
+        app(AutoPosting::class)->collection($collection);
+    }
+
+    // ---- dealers -------------------------------------------------------------
+
+    private function setUpDealers(): void
+    {
+        $area = \App\Models\Area::orderBy('id')->first() ?? \App\Models\Area::create(['code' => 'AR1', 'name' => 'Area 1']);
+        $svc = app(\App\Services\DealerService::class);
+
+        foreach ([['GZP', 'Gazipur Krishi Bitan', 'Abdul Hai', 'Joydebpur, Gazipur'], ['BOG', 'Bogura Agro Traders', 'Mosharraf Hossain', 'Sherpur Road, Bogura'], ['JSR', 'Jashore Sar Ghor', 'Nurul Amin', 'Chowgacha, Jashore']] as $i => [$code, $name, $owner, $address]) {
+            $dealer = \App\Models\Dealer::where('code', $code)->first() ?? $svc->create(
+                ['code' => $code, 'name' => $name, 'owner_name' => $owner, 'phone' => '0171100000'.($i + 1), 'email' => null, 'address' => $address, 'area_id' => $area->id],
+                1500000,
+                // A login for the dealer panel; the password is random (set a real one in Dealers when handing it over).
+                ['name' => $owner, 'email' => strtolower($code).'.dealer@demo.local', 'password' => \Illuminate\Support\Str::password(16)],
+            );
+            $account = Tenant::bypass(fn () => Retailer::where('account_dealer_id', $dealer->id)->firstOrFail());
+            $warehouse = Tenant::bypass(fn () => Warehouse::where('dealer_id', $dealer->id)->value('id'));
+            $shops = collect();
+            foreach (['Krishi Ghor', 'Shapla Beej Bhandar', 'Sonali Sar Bitan', 'Matir Bondhu Store'] as $k => $shop) {
+                $shops->push(Tenant::bypass(fn () => Retailer::firstOrCreate(['code' => $code.'-R'.($k + 1)], [
+                    'dealer_id' => $dealer->id, 'area_id' => $area->id, 'name' => $shop.' ('.explode(',', $address)[1].')',
+                    'shop_name' => $shop, 'phone' => '0181'.$i.$k.'000000', 'address' => $address, 'credit_limit' => 80000, 'current_due' => 0, 'active' => true,
+                ])));
+            }
+            $this->dealers[] = ['dealer' => $dealer, 'account' => $account, 'warehouse' => $warehouse, 'shops' => $shops];
+        }
+    }
+
+    /** Dealers buy from the head office depot on the 5th and 18th at the dealer price, and pay most of it a week later. */
+    private function dealerPurchases(Carbon $monthStart, bool $isCurrent, Carbon $realToday): void
+    {
+        foreach ([5, 18] as $day) {
+            $date = $monthStart->copy()->addDays($day - 1);
+            if ($isCurrent && $date->gte($realToday)) {
+                continue;
+            }
+            $this->travel($date->copy()->setTime(10, 30));
+            foreach ($this->dealers as $d) {
+                $lines = [];
+                foreach ($this->fgProducts as $p) {
+                    $available = (float) Stock::where('product_id', $p->id)->where('warehouse_id', $this->depot->id)->value('quantity');
+                    $qty = floor($available * (0.06 + $this->rand(0, 6) / 100));
+                    if ($qty >= 1) {
+                        $lines[] = ['product' => $p, 'qty' => $qty, 'price' => $p->priceFor($d['account'])];
+                    }
+                }
+                if (! $lines) {
+                    continue;
+                }
+                $invoice = $this->order($d['account']->fresh(), $this->depot->id, $lines, $date);
+                $pay = $date->copy()->addDays(7);
+                if ($pay->lt($realToday)) {
+                    $this->travel($pay->copy()->setTime(12, 0));
+                    $this->collect($d['account'], (float) $invoice->grand_total * $this->rand(75, 95) / 100, $pay);
+                    $this->travel($date->copy()->setTime(10, 30));
+                }
+            }
+        }
+    }
+
+    /** Each dealer sells from its own godown to its shops on the 12th and 26th, in its own books, and collects a week later. */
+    private function dealerSales(Carbon $monthStart, bool $isCurrent, Carbon $realToday): void
+    {
+        foreach ([12, 26] as $round => $day) {
+            $date = $monthStart->copy()->addDays($day - 1);
+            if ($isCurrent && $date->gte($realToday)) {
+                continue;
+            }
+            $this->travel($date->copy()->setTime(11, 30));
+            foreach ($this->dealers as $d) {
+                Tenant::bypass(function () use ($d, $date, $round, $realToday) {
+                    foreach ($d['shops'] as $k => $shop) {
+                        $lines = [];
+                        foreach ($this->fgProducts as $p) {
+                            $available = (float) Stock::where('product_id', $p->id)->where('warehouse_id', $d['warehouse'])->value('quantity');
+                            $qty = floor($available * 0.8 / ($d['shops']->count() - $k) / (2 - $round));
+                            if ($qty >= 1) {
+                                $lines[] = ['product' => $p, 'qty' => $qty, 'price' => (float) $p->sale_price];
+                            }
+                        }
+                        if (! $lines) {
+                            continue;
+                        }
+                        $invoice = $this->order($shop->fresh(), $d['warehouse'], $lines, $date);
+                        $pay = $date->copy()->addDays(5 + $k);
+                        if ($pay->lt($realToday)) {
+                            $this->collect($shop, (float) $invoice->grand_total * $this->rand(60, 95) / 100, $pay);
+                        }
+                    }
+                });
+            }
+        }
+    }
+
+    // ---- money -----------------------------------------------------------------
+
+    /** The head office's monthly running costs, paid on the 25th. */
+    private function expenses(Carbon $monthStart, bool $isCurrent, Carbon $realToday): void
+    {
+        $date = $monthStart->copy()->addDays(24);
+        if ($isCurrent && $date->gte($realToday)) {
+            return;
+        }
+        $this->travel($date->copy()->setTime(13, 0));
+        $bank = Account::bySystemKey('bank')->id;
+        $cash = Account::bySystemKey('cash')->id;
+        foreach ([['5240', 'Office & godown rent', 45000, 0, $bank], ['5250', 'Electricity, water & gas', 12000, 6000, $bank],
+            ['5270', 'Office expenses', 5000, 3000, $cash], ['5260', 'Delivery van fuel & tolls', 9000, 6000, $cash],
+            ['5280', 'Farmer meetings & leaflets', 10000, 15000, $bank], ['5300', 'Bank charges', 400, 300, $bank]] as [$code, $note, $base, $spread, $from]) {
+            $account = Account::where('code', $code)->value('id');
+            if (! $account) {
+                continue;
+            }
+            $amount = $base + ($spread ? $this->rand(0, $spread) : 0);
+            app(LedgerService::class)->post(['type' => 'payment', 'entry_date' => $date->toDateString(), 'narration' => $note],
+                [['account' => $account, 'debit' => $amount], ['account' => $from, 'credit' => $amount]]);
+        }
+    }
+
+    /** At month end the head office pays 85% of what it owes each supplier. */
+    private function paySuppliers(Carbon $date): void
+    {
+        $this->travel($date->copy()->setTime(17, 30));
+        $ap = Account::bySystemKey('ap')->id;
+        $owed = \Illuminate\Support\Facades\DB::table('journal_lines as l')->join('journal_entries as e', 'e.id', '=', 'l.journal_entry_id')
+            ->where('e.status', 'posted')->whereNull('e.dealer_id')->where('l.account_id', $ap)->where('l.party_type', 'company')
+            ->groupBy('l.party_id')->selectRaw('l.party_id, SUM(l.credit) - SUM(l.debit) as due')->get();
+        foreach ($owed as $row) {
+            $amount = round((float) $row->due * 0.85, 2);
+            if ($amount < 100) {
+                continue;
+            }
+            app(LedgerService::class)->post(
+                ['type' => 'payment', 'entry_date' => $date->toDateString(), 'narration' => 'Payment to '.Company::find($row->party_id)?->name],
+                [['account' => 'ap', 'debit' => $amount, 'party_type' => 'company', 'party_id' => $row->party_id], ['account' => 'bank', 'credit' => $amount]],
+            );
+        }
     }
 
     // ---- people ----------------------------------------------------------------
