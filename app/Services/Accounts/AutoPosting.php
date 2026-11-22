@@ -41,6 +41,7 @@ class AutoPosting
         $discount = round((float) $invoice->discount, 2);
         $gross = round((float) $invoice->subtotal, 2);
         $cost = $this->costOfItems($invoice->items);
+        $vat = round((float) $invoice->vat_amount, 2);   // inside the price: this part belongs to the government
 
         $this->once($invoice, 'sale', fn () => [
             ['type' => 'auto', 'entry_date' => $invoice->invoice_date, 'dealer_id' => $owner,
@@ -48,7 +49,8 @@ class AutoPosting
             [
                 ['account' => 'ar', 'debit' => $net, 'party_type' => 'retailer', 'party_id' => $invoice->retailer_id],
                 ['account' => 'sales_discount', 'debit' => $discount],
-                ['account' => 'sales', 'credit' => $gross],
+                ['account' => 'sales', 'credit' => round($gross - $vat, 2)],
+                ['account' => 'vat_output', 'credit' => $vat],
                 ['account' => 'cogs', 'debit' => $cost],
                 ['account' => 'inventory', 'credit' => $cost],
             ],
@@ -140,9 +142,15 @@ class AutoPosting
 
         $credit = 0.0;
         $restockCost = 0.0;
+        $vat = 0.0;
+        $taxed = \App\Services\Vat\VatService::appliesTo($customer);
 
         foreach ($receive->items as $item) {
-            $credit += (float) $item->quantity * (float) ($prices[$item->product_id] ?? 0);
+            $value = (float) $item->quantity * (float) ($prices[$item->product_id] ?? 0);
+            $credit += $value;
+            if ($taxed) {
+                $vat += \App\Services\Vat\VatService::included($value, (float) Product::whereKey($item->product_id)->value('vat_rate'));
+            }
 
             if ($item->disposition === 'restock') {
                 $cost = $item->batch_id ? (float) Tenant::bypass(fn () => Batch::whereKey($item->batch_id)->value('cost_price')) : (float) Product::whereKey($item->product_id)->value('purchase_price');
@@ -152,12 +160,14 @@ class AutoPosting
 
         $credit = round($credit, 2);
         $restockCost = round($restockCost, 2);
+        $vat = round($vat, 2);   // Output VAT on returned goods is given back (credit note, Mushak 6.7)
 
         $this->once($receive, 'sales_return', fn () => [
             ['type' => 'auto', 'entry_date' => $receive->receive_date, 'dealer_id' => $customer?->dealer_id,
                 'narration' => __('Return received :n', ['n' => $receive->number])],
             [
-                ['account' => 'sales_return', 'debit' => $credit],
+                ['account' => 'sales_return', 'debit' => round($credit - $vat, 2)],
+                ['account' => 'vat_output', 'debit' => $vat],
                 ['account' => 'ar', 'credit' => $credit, 'party_type' => 'retailer', 'party_id' => $request?->retailer_id],
                 ['account' => 'inventory', 'debit' => $restockCost],
                 ['account' => 'cogs', 'credit' => $restockCost],

@@ -332,6 +332,28 @@ migration: `2026_11_22_000007_create_damage_repair_tables`। এটা `5290 Re
 - **পারমিশন:** `damage.view/manage/approve`। Manager, Factory Manager আর Dealer তিনটাই; Accountant শুধু দেখা।
 - **টেস্ট:** `DamageRepairTest` (৭টা), মোট ১৩৪টা। অনুমোদন ছাড়া মাল না সরা, ভাগে সিদ্ধান্ত আর প্রতিটির ক্ষতির অঙ্ক, মেরামতের খরচ ব্যাচের দামে, বাতিল মেরামতে পরিমাণ ফেরা, কিছুই মেরামত না হলে খরচ, ফেরত আর উৎপাদন থেকে আসা, রক্ষণাবেক্ষণের ভাউচার, ডিলার শুধু নিজেরটা দেখে।
 
+### ২২ নভেম্বর ২০২৬: ERP ধাপ ৬ (মূসক, হাজিরা মেশিন, ড্যাশবোর্ড, ডেমো ডাটা)
+migration: `2026_11_22_000008_create_vat_and_device_tables`।
+- **মূসক** ([VatService](app/Services/Vat/VatService.php)):
+  - সেটিং `vat_enabled` আর `vat_bin` (`app_settings`), Settings → Company Profile থেকে। চালু করতে বিআইএন লাগে।
+  - পণ্যে `vat_rate` (%), ০ = অব্যাহতি। দাম মূসকসহ ধরা: মূসক = মূল্য × হার ÷ (১০০ + হার)। তাই চালু করলে ক্রেতার দেয়া টাকা বদলায় না।
+  - শুধু হেড অফিসের ক্রেতা (`retailers.dealer_id` null) — ডিলারের নিজের বিক্রিতে নয়।
+  - Delivery → Create চালানের লাইনে `vat_rate`, `vat_amount` রাখে; অর্ডারের ছাড় লাইনের মূল্য অনুযায়ী ভাগ করে মূসক হয়। চালানে মোট `vat_amount`।
+  - ভাউচার: Cr Sales (মোট − মূসক), Cr Output VAT (`vat_output`, 2130)। ফেরতে (Mushak 6.7-এর মতো) Dr Sales Return (মূল্য − মূসক), Dr Output VAT, পণ্যের এখনকার হার দিয়ে।
+  - মূসক ৬.৩: `sales.invoices.mushak` ([DocumentPrintController](app/Http/Controllers/DocumentPrintController.php)), `pdfs/mushak-6-3`, landscape, সবসময় বাংলায়। মূসক বন্ধ বা ডিলারের ক্রেতা হলে 404।
+  - Reports → মূসক রিপোর্ট (`reports.vat`, হেড অফিস): মাসের চালান, বিক্রির মূসক, ফেরতে বাদ, নিট, অন্যান্য সমন্বয় আর মাস শেষের Output VAT ব্যালেন্স।
+  - ক্রেতার `bin` (Retailers ফর্মে)।
+- **হাজিরা মেশিন** (ZKTeco ADMS / "iclock" push):
+  - [routes/device.php](routes/device.php), `bootstrap/app.php`-এর `then:` দিয়ে লোড — web গ্রুপের বাইরে, তাই session/cookie/CSRF নেই। `throttle:240,1`।
+  - [IclockController](app/Http/Controllers/IclockController.php): `GET /iclock/cdata` (হ্যান্ডশেক, অপশন ফেরত), `POST /iclock/cdata?table=ATTLOG` (পাঞ্চ), `GET /iclock/getrequest`, `POST /iclock/devicecmd` (দুটোই শুধু `OK`)। `.aspx` রূপও আছে।
+  - অচেনা সিরিয়াল নম্বর নিজে থেকে `attendance_devices`-এ বন্ধ অবস্থায় যোগ হয় (একসাথে ১০টার বেশি না); চালু না করা পর্যন্ত পাঞ্চ নেয়া হয় না।
+  - [DeviceAttendanceService](app/Services/Hr/DeviceAttendanceService.php): প্রতিটা পাঞ্চ একবার (`device_user_id` + সময় unique)। দিনের সব পাঞ্চ থেকে আবার হিসাব: প্রথম = আসা, শেষ = যাওয়া, `AttendanceService::record` দিয়ে (source `device`)। `manual` দিন বদলায় না। মেলেনি এমন আইডির পাঞ্চ `processed = false` থাকে; HR → Attendance Machines-এ "অপেক্ষার পাঞ্চ চালান"।
+  - পেজ: HR → Attendance Machines (`hr.devices`): মেশিন যোগ/চালু/বন্ধ, শেষ যোগাযোগ, সাম্প্রতিক পাঞ্চ, সংযোগের নিয়ম।
+- **ড্যাশবোর্ড:** `dashboard.factory`, `dashboard.accounts`, `dashboard.hr` (Livewire `Dashboard\Factory/Accounts/Hr`)। [DashboardController](app/Http/Controllers/DashboardController.php)`::dashboardsFor()` কে কোনগুলো দেখবে ঠিক করে (ওপরের ট্যাব), `homeRoute()` লগইনের পরের পাতা: Admin/Manager/Dealer → ব্যবসা, Accountant → হিসাব, HR Manager → HR, Factory Manager → কারখানা। আগে এই তিন রোল `/dashboard`-এ 403 পেত।
+- **ডেমো ডাটা:** [ErpDemoSeeder](database/seeders/ErpDemoSeeder.php) (`DatabaseSeeder`-এর শেষে, আলাদাও চালানো যায়: `php artisan db:seed --class=ErpDemoSeeder`)। ঘড়ি প্রতিটা দিনে সরিয়ে (`Carbon::setTestNow`) একই সার্ভিস দিয়ে ১২ মাস: কারখানা, ৩টা ফর্মুলা, মাসে ৬টা ব্যাচ (কখনো QC ফেল), কাঁচামাল কেনা, ডিপোতে পাঠানো, হেড অফিসের ক্রেতাকে বিক্রি ও আদায়, রিজেক্ট ও পরিবহনে ড্যামেজের সিদ্ধান্ত ও মেরামত, মেশিন সার্ভিস, ১৬ জন কর্মী, প্রতিদিনের হাজিরা (শেষ সপ্তাহ মেশিন থেকে), ছুটি, অগ্রিম/ঋণ, প্রতিটা শেষ হওয়া মাসের বেতন শিট পরিশোধ। চলতি মাসে কিছু ব্যাচ মাঝপথে, একটা ড্যামেজ আর ছুটি অপেক্ষায়। একই ফলাফল প্রতিবার (নিজস্ব random)। ডেমো ফ্যাক্টরির (`AGT-F1`) ব্যাচ থাকলে চলে না।
+- **ছোট ঠিক:** `InventoryService::consumeStock` পরিমাণ ৩ দশমিকে গোল করে (২০ × ১.০২ × ৩০০ = ৬১২০.০০০০০০০০১)। Attendance পেজে অচেনা `?tab=` হলে daily।
+- **টেস্ট:** `Phase6Test` (১০টা) আর AccessTest-এ ৫টা নতুন পেজ, মোট ১৪৯টা। মূসক বন্ধে কিছু না বদলানো, চালু হলে ভাগ ও ভাউচার, ছাড়ের সাথে মূসক, ডিলারের ক্রেতা বাদ, ফেরতে মূসক ফেরা, বিআইএন ছাড়া চালু না হওয়া, অচেনা মেশিন বন্ধ, পাঞ্চ থেকে হাজিরা (দুবার পাঠালেও একবার, অপেক্ষার পাঞ্চ), হাতের দিন না বদলানো, রোল অনুযায়ী ড্যাশবোর্ড।
+
 ---
 
 ## জানা সমস্যা (Known issues)
@@ -402,7 +424,9 @@ $P artisan migrate --force
 $P artisan optimize
 ```
 
-**ডেমো ডাটা:** আগের (SQLite) ইনস্টলে এক বছরের ডেমো ডাটা ছিল (`DemoDataSeeder` → `YearlyDemoSeeder` → `YearlyExtrasSeeder`); বর্তমান ইনস্টলে নেই। ওই seeder-গুলো ERP ধাপ ০–৫-এর মডিউল (উৎপাদন, HR, ড্যামেজ…) ভরে না।
+**ডেমো ডাটা:** বর্তমান ইনস্টলে নেই। পুরো ডেমো (`DemoDataSeeder` → `YearlyDemoSeeder` → `YearlyExtrasSeeder` → `AccountingBackfillSeeder` → `ErpDemoSeeder`) খালি ডাটাবেসেই চালানো উচিত; শুধু কারখানা-HR অংশ চাইলে `php artisan db:seed --class=ErpDemoSeeder`।
+
+**হাজিরা মেশিন:** মেশিনের Cloud Server (ADMS) = `dms.agatbd.com`, পোর্ট 443, HTTPS। `/iclock/...` রুট session ছাড়া চলে।
 
 crontab বদলাতে হলে প্রথমে `crontab -l > file` করে ফাইলটা এডিট করুন, তারপর `crontab file` চালান। `crontab -l | ... | crontab -` পাইপ ব্যবহার করবেন না। এই সার্ভারে একবার এভাবে agatbd.com-এর cron লাইন মুছে গিয়েছিল।
 

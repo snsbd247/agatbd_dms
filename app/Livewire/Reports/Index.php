@@ -28,6 +28,7 @@ class Index extends Component
             ['route' => 'reports.products', 'icon' => 'archive-box', 'color' => 'pink', 'title' => 'Product Performance', 'description' => 'View top products by revenue & profit'],
             ['route' => 'reports.payroll', 'icon' => 'wallet', 'color' => 'purple', 'headOffice' => true, 'title' => 'Payroll & Commission', 'description' => 'View payroll summary across periods'],
             ['route' => 'reports.profit', 'icon' => 'trending-up', 'color' => 'green', 'title' => 'Profit & Loss Report', 'description' => 'View revenue, cost & profit'],
+            ['route' => 'reports.vat', 'icon' => 'document-text', 'color' => 'teal', 'headOffice' => true, 'title' => 'VAT Report', 'description' => 'Monthly Output VAT and Mushak 6.3 invoices'],
         ];
 
         $reports = collect($reports)

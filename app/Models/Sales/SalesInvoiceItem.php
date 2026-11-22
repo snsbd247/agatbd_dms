@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class SalesInvoiceItem extends Model
 {
-    protected $fillable = ['sales_invoice_id', 'product_id', 'batch_id', 'quantity', 'unit_price', 'line_total'];
+    protected $fillable = ['sales_invoice_id', 'product_id', 'batch_id', 'quantity', 'unit_price', 'line_total', 'vat_rate', 'vat_amount'];
 
     protected function casts(): array
     {
@@ -16,6 +16,8 @@ class SalesInvoiceItem extends Model
             'quantity' => 'decimal:3',
             'unit_price' => 'decimal:2',
             'line_total' => 'decimal:2',
+            'vat_rate' => 'decimal:2',
+            'vat_amount' => 'decimal:2',
         ];
     }
 

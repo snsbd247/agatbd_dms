@@ -62,6 +62,7 @@ class InventoryService
      */
     public function consumeStock(int $productId, int $warehouseId, float $quantity, Model $reference): array
     {
+        $quantity = round($quantity, 3);   // e.g. 20 × 1.02 × 300 is 6120.000000001 in floating point
         $beforeQuantity = null;
         $afterStock = null;
 

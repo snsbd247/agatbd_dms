@@ -30,7 +30,7 @@ class Product extends Model
     protected $fillable = [
         'company_id', 'brand_id', 'category_id', 'unit_id', 'type',
         'sku', 'barcode', 'name', 'description', 'image_path',
-        'purchase_price', 'sale_price', 'reorder_level', 'shelf_life_days', 'active',
+        'purchase_price', 'sale_price', 'vat_rate', 'reorder_level', 'shelf_life_days', 'active',
     ];
 
     protected function casts(): array

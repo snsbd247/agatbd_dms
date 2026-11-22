@@ -56,6 +56,11 @@ class AccessTest extends TestCase
             'retailers' => ['retailers.index',               200,   200,   200,   200, 403],
             'reports' => ['reports.index',                   200,   200,   200,   403, 403],
             'portal orders' => ['portal.orders',             403,   403,   200,   403, 200],   // Admin: no customer account to buy with
+            'vat report' => ['reports.vat',                 200,   200,   403,   403, 403],
+            'attendance machines' => ['hr.devices',         200,   200,   403,   403, 403],
+            'factory dashboard' => ['dashboard.factory',    200,   200,   403,   403, 403],
+            'accounts dashboard' => ['dashboard.accounts',  200,   200,   200,   403, 403],
+            'hr dashboard' => ['dashboard.hr',              200,   200,   403,   403, 403],
             'help' => ['help',                               200,   200,   200,   200, 200],
         ];
     }

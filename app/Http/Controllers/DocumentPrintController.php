@@ -26,6 +26,30 @@ class DocumentPrintController extends Controller
         return $this->renderSalesInvoice($salesInvoice);
     }
 
+    /** Mushak 6.3 (VAT invoice) for a head-office sale, while VAT is switched on. */
+    public function mushak(SalesInvoice $salesInvoice)
+    {
+        $salesInvoice->load(['items.product.unit', 'items.product.brand', 'items.batch', 'retailer', 'salesOrder']);
+        abort_unless(\App\Services\Vat\VatService::appliesTo($salesInvoice->retailer), 404);
+
+        // An official Bangla form whatever the user's language.
+        $locale = app()->getLocale();
+        app()->setLocale('bn');
+
+        try {
+            return PdfService::stream('pdfs.mushak-6-3', [
+                'invoice' => $salesInvoice,
+                'company' => CompanyProfile::first(),
+                'bin' => \App\Services\Vat\VatService::bin(),
+                'vehicle' => null,
+                'signer' => auth()->user(),
+                'signerTitle' => __(auth()->user()?->getRoleNames()->first() ?? ''),
+            ], 'mushak-6.3-'.$salesInvoice->number.'.pdf', 'landscape');
+        } finally {
+            app()->setLocale($locale);
+        }
+    }
+
     public function moneyReceipt(PaymentCollection $collection)
     {
         return $this->renderReceipt($collection);

@@ -41,6 +41,7 @@ class Products extends Component
     public string $reorder_level = '0';
     public string $type = 'trading';
     public string $shelf_life_days = '';
+    public string $vat_rate = '0';
     public bool $active = true;
 
     /** Extra packs: [['unit_id' => int|null, 'factor' => string], …] */
@@ -95,6 +96,7 @@ class Products extends Component
         $this->reorder_level = (string) $product->reorder_level;
         $this->type = $product->type ?? 'trading';
         $this->shelf_life_days = (string) ($product->shelf_life_days ?? '');
+        $this->vat_rate = rtrim(rtrim((string) $product->vat_rate, '0'), '.') ?: '0';
         $this->active = $product->active;
         $this->packs = $product->units()->get()
             ->map(fn (ProductUnit $u) => ['unit_id' => $u->unit_id, 'factor' => rtrim(rtrim(number_format((float) $u->factor, 6, '.', ''), '0'), '.')])
@@ -121,6 +123,7 @@ class Products extends Component
             'reorder_level' => 'required|numeric|min:0',
             'type' => 'required|in:'.implode(',', array_keys(Product::TYPES)),
             'shelf_life_days' => 'nullable|integer|min:1|max:3650',
+            'vat_rate' => 'required|numeric|min:0|max:100',
             'active' => 'boolean',
             'packs' => 'array',
             'packs.*.unit_id' => 'required|distinct|exists:units,id|different:form_unit_id',
@@ -147,6 +150,7 @@ class Products extends Component
             'reorder_level' => $data['reorder_level'],
             'type' => $data['type'],
             'shelf_life_days' => $data['shelf_life_days'] !== '' ? (int) $data['shelf_life_days'] : null,
+            'vat_rate' => $data['vat_rate'],
             'active' => $data['active'],
         ];
 
@@ -199,6 +203,7 @@ class Products extends Component
         $this->reorder_level = '0';
         $this->type = 'trading';
         $this->shelf_life_days = '';
+        $this->vat_rate = '0';
         $this->packs = [];
         $this->active = true;
         $this->resetErrorBag();

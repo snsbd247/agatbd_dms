@@ -33,6 +33,7 @@ class Index extends Component
     public string $shop_name = '';
     public string $phone = '';
     public string $address = '';
+    public string $bin = '';
     public ?int $form_area_id = null;
     public ?int $form_representative_id = null;
     public string $credit_limit = '0';
@@ -70,6 +71,7 @@ class Index extends Component
         $this->shop_name = (string) $retailer->shop_name;
         $this->phone = $retailer->phone;
         $this->address = (string) $retailer->address;
+        $this->bin = (string) $retailer->bin;
         $this->form_area_id = $retailer->area_id;
         $this->form_representative_id = $retailer->representative_id;
         $this->credit_limit = (string) $retailer->credit_limit;
@@ -89,6 +91,7 @@ class Index extends Component
             'shop_name' => 'nullable|string|max:255',
             'phone' => 'required|string|max:30',
             'address' => 'nullable|string|max:255',
+            'bin' => 'nullable|string|max:20',
             'form_area_id' => 'required|exists:areas,id',
             'form_representative_id' => 'nullable|exists:representatives,id',
             'credit_limit' => 'required|numeric|min:0',
@@ -139,7 +142,7 @@ class Index extends Component
     public function resetForm(): void
     {
         $this->reset([
-            'editingId', 'linkedEmail', 'code', 'name', 'shop_name', 'phone', 'address',
+            'editingId', 'linkedEmail', 'code', 'name', 'shop_name', 'phone', 'address', 'bin',
             'form_area_id', 'form_representative_id', 'create_login', 'login_email', 'login_password',
         ]);
         $this->credit_limit = '0';

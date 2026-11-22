@@ -141,6 +141,7 @@ class Create extends Component
             $isFinalDelivery = $this->salesOrder->items()->whereColumn('delivered_quantity', '<', 'quantity')->doesntExist();
             $discount = $this->salesOrder->discountForDelivery($invoiceTotal, $isFinalDelivery);
             $netTotal = round($invoiceTotal - $discount, 2);
+            [$taxedLines, $vatTotal] = \App\Services\Vat\VatService::applyToLines($invoiceLineData, $discount, Retailer::find($this->salesOrder->retailer_id));
 
             $invoice = SalesInvoice::create([
                 'number' => $numbers->generate('sales_invoice'),
@@ -150,12 +151,13 @@ class Create extends Component
                 'subtotal' => $invoiceTotal,
                 'discount' => $discount,
                 'grand_total' => $netTotal,
+                'vat_amount' => $vatTotal,
                 'paid_amount' => 0,
                 'due_amount' => $netTotal,
                 'status' => 'unpaid',
             ]);
 
-            foreach ($invoiceLineData as $line) {
+            foreach ($taxedLines as $line) {
                 SalesInvoiceItem::create(['sales_invoice_id' => $invoice->id, ...$line]);
             }
 

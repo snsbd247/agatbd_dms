@@ -120,6 +120,9 @@ Route::post('/locale/{locale}', \App\Http\Controllers\LocaleController::class)->
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', DashboardController::class)->name('dashboard');
     Route::get('/dashboard/dealer', DealerDashboard::class)->name('dashboard.dealer');
+    Route::get('/dashboard/factory', \App\Livewire\Dashboard\Factory::class)->name('dashboard.factory');
+    Route::get('/dashboard/accounts', \App\Livewire\Dashboard\Accounts::class)->name('dashboard.accounts');
+    Route::get('/dashboard/hr', \App\Livewire\Dashboard\Hr::class)->name('dashboard.hr');
     Route::get('/dashboard/representative', RepresentativeDashboard::class)->name('dashboard.representative');
     Route::get('/dashboard/retailer', RetailerDashboard::class)->middleware('tenant.off')->name('dashboard.retailer');
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
@@ -187,6 +190,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/employees', \App\Livewire\Hr\Employees\Index::class)->name('employees.index');
         Route::get('/employees/{employee}', \App\Livewire\Hr\Employees\Show::class)->name('employees.show');
         Route::get('/attendance', \App\Livewire\Hr\Attendance::class)->name('attendance');
+        Route::get('/attendance-machines', \App\Livewire\Hr\Devices::class)->name('devices');
         Route::get('/leave', \App\Livewire\Hr\Leaves::class)->name('leaves');
         Route::get('/advances-loans', \App\Livewire\Hr\Loans::class)->name('loans');
         Route::get('/salary', \App\Livewire\Hr\Payroll\Index::class)->name('payroll.index');
@@ -246,6 +250,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/orders/{salesOrder}', SalesOrderShow::class)->name('orders.show');
         Route::get('/orders/{salesOrder}/deliver', DeliveryCreate::class)->middleware('can:delivery.manage')->name('orders.deliver');
         Route::get('/invoices/{salesInvoice}/print', [DocumentPrintController::class, 'salesInvoice'])->name('invoices.print');
+        Route::get('/invoices/{salesInvoice}/mushak', [DocumentPrintController::class, 'mushak'])->name('invoices.mushak');
     });
 
     Route::middleware('can:delivery.view')->prefix('deliveries')->name('delivery.')->group(function () {
@@ -303,6 +308,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/warranty', ReportsWarranty::class)->name('warranty');
         Route::get('/payroll', ReportsPayrollSummary::class)->middleware('head.office')->name('payroll');
         Route::get('/profit', ReportsProfit::class)->name('profit');
+        Route::get('/vat', \App\Livewire\Reports\Vat::class)->middleware('head.office')->name('vat');
         Route::get('/expiry', ReportsExpiry::class)->name('expiry');
         Route::get('/areas', ReportsAreas::class)->name('areas');
         Route::get('/dealers', ReportsDealers::class)->middleware('can:dealers.view')->name('dealers');

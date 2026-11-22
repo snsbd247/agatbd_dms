@@ -42,6 +42,20 @@
                 @error('fiscal_year_start_month') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
                 <p class="text-xs text-slate-400 mt-1">{{ __('Bangladesh: July (July–June). Accounts reports and year closing follow this.') }} {{ __('Current year:') }} {{ \App\Support\FiscalYear::current()['label'] }}</p>
             </div>
+            <div class="rounded-lg border border-slate-200 p-4">
+                <label class="flex items-center gap-2 font-medium text-slate-700">
+                    <input type="checkbox" wire:model.live="vat_enabled" class="rounded border-slate-300">
+                    {{ __('VAT (Mushak) is on') }}
+                </label>
+                <p class="text-xs text-slate-400 mt-1">{{ __('Sale prices include VAT at each product\'s VAT rate. When on, head-office invoices show the VAT, a Mushak 6.3 can be printed, and the VAT is kept in Output VAT in the accounts. Dealers\' own sales are not taxed.') }}</p>
+                @if($vat_enabled)
+                    <div class="mt-3">
+                        <label class="text-sm text-slate-500">{{ __('BIN (VAT registration number)') }}</label>
+                        <input wire:model="vat_bin" type="text" maxlength="20" class="w-full sm:w-64 border rounded-lg p-2 mt-1">
+                        @error('vat_bin') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
+                    </div>
+                @endif
+            </div>
         </div>
 
         <div class="mt-6 flex justify-end">

@@ -104,7 +104,9 @@ class Show extends Component
     {
         $this->salesOrder->load(['retailer', 'representative', 'warehouse', 'items.product', 'deliveryNotes', 'invoices', 'deliveryInvoices']);
 
-        return view('livewire.sales.orders.show');
+        return view('livewire.sales.orders.show', [
+            'vatOn' => \App\Services\Vat\VatService::appliesTo($this->salesOrder->retailer),
+        ]);
     }
 }
 

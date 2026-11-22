@@ -16,7 +16,7 @@ class Retailer extends Model
 
     protected $fillable = [
         'dealer_id', 'account_dealer_id', 'user_id', 'representative_id', 'area_id', 'code', 'name',
-        'shop_name', 'phone', 'address', 'credit_limit', 'current_due', 'active',
+        'shop_name', 'phone', 'address', 'bin', 'credit_limit', 'current_due', 'active',
     ];
 
 

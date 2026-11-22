@@ -166,6 +166,10 @@
                         <input wire:model="address" type="text" class="w-full border rounded-lg p-2 mt-1">
                     </div>
                     <div>
+                        <label class="text-sm text-slate-500">{{ __('BIN (VAT registration number)') }}</label>
+                        <input wire:model="bin" type="text" maxlength="20" placeholder="{{ __('Optional') }}" class="w-full border rounded-lg p-2 mt-1">
+                    </div>
+                    <div>
                         <label class="text-sm text-slate-500">{{ __('Area') }}</label>
                         <select wire:model="form_area_id" class="w-full border rounded-lg p-2 mt-1">
                             <option value="">{{ __('— Select —') }}</option>

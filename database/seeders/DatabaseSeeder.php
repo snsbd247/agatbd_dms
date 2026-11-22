@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             YearlyDemoSeeder::class,
             YearlyExtrasSeeder::class,
             AccountingBackfillSeeder::class,
+            ErpDemoSeeder::class,
         ]);
     }
 }

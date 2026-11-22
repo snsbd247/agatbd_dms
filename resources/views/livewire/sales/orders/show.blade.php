@@ -124,6 +124,9 @@
                     <span class="flex items-center gap-3">
                         <span class="font-medium">৳ {{ number_format($invoice->grand_total, 2) }}</span>
                         <a href="{{ route('sales.invoices.print', $invoice) }}" target="_blank" class="text-indigo-600 hover:text-indigo-500" title="{{ __('Print') }}"><x-icon name="printer" class="w-4 h-4" /></a>
+                        @if($vatOn)
+                            <a href="{{ route('sales.invoices.mushak', $invoice) }}" target="_blank" class="ml-2 rounded border border-emerald-300 px-1.5 py-0.5 text-xs font-semibold text-emerald-700 hover:bg-emerald-50" title="{{ __('Mushak 6.3') }}">৬.৩</a>
+                        @endif
                     </span>
                 </div>
             @empty

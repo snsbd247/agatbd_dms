@@ -71,6 +71,9 @@
                     <tr><td>{{ __('Discount') }}</td><td class="r">− {{ $currency }} {{ number_format($invoice->discount, 2) }}</td></tr>
                 @endif
                 <tr class="grand"><td>{{ __('Grand Total') }}</td><td class="r">{{ $currency }} {{ number_format($invoice->grand_total, 2) }}</td></tr>
+                @if((float) $invoice->vat_amount > 0)
+                    <tr><td class="small muted">{{ __('Includes VAT') }}</td><td class="r small muted">{{ $currency }} {{ number_format($invoice->vat_amount, 2) }}</td></tr>
+                @endif
                 <tr><td>{{ __('Paid') }}</td><td class="r">{{ $currency }} {{ number_format($invoice->paid_amount, 2) }}</td></tr>
                 <tr><td><strong>{{ __('Due') }}</strong></td><td class="r"><strong>{{ $currency }} {{ number_format($invoice->due_amount, 2) }}</strong></td></tr>
             </table>

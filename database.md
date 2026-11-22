@@ -749,3 +749,18 @@ erDiagram
 | machine_maintenances | machine_id, type (`preventive`/`breakdown`), maintenance_date, description, downtime_hours, vendor, cost, paid_from_account_id, next_due_date, created_by | |
 
 `5290 Repairs & Maintenance` এখন system key `repairs`। ভাউচারের উৎস: `DamageAction` (`write_off`), `RepairJob` (`completed`), `MachineMaintenance` (`cost`)।
+
+---
+
+## ১৮. মূসক আর হাজিরা মেশিন (migration `2026_11_22_000008`)
+
+| টেবিল / কলাম | মূল কলাম | নোট |
+|---|---|---|
+| products.vat_rate | decimal(5,2), ডিফল্ট ০ | বিক্রয়মূল্যের ভেতরে মূসকের হার; ০ = অব্যাহতি |
+| retailers.bin | string(20), nullable | ক্রেতার বিআইএন, মূসক ৬.৩-এ |
+| sales_invoices.vat_amount | decimal(14,2), ডিফল্ট ০ | চালানের মোট মূসক (grand_total-এর ভেতরে) |
+| sales_invoice_items.vat_rate, vat_amount | | চালানের সময়ের হার আর ছাড়ের পরে লাইনের মূসক |
+| attendance_devices | serial_no (unique), name, location, active, last_seen_at, last_ip, punch_count | অচেনা মেশিন বন্ধ অবস্থায় যোগ হয় |
+| attendance_punches | attendance_device_id, device_user_id, punched_at, employee_id, processed | unique(device_user_id, punched_at); মেলেনি = processed false |
+
+সেটিং (`app_settings`): `vat_enabled` ('1'/'0'), `vat_bin`। ভাউচারে Output VAT = system key `vat_output` (2130)। `attendances.source` এখন `device`-ও হয়।

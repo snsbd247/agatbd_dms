@@ -25,6 +25,8 @@ class CompanyProfile extends Component
     public string $email = '';
     public string $invoice_footer = '';
     public int $fiscal_year_start_month = 7;
+    public bool $vat_enabled = false;
+    public string $vat_bin = '';
 
     public bool $saved = false;
 
@@ -41,6 +43,8 @@ class CompanyProfile extends Component
         }
 
         $this->fiscal_year_start_month = \App\Support\FiscalYear::startMonth();
+        $this->vat_enabled = \App\Services\Vat\VatService::enabled();
+        $this->vat_bin = (string) \App\Services\Vat\VatService::bin();
     }
 
     public function save(): void
@@ -55,7 +59,12 @@ class CompanyProfile extends Component
             'invoice_footer' => 'nullable|string|max:1000',
         ]);
         $this->validate(['fiscal_year_start_month' => 'required|integer|between:1,12']);
-        \App\Models\Settings\AppSetting::put([\App\Support\FiscalYear::SETTING => (string) $this->fiscal_year_start_month]);
+        $this->validate(['vat_bin' => [$this->vat_enabled ? 'required' : 'nullable', 'string', 'max:20']], [], ['vat_bin' => __('BIN')]);
+        \App\Models\Settings\AppSetting::put([
+            \App\Support\FiscalYear::SETTING => (string) $this->fiscal_year_start_month,
+            \App\Services\Vat\VatService::ENABLED => $this->vat_enabled,
+            \App\Services\Vat\VatService::BIN => trim($this->vat_bin) ?: null,
+        ]);
 
         $profile = CompanyProfileModel::first();
 

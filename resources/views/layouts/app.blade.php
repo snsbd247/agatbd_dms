@@ -97,6 +97,7 @@
             ['icon' => 'user-group', 'label' => 'HR', 'permission' => 'hr.view', 'prefix' => ['hr.'], 'links' => [
                 ['route' => 'hr.employees.index', 'label' => 'Employees', 'icon' => 'user-group', 'headOffice' => true],
                 ['route' => 'hr.attendance', 'label' => 'Attendance', 'icon' => 'clock', 'headOffice' => true],
+                ['route' => 'hr.devices', 'label' => 'Attendance Machines', 'icon' => 'database', 'headOffice' => true],
                 ['route' => 'hr.leaves', 'label' => 'Leave', 'icon' => 'calendar', 'headOffice' => true],
                 ['route' => 'hr.loans', 'label' => 'Advances & Loans', 'icon' => 'credit-card', 'headOffice' => true],
                 ['route' => 'hr.payroll.index', 'label' => 'Salary Sheets', 'icon' => 'wallet', 'headOffice' => true],
@@ -157,13 +158,9 @@
             fn ($group) => collect($group['prefix'])->contains(fn ($p) => request()->routeIs($p.'*'))
         )['label'] ?? null;
 
-        $dashboardRouteName = match (true) {
-            auth()->user()->hasRole('Sales Representative') => 'dashboard.representative',
-            auth()->user()->hasRole('Retailer') => 'dashboard.retailer',
-            default => 'dashboard.dealer',
-        };
+        $dashboardRouteName = \App\Http\Controllers\DashboardController::homeRoute(auth()->user());
         $dashboardHref = route($dashboardRouteName);
-        $dashboardActive = request()->routeIs('dashboard') || request()->routeIs($dashboardRouteName);
+        $dashboardActive = request()->routeIs('dashboard') || request()->routeIs($dashboardRouteName) || request()->routeIs('dashboard.factory', 'dashboard.accounts', 'dashboard.hr', 'dashboard.dealer');
 
         $masterTabVisible = auth()->user()->can('master-data.view');
         $businessTabVisible = collect(['purchase.view', 'inventory.view', 'sales.view', 'delivery.view', 'collection.view'])

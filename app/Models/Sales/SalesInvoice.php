@@ -17,7 +17,7 @@ class SalesInvoice extends Model
 
     protected $fillable = [
         'number', 'sales_order_id', 'retailer_id', 'invoice_date',
-        'subtotal', 'discount', 'grand_total', 'paid_amount', 'due_amount', 'status',
+        'subtotal', 'discount', 'grand_total', 'vat_amount', 'paid_amount', 'due_amount', 'status',
     ];
 
     protected function casts(): array
@@ -27,6 +27,7 @@ class SalesInvoice extends Model
             'subtotal' => 'decimal:2',
             'discount' => 'decimal:2',
             'grand_total' => 'decimal:2',
+            'vat_amount' => 'decimal:2',
             'paid_amount' => 'decimal:2',
             'due_amount' => 'decimal:2',
         ];

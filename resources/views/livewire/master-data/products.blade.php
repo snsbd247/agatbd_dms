@@ -195,6 +195,9 @@
                     @endif
                     <div class="flex justify-between py-1.5 border-b"><span class="text-slate-500">{{ __('Purchase Price') }}</span><span class="font-medium">৳ {{ number_format($viewingProduct->purchase_price, 2) }}</span></div>
                     <div class="flex justify-between py-1.5 border-b"><span class="text-slate-500">{{ __('Sale Price') }}</span><span class="font-medium">৳ {{ number_format($viewingProduct->sale_price, 2) }}</span></div>
+                    @if((float) $viewingProduct->vat_rate > 0)
+                        <div class="flex justify-between py-1.5 border-b"><span class="text-slate-500">{{ __('VAT rate (%)') }}</span><span class="font-medium">{{ rtrim(rtrim((string) $viewingProduct->vat_rate, '0'), '.') }}%</span></div>
+                    @endif
                     <div class="flex justify-between py-1.5 border-b"><span class="text-slate-500">{{ __('Reorder Level') }}</span><span class="font-medium">{{ rtrim(rtrim(number_format($viewingProduct->reorder_level, 3), '0'), '.') }}</span></div>
                     <div class="flex justify-between py-1.5"><span class="text-slate-500">{{ __('Status') }}</span><span class="font-medium">{{ $viewingProduct->active ? __('Active') : __('Inactive') }}</span></div>
                 </div>
@@ -262,6 +265,12 @@
                         <input wire:model="shelf_life_days" type="number" min="1" step="1" placeholder="{{ __('e.g. 365') }}" class="w-full border rounded-lg p-2 mt-1">
                         @error('shelf_life_days') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
                         <p class="text-xs text-slate-400 mt-1">{{ __('Default expiry of a batch made in the factory.') }}</p>
+                    </div>
+                    <div>
+                        <label class="text-sm text-slate-500">{{ __('VAT rate (%)') }}</label>
+                        <input wire:model="vat_rate" type="number" min="0" max="100" step="0.01" class="w-full border rounded-lg p-2 mt-1">
+                        @error('vat_rate') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
+                        <p class="text-xs text-slate-400 mt-1">{{ __('Included in the sale price. 0 = exempt (most fertiliser, seed and feed).') }}</p>
                     </div>
                     <div>
                         <label class="text-sm text-slate-500">{{ __('SKU') }}</label>

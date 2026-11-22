@@ -154,6 +154,9 @@ class Attendance extends Component
 
     public function render(AttendanceService $service)
     {
+        if (! in_array($this->tab, ['daily', 'import', 'monthly'], true)) {
+            $this->tab = 'daily';   // an unknown ?tab= in the address
+        }
         $data = ['employees' => $this->employees(), 'departments' => Department::orderBy('name')->get()];
 
         if ($this->tab === 'monthly') {

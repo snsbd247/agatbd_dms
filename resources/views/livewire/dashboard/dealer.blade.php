@@ -1,5 +1,6 @@
 <div class="space-y-5">
     @php $money = fn ($value) => '৳ '.number_format($value, 2); @endphp
+    @include('livewire.dashboard.partials.tabs', ['current' => 'dashboard.dealer'])
     <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div><h2 class="text-2xl font-bold text-slate-800">{{ __('Dashboard') }}</h2><p class="mt-1 text-sm text-slate-500">{{ __('All important business information on one screen.') }}</p></div>
         <div class="flex items-center gap-1 rounded-lg border bg-white px-2 py-1.5 shadow-sm"><x-icon name="calendar" class="h-4 w-4 text-slate-400" /><input type="date" wire:model.live="rangeFrom" class="w-28 border-0 p-0 text-sm focus:ring-0"><span class="text-slate-300">–</span><input type="date" wire:model.live="rangeTo" class="w-28 border-0 p-0 text-sm focus:ring-0"></div>
