@@ -51,7 +51,7 @@
                 ['route' => 'purchase.returns.index', 'label' => 'Purchase Returns', 'icon' => 'refresh'],
             ]],
             ['icon' => 'archive-box', 'label' => 'Inventory', 'permission' => 'inventory.view', 'prefix' => ['inventory.'], 'links' => [
-                ['route' => 'inventory.factories', 'label' => 'Factories', 'icon' => 'factory', 'headOffice' => true],
+                ['route' => 'inventory.factories', 'label' => 'Factories', 'icon' => 'factory', 'headOffice' => true, 'module' => 'production'],
                 ['route' => 'inventory.warehouses', 'label' => 'Warehouses', 'icon' => 'archive-box'],
                 ['route' => 'inventory.areas', 'label' => 'Areas', 'icon' => 'map-pin', 'headOffice' => true],
                 ['route' => 'inventory.adjustments', 'label' => 'Stock Adjustments', 'icon' => 'refresh'],
@@ -97,7 +97,7 @@
             ['icon' => 'user-group', 'label' => 'HR', 'permission' => 'hr.view', 'prefix' => ['hr.'], 'links' => [
                 ['route' => 'hr.employees.index', 'label' => 'Employees', 'icon' => 'user-group', 'headOffice' => true],
                 ['route' => 'hr.attendance', 'label' => 'Attendance', 'icon' => 'clock', 'headOffice' => true],
-                ['route' => 'hr.devices', 'label' => 'Attendance Machines', 'icon' => 'database', 'headOffice' => true],
+                ['route' => 'hr.devices', 'label' => 'Attendance Machines', 'icon' => 'database', 'headOffice' => true, 'module' => 'attendance_devices'],
                 ['route' => 'hr.leaves', 'label' => 'Leave', 'icon' => 'calendar', 'headOffice' => true],
                 ['route' => 'hr.loans', 'label' => 'Advances & Loans', 'icon' => 'credit-card', 'headOffice' => true],
                 ['route' => 'hr.payroll.index', 'label' => 'Salary Sheets', 'icon' => 'wallet', 'headOffice' => true],
@@ -124,15 +124,15 @@
                 ['route' => 'reports.stock', 'label' => 'Stock Report', 'icon' => 'archive-box'],
                 ['route' => 'reports.expiry', 'label' => 'Expiry Report', 'icon' => 'clock'],
                 ['route' => 'reports.collections', 'label' => 'Collections & Due', 'icon' => 'banknotes'],
-                ['route' => 'reports.returns', 'label' => 'Return Report', 'icon' => 'refresh'],
-                ['route' => 'reports.warranty', 'label' => 'Warranty Report', 'icon' => 'shield-exclamation'],
-                ['route' => 'reports.representatives', 'label' => 'Representative Performance', 'icon' => 'user-group'],
+                ['route' => 'reports.returns', 'label' => 'Return Report', 'icon' => 'refresh', 'module' => 'returns'],
+                ['route' => 'reports.warranty', 'label' => 'Warranty Report', 'icon' => 'shield-exclamation', 'module' => 'warranty'],
+                ['route' => 'reports.representatives', 'label' => 'Representative Performance', 'icon' => 'user-group', 'module' => 'representatives'],
                 ['route' => 'reports.retailers', 'label' => 'Retailer Report', 'icon' => 'building-storefront'],
                 ['route' => 'reports.companies', 'label' => 'Company Report', 'icon' => 'gift', 'headOffice' => true],
                 ['route' => 'reports.dealers', 'label' => 'Dealer Sales Report', 'icon' => 'building-storefront', 'permission' => 'dealers.view'],
                 ['route' => 'reports.areas', 'label' => 'Area Report', 'icon' => 'map-pin'],
                 ['route' => 'reports.products', 'label' => 'Product Performance', 'icon' => 'trending-up'],
-                ['route' => 'reports.payroll', 'label' => 'Payroll & Commission', 'icon' => 'wallet', 'headOffice' => true],
+                ['route' => 'reports.payroll', 'label' => 'Payroll & Commission', 'icon' => 'wallet', 'headOffice' => true, 'module' => 'representatives'],
                 ['route' => 'reports.profit', 'label' => 'Profit & Loss', 'icon' => 'credit-card'],
             ]],
             ['icon' => 'wallet', 'label' => 'Payroll', 'permission' => 'payroll.view', 'prefix' => ['payroll.'], 'links' => [
@@ -142,9 +142,10 @@
             ]],
             ['icon' => 'cog', 'label' => 'Settings', 'permission' => 'settings.manage', 'prefix' => ['settings.'], 'links' => [
                 ['route' => 'settings.company-profile', 'label' => 'Company Profile', 'icon' => 'building-storefront'],
+                ['route' => 'settings.modules', 'label' => 'Business Type & Modules', 'icon' => 'grid'],
                 ['route' => 'settings.numbering', 'label' => 'Numbering', 'icon' => 'database'],
                 ['route' => 'settings.messaging', 'label' => 'Email & SMS', 'icon' => 'mail'],
-                ['route' => 'settings.warranty-policies', 'label' => 'Warranty Policies', 'icon' => 'shield-check'],
+                ['route' => 'settings.warranty-policies', 'label' => 'Warranty Policies', 'icon' => 'shield-check', 'module' => 'warranty'],
                 ['route' => 'settings.users', 'label' => 'Users', 'icon' => 'user'],
                 ['route' => 'settings.login-history', 'label' => 'Login History', 'icon' => 'clock'],
                 ['route' => 'settings.audit-log', 'label' => 'Audit Log', 'icon' => 'book-open'],
@@ -226,6 +227,7 @@
                                 @foreach($group['links'] as $link)
                                     @continue(isset($link['permission']) && ! auth()->user()->can($link['permission']))
                                     @continue(! empty($link['headOffice']) && auth()->user()->dealer_id)
+                                    @continue(isset($link['module']) && ! \App\Support\Modules::enabled($link['module']))
                                     @php $linkActive = isset($link['params']) ? request()->routeIs($link['route']) && request()->route('report') === $link['params']['report'] : request()->routeIs($link['route']); @endphp
                                     <a href="{{ route($link['route'], $link['params'] ?? []) }}" class="flex items-center gap-2 pl-3 pr-3 py-1.5 rounded-lg text-sm {{ $linkActive ? 'bg-indigo-600/20 text-white border-l-2 border-indigo-500 -ml-px' : 'text-slate-400 hover:bg-slate-800/70 hover:text-slate-200' }}">
                                         <x-icon :name="$link['icon'] ?? 'chevron-right'" class="w-4 h-4 shrink-0" />

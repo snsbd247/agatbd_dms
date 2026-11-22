@@ -119,7 +119,7 @@ class Help extends Component
                 'tips' => ['যাদের অনুমোদনের ক্ষমতা নেই তাদের রিপোর্ট অনুমোদনের অপেক্ষায় থাকে; ততক্ষণ মাল আগের গুদামেই থাকে।'],
             ],
             [
-                'id' => 'vat', 'title' => 'মূসক (ভ্যাট) ও মূসক ৬.৩', 'icon' => 'document-text', 'can' => 'sales.view',
+                'id' => 'vat', 'title' => 'মূসক (ভ্যাট) ও মূসক ৬.৩', 'icon' => 'document-text', 'can' => 'sales.view', 'module' => 'vat',
                 'steps' => [
                     '<b>Settings → Company Profile</b>-এ "মূসক (ভ্যাট) চালু" টিক দিন আর প্রতিষ্ঠানের <b>বিআইএন</b> লিখে Save করুন। বন্ধ রাখলে কিছুই বদলায় না।',
                     '<b>Master Data → Products</b>-এ প্রতিটি পণ্যের <b>মূসক হার (%)</b> দিন। বিক্রয়মূল্যের ভেতরেই মূসক ধরা হয়, তাই ক্রেতা একই দাম দেন। ০ মানে অব্যাহতি (বেশিরভাগ সার, বীজ, খাদ্য)।',
@@ -133,7 +133,7 @@ class Help extends Component
                 ],
             ],
             [
-                'id' => 'attendance-machine', 'title' => 'হাজিরা মেশিন (ZKTeco)', 'icon' => 'clock', 'can' => 'hr.view',
+                'id' => 'attendance-machine', 'title' => 'হাজিরা মেশিন (ZKTeco)', 'icon' => 'clock', 'can' => 'hr.view', 'module' => 'attendance_devices',
                 'steps' => [
                     'মেশিনে <b>Menu → Comm. → Cloud Server Setting (ADMS)</b>-এ সার্ভার ঠিকানা <b>dms.agatbd.com</b>, পোর্ট <b>443</b>, HTTPS চালু করুন। মেশিনে ইন্টারনেট লাগবে।',
                     'এক মিনিটের মধ্যে <b>HR → Attendance Machines</b>-এ মেশিনটি "বন্ধ" অবস্থায় দেখা যাবে। সিরিয়াল নম্বর মিলিয়ে <b>চালু করুন</b> চাপুন।',
@@ -290,6 +290,9 @@ class Help extends Component
         $user = Auth::user();
 
         $sections = collect($this->sections())->filter(function ($s) use ($user) {
+            if (isset($s['module']) && ! \App\Support\Modules::enabled($s['module'])) {
+                return false;
+            }
             if (isset($s['role'])) {
                 return $user->hasRole($s['role']);
             }

@@ -763,4 +763,4 @@ erDiagram
 | attendance_devices | serial_no (unique), name, location, active, last_seen_at, last_ip, punch_count | অচেনা মেশিন বন্ধ অবস্থায় যোগ হয় |
 | attendance_punches | attendance_device_id, device_user_id, punched_at, employee_id, processed | unique(device_user_id, punched_at); মেলেনি = processed false |
 
-সেটিং (`app_settings`): `vat_enabled` ('1'/'0'), `vat_bin`। ভাউচারে Output VAT = system key `vat_output` (2130)। `attendances.source` এখন `device`-ও হয়।
+সেটিং (`app_settings`): `vat_enabled` ('1'/'0'), `vat_bin`, আর ধাপ ৭ক থেকে `business_type` (`trading`/`manufacturing`/`both`) ও `modules_off` (বন্ধ মডিউলের JSON তালিকা, [Modules](app/Support/Modules.php))। ভাউচারে Output VAT = system key `vat_output` (2130)। `attendances.source` এখন `device`-ও হয়।

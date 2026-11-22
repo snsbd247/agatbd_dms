@@ -42,6 +42,7 @@
                 @error('fiscal_year_start_month') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
                 <p class="text-xs text-slate-400 mt-1">{{ __('Bangladesh: July (July–June). Accounts reports and year closing follow this.') }} {{ __('Current year:') }} {{ \App\Support\FiscalYear::current()['label'] }}</p>
             </div>
+            @if(\App\Support\Modules::enabled('vat'))
             <div class="rounded-lg border border-slate-200 p-4">
                 <label class="flex items-center gap-2 font-medium text-slate-700">
                     <input type="checkbox" wire:model.live="vat_enabled" class="rounded border-slate-300">
@@ -56,6 +57,7 @@
                     </div>
                 @endif
             </div>
+            @endif
         </div>
 
         <div class="mt-6 flex justify-end">

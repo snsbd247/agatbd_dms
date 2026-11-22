@@ -141,8 +141,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/orders/new', PortalOrderCreate::class)->name('orders.create');
         Route::get('/orders/{salesOrder}', PortalOrderShow::class)->name('orders.show');
         Route::get('/statement', PortalStatement::class)->name('statement');
-        Route::get('/returns', PortalReturns::class)->name('returns');
-        Route::get('/warranty', PortalWarranty::class)->name('warranty');
+        Route::get('/returns', PortalReturns::class)->middleware('module:returns')->name('returns');
+        Route::get('/warranty', PortalWarranty::class)->middleware('module:warranty')->name('warranty');
         Route::get('/invoices/{deliveryInvoice}/pdf', [DeliveryInvoiceController::class, 'printForRetailer'])->name('invoices.print');
         Route::get('/sales-invoices/{salesInvoice}/pdf', [DocumentPrintController::class, 'salesInvoiceForRetailer'])->name('sales-invoices.print');
         Route::get('/receipts/{collection}/pdf', [DocumentPrintController::class, 'moneyReceiptForRetailer'])->name('receipts.print');
@@ -190,7 +190,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/employees', \App\Livewire\Hr\Employees\Index::class)->name('employees.index');
         Route::get('/employees/{employee}', \App\Livewire\Hr\Employees\Show::class)->name('employees.show');
         Route::get('/attendance', \App\Livewire\Hr\Attendance::class)->name('attendance');
-        Route::get('/attendance-machines', \App\Livewire\Hr\Devices::class)->name('devices');
+        Route::get('/attendance-machines', \App\Livewire\Hr\Devices::class)->middleware('module:attendance_devices')->name('devices');
         Route::get('/leave', \App\Livewire\Hr\Leaves::class)->name('leaves');
         Route::get('/advances-loans', \App\Livewire\Hr\Loans::class)->name('loans');
         Route::get('/salary', \App\Livewire\Hr\Payroll\Index::class)->name('payroll.index');
@@ -226,7 +226,7 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::middleware('can:inventory.view')->prefix('inventory')->name('inventory.')->group(function () {
-        Route::get('/factories', Factories::class)->middleware('head.office')->name('factories');
+        Route::get('/factories', Factories::class)->middleware(['head.office', 'module:production'])->name('factories');
         Route::get('/warehouses', Warehouses::class)->name('warehouses');
         Route::get('/areas', Areas::class)->middleware('head.office')->name('areas');
         Route::get('/adjustments', StockAdjustments::class)->name('adjustments');
@@ -299,16 +299,16 @@ Route::middleware('auth')->group(function () {
         Route::get('/sales', ReportsSales::class)->name('sales');
         Route::get('/stock', ReportsStock::class)->name('stock');
         Route::get('/collections', ReportsCollections::class)->name('collections');
-        Route::get('/returns', ReportsReturns::class)->name('returns');
-        Route::get('/representatives', ReportsRepresentatives::class)->name('representatives');
+        Route::get('/returns', ReportsReturns::class)->middleware('module:returns')->name('returns');
+        Route::get('/representatives', ReportsRepresentatives::class)->middleware('module:representatives')->name('representatives');
         Route::get('/purchase', ReportsPurchase::class)->middleware('head.office')->name('purchase');
         Route::get('/companies', ReportsCompanies::class)->middleware('head.office')->name('companies');
         Route::get('/products', ReportsProducts::class)->name('products');
         Route::get('/retailers', ReportsRetailers::class)->name('retailers');
-        Route::get('/warranty', ReportsWarranty::class)->name('warranty');
-        Route::get('/payroll', ReportsPayrollSummary::class)->middleware('head.office')->name('payroll');
+        Route::get('/warranty', ReportsWarranty::class)->middleware('module:warranty')->name('warranty');
+        Route::get('/payroll', ReportsPayrollSummary::class)->middleware(['head.office', 'module:representatives'])->name('payroll');
         Route::get('/profit', ReportsProfit::class)->name('profit');
-        Route::get('/vat', \App\Livewire\Reports\Vat::class)->middleware('head.office')->name('vat');
+        Route::get('/vat', \App\Livewire\Reports\Vat::class)->middleware(['head.office', 'module:vat'])->name('vat');
         Route::get('/expiry', ReportsExpiry::class)->name('expiry');
         Route::get('/areas', ReportsAreas::class)->name('areas');
         Route::get('/dealers', ReportsDealers::class)->middleware('can:dealers.view')->name('dealers');
@@ -319,14 +319,14 @@ Route::middleware('auth')->group(function () {
             Route::get('/sales', [ReportExportController::class, 'sales'])->name('sales');
             Route::get('/stock', [ReportExportController::class, 'stock'])->name('stock');
             Route::get('/collections', [ReportExportController::class, 'collections'])->name('collections');
-            Route::get('/returns', [ReportExportController::class, 'returns'])->name('returns');
-            Route::get('/representatives', [ReportExportController::class, 'representatives'])->name('representatives');
+            Route::get('/returns', [ReportExportController::class, 'returns'])->middleware('module:returns')->name('returns');
+            Route::get('/representatives', [ReportExportController::class, 'representatives'])->middleware('module:representatives')->name('representatives');
             Route::get('/purchase', [ReportExportController::class, 'purchase'])->middleware('head.office')->name('purchase');
             Route::get('/companies', [ReportExportController::class, 'companies'])->middleware('head.office')->name('companies');
             Route::get('/products', [ReportExportController::class, 'products'])->name('products');
             Route::get('/retailers', [ReportExportController::class, 'retailers'])->name('retailers');
-            Route::get('/warranty', [ReportExportController::class, 'warranty'])->name('warranty');
-            Route::get('/payroll', [ReportExportController::class, 'payroll'])->middleware('head.office')->name('payroll');
+            Route::get('/warranty', [ReportExportController::class, 'warranty'])->middleware('module:warranty')->name('warranty');
+            Route::get('/payroll', [ReportExportController::class, 'payroll'])->middleware(['head.office', 'module:representatives'])->name('payroll');
             Route::get('/profit', [ReportExportController::class, 'profit'])->name('profit');
             Route::get('/expiry', [ReportExportController::class, 'expiry'])->name('expiry');
             Route::get('/areas', [ReportExportController::class, 'areas'])->name('areas');
@@ -344,9 +344,10 @@ Route::middleware('auth')->group(function () {
 
     Route::middleware('can:settings.manage')->prefix('settings')->name('settings.')->group(function () {
         Route::get('/company-profile', SettingsCompanyProfile::class)->name('company-profile');
+        Route::get('/modules', \App\Livewire\Settings\ModuleSettings::class)->name('modules');
         Route::get('/numbering', SettingsNumbering::class)->name('numbering');
         Route::get('/email-sms', \App\Livewire\Settings\Messaging::class)->name('messaging');
-        Route::get('/warranty-policies', SettingsWarrantyPoliciesIndex::class)->name('warranty-policies');
+        Route::get('/warranty-policies', SettingsWarrantyPoliciesIndex::class)->middleware('module:warranty')->name('warranty-policies');
         Route::get('/users', SettingsUsersIndex::class)->name('users');
         Route::get('/login-history', SettingsLoginHistories::class)->name('login-history');
         Route::get('/audit-log', SettingsAuditLogs::class)->name('audit-log');

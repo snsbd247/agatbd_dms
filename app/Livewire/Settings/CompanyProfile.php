@@ -43,7 +43,7 @@ class CompanyProfile extends Component
         }
 
         $this->fiscal_year_start_month = \App\Support\FiscalYear::startMonth();
-        $this->vat_enabled = \App\Services\Vat\VatService::enabled();
+        $this->vat_enabled = \App\Models\Settings\AppSetting::flag(\App\Services\Vat\VatService::ENABLED);
         $this->vat_bin = (string) \App\Services\Vat\VatService::bin();
     }
 
@@ -59,12 +59,14 @@ class CompanyProfile extends Component
             'invoice_footer' => 'nullable|string|max:1000',
         ]);
         $this->validate(['fiscal_year_start_month' => 'required|integer|between:1,12']);
-        $this->validate(['vat_bin' => [$this->vat_enabled ? 'required' : 'nullable', 'string', 'max:20']], [], ['vat_bin' => __('BIN')]);
-        \App\Models\Settings\AppSetting::put([
-            \App\Support\FiscalYear::SETTING => (string) $this->fiscal_year_start_month,
-            \App\Services\Vat\VatService::ENABLED => $this->vat_enabled,
-            \App\Services\Vat\VatService::BIN => trim($this->vat_bin) ?: null,
-        ]);
+        $settings = [\App\Support\FiscalYear::SETTING => (string) $this->fiscal_year_start_month];
+        // With the VAT module off the switch is hidden: keep what was saved before.
+        if (\App\Support\Modules::enabled('vat')) {
+            $this->validate(['vat_bin' => [$this->vat_enabled ? 'required' : 'nullable', 'string', 'max:20']], [], ['vat_bin' => __('BIN')]);
+            $settings[\App\Services\Vat\VatService::ENABLED] = $this->vat_enabled;
+            $settings[\App\Services\Vat\VatService::BIN] = trim($this->vat_bin) ?: null;
+        }
+        \App\Models\Settings\AppSetting::put($settings);
 
         $profile = CompanyProfileModel::first();
 

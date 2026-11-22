@@ -22,7 +22,7 @@ class VatService
 
     public static function enabled(): bool
     {
-        return AppSetting::flag(self::ENABLED);
+        return \App\Support\Modules::enabled('vat') && AppSetting::flag(self::ENABLED);
     }
 
     public static function bin(): ?string

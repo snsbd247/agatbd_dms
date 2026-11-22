@@ -78,7 +78,7 @@ class IclockController extends Controller
     private function device(Request $request): ?AttendanceDevice
     {
         $serial = substr(trim((string) $request->query('SN', '')), 0, 40);
-        if ($serial === '' || ! preg_match('/^[A-Za-z0-9_-]+$/', $serial)) {
+        if (! \App\Support\Modules::enabled('attendance_devices') || $serial === '' || ! preg_match('/^[A-Za-z0-9_-]+$/', $serial)) {
             return null;
         }
 
