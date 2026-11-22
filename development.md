@@ -412,6 +412,8 @@ Apache কনফিগ বদলালে: `F:\Lovable\xampp\apache\bin\httpd.ex
 
 ## লাইভ সার্ভার: https://dms.agatbd.com
 
+> **২২ নভেম্বর ২০২৬ (পরে):** ধাপ ৬ আর ৭ (মূসক, হাজিরা মেশিন, ড্যাশবোর্ড, মডিউল, কস্টিং, আমদানি, কিট, সেটআপ উইজার্ড) ডেপ্লয় হয়েছে। এরপর প্রথম লগইনে অ্যাডমিন সেটআপ উইজার্ড পান। নতুন পারমিশনের জন্য deploy-এর পর `db:seed --class=PermissionSeeder` আর `--class=RoleSeeder` চালানো হয়েছে; `.env`-এ `APP_LOCALE=en`।
+>
 > **২২ নভেম্বর ২০২৬:** ERP ধাপ ০–৫ সহ আবার ডেপ্লয় করা হয়েছে, এবার **MySQL (MariaDB 10.11)** ডাটাবেসে। খালি শুরু (ডেমো ডাটা নেই): রোল, হিসাবের তালিকা, স্ট্যান্ডার্ড ইউনিট, কোম্পানির নাম-লোগো আর একজন Admin (`admin@agatbd.com`)। আগের SQLite-এর শেষ ব্যাকআপ এই পিসির `storage/backups/live-final/`-এ আছে।
 
 একটা cPanel অ্যাকাউন্টে চলে (LiteSpeed, CloudLinux)। একই অ্যাকাউন্টে আরেকটা প্রজেক্টও আছে, agatbd.com (`~/public_html`)। ওটার কোনো ফাইলে, cron লাইনে বা `~/agatbd-deploy` ফোল্ডারে হাত দেওয়া যাবে না।
@@ -440,6 +442,7 @@ git pull
 rm -rf public/build && tar -xzf ~/dms-build.tgz -C public && rm ~/dms-build.tgz
 $P ~/agatbd-deploy/composer.phar install --no-dev --optimize-autoloader   # composer.lock বদলালে
 $P artisan migrate --force
+$P artisan db:seed --class=PermissionSeeder --force && $P artisan db:seed --class=RoleSeeder --force   # নতুন পারমিশন এলে
 $P artisan optimize
 ```
 
