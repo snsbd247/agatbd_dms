@@ -110,4 +110,49 @@
             </div>
         </div>
     @endif
+    @unless(auth()->user()->dealer_id)
+        <div class="bg-white rounded-xl shadow p-6 mt-6 border border-red-200">
+            <h2 class="font-semibold text-red-700">{{ __('Clear data before going live') }}</h2>
+            <p class="text-sm text-slate-600 mt-1">{{ __('Removes demo or test data so you can start with real figures. A backup is taken first, so this can be undone with Restore.') }}</p>
+
+            @if($resetResult)
+                <div class="bg-green-50 text-green-700 text-sm rounded-lg px-4 py-3 mt-3">
+                    {{ __(':rows rows removed. Backup taken first: :backup', ['rows' => number_format($resetResult['rows']), 'backup' => $resetResult['backup']]) }}
+                    @if($resetResult['mode'] === 'all')
+                        <a href="{{ route('settings.setup') }}" class="underline ml-1">{{ __('Open the setup wizard') }}</a>
+                    @endif
+                </div>
+            @endif
+
+            <div class="grid sm:grid-cols-2 gap-3 mt-4">
+                <label class="border rounded-lg p-3 cursor-pointer {{ $resetMode === 'transactions' ? 'border-red-400 bg-red-50' : '' }}">
+                    <input type="radio" wire:model.live="resetMode" value="transactions" class="mr-1">
+                    <span class="font-medium text-sm">{{ __('Transactions only') }}</span>
+                    <p class="text-xs text-slate-500 mt-1">{{ __('Orders, invoices, purchases, stock, vouchers, payroll and attendance are removed. Products, customers, suppliers, dealers, warehouses and employees stay; stock and dues become zero.') }}</p>
+                </label>
+                <label class="border rounded-lg p-3 cursor-pointer {{ $resetMode === 'all' ? 'border-red-400 bg-red-50' : '' }}">
+                    <input type="radio" wire:model.live="resetMode" value="all" class="mr-1">
+                    <span class="font-medium text-sm">{{ __('Everything') }}</span>
+                    <p class="text-xs text-slate-500 mt-1">{{ __('Master data goes too, with dealer, customer and employee logins. Head-office users, roles, settings, company profile and the chart of accounts stay.') }}</p>
+                </label>
+            </div>
+
+            <div class="grid sm:grid-cols-3 gap-3 mt-4 items-end">
+                <div>
+                    <label class="text-sm text-slate-500">{{ __('Your password') }}</label>
+                    <input wire:model="resetPassword" type="password" autocomplete="current-password" class="w-full border rounded-lg p-2 mt-1">
+                    @error('resetPassword') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
+                </div>
+                <div>
+                    <label class="text-sm text-slate-500">{{ __('Type') }} <span class="font-mono font-semibold">CLEAR</span> {{ __('to confirm') }}</label>
+                    <input wire:model="resetText" type="text" autocomplete="off" class="w-full border rounded-lg p-2 mt-1 font-mono">
+                    @error('resetText') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
+                </div>
+                <button wire:click="clearData" wire:loading.attr="disabled" class="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-500 disabled:opacity-60 text-white font-medium">
+                    <span wire:loading.remove wire:target="clearData">{{ __('Clear data') }}</span>
+                    <span wire:loading wire:target="clearData">{{ __('Clearing…') }}</span>
+                </button>
+            </div>
+        </div>
+    @endunless
 </div>

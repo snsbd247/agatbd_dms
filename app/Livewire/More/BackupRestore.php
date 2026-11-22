@@ -27,6 +27,12 @@ class BackupRestore extends Component
 
     public ?array $result = null;
 
+    /** Clearing data: "transactions" or "all", see DataResetService. */
+    public string $resetMode = 'transactions';
+    public string $resetPassword = '';
+    public string $resetText = '';
+    public ?array $resetResult = null;
+
     public function chooseStored(string $name): void
     {
         $this->authorize('settings.manage');
@@ -100,6 +106,47 @@ class BackupRestore extends Component
 
         $this->result = $result + ['file' => $label];
         $this->reset(['restoreSource', 'confirmPassword', 'confirmText', 'upload']);
+    }
+
+    /** Clear demo or test data. A backup is taken first. */
+    public function clearData(BackupService $backups, \App\Services\DataResetService $reset): void
+    {
+        $this->authorize('settings.manage');
+        abort_if(Auth::user()->dealer_id, 403);
+
+        $this->validate([
+            'resetMode' => 'required|in:transactions,all',
+            'resetPassword' => 'required',
+            'resetText' => 'required|in:CLEAR',
+        ], [
+            'resetText.in' => __('Type CLEAR in capital letters to confirm.'),
+        ]);
+
+        if (! Hash::check($this->resetPassword, Auth::user()->password)) {
+            $this->addError('resetPassword', __('Your password is not correct.'));
+
+            return;
+        }
+
+        try {
+            $file = $backups->create('before-clear');
+            $removed = $reset->reset($this->resetMode, Auth::user());
+        } catch (\Throwable $e) {
+            report($e);
+            $this->addError('resetText', __('Clearing failed, nothing was changed:').' '.$e->getMessage());
+
+            return;
+        }
+
+        AuditLog::create([
+            'user_id' => Auth::id(),
+            'action' => 'data.cleared',
+            'new_values' => ['mode' => $this->resetMode, 'backup' => basename($file), 'rows' => array_sum($removed)],
+            'ip_address' => request()->ip(),
+        ]);
+
+        $this->resetResult = ['rows' => array_sum($removed), 'backup' => basename($file), 'mode' => $this->resetMode];
+        $this->reset(['resetPassword', 'resetText']);
     }
 
     public function render(BackupService $backups)

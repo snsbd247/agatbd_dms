@@ -364,6 +364,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/modules', \App\Livewire\Settings\ModuleSettings::class)->name('modules');
         Route::get('/setup', \App\Livewire\Setup\Wizard::class)->name('setup');
         Route::get('/numbering', SettingsNumbering::class)->name('numbering');
+        Route::get('/data-import', \App\Livewire\Settings\DataImport::class)->name('data-import');
+        Route::get('/data-import/template/{type}', \App\Http\Controllers\DataImportTemplateController::class)->name('data-import.template');
         Route::get('/email-sms', \App\Livewire\Settings\Messaging::class)->name('messaging');
         Route::get('/warranty-policies', SettingsWarrantyPoliciesIndex::class)->middleware('module:warranty')->name('warranty-policies');
         Route::get('/users', SettingsUsersIndex::class)->name('users');

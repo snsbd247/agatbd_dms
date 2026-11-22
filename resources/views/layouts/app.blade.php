@@ -154,6 +154,7 @@
                 ['route' => 'settings.company-profile', 'label' => 'Company Profile', 'icon' => 'building-storefront'],
                 ['route' => 'settings.modules', 'label' => 'Business Type & Modules', 'icon' => 'grid'],
                 ['route' => 'settings.numbering', 'label' => 'Numbering', 'icon' => 'database'],
+                ['route' => 'settings.data-import', 'label' => 'Data Import', 'icon' => 'database'],
                 ['route' => 'settings.messaging', 'label' => 'Email & SMS', 'icon' => 'mail'],
                 ['route' => 'settings.warranty-policies', 'label' => 'Warranty Policies', 'icon' => 'shield-check', 'module' => 'warranty'],
                 ['route' => 'settings.users', 'label' => 'Users', 'icon' => 'user'],
