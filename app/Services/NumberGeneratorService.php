@@ -38,6 +38,7 @@ class NumberGeneratorService
         'import_shipment' => 'IMP',
         'assembly_order' => 'ASM',
         'cheque' => 'CHQ',
+        'fixed_asset' => 'FA',
     ];
 
     public function generate(string $type): string

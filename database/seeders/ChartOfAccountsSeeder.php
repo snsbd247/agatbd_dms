@@ -35,7 +35,7 @@ class ChartOfAccountsSeeder extends Seeder
         ['1220', 'Plant & Machinery', 'asset', '1200', null, []],
         ['1230', 'Vehicles', 'asset', '1200', null, []],
         ['1240', 'Furniture & Office Equipment', 'asset', '1200', null, []],
-        ['1290', 'Accumulated Depreciation', 'asset', '1200', null, []],
+        ['1290', 'Accumulated Depreciation', 'asset', '1200', 'accum_depreciation', []],
 
         ['2000', 'Liabilities', 'liability', null, null, ['group']],
         ['2100', 'Current Liabilities', 'liability', '2000', null, ['group']],
@@ -77,7 +77,7 @@ class ChartOfAccountsSeeder extends Seeder
         ['5285', 'Dealer Incentives', 'expense', '5200', 'dealer_incentive', []],
         ['5290', 'Repairs & Maintenance', 'expense', '5200', 'repairs', []],
         ['5300', 'Bank Charges', 'expense', '5200', null, []],
-        ['5310', 'Depreciation', 'expense', '5200', null, []],
+        ['5310', 'Depreciation', 'expense', '5200', 'depreciation', []],
         ['5320', 'Stock Loss & Damage', 'expense', '5200', 'stock_loss', []],
         ['5390', 'Miscellaneous Expenses', 'expense', '5200', null, []],
     ];

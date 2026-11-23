@@ -119,6 +119,7 @@ class Navigation
                     ['route' => 'accounts.expenses', 'label' => 'Expenses', 'icon' => 'banknotes'],
                     ['route' => 'accounts.bank', 'label' => 'Bank Reconciliation', 'icon' => 'shield-check'],
                     ['route' => 'accounts.chart', 'label' => 'Chart of Accounts', 'icon' => 'database'],
+                    ['route' => 'accounts.assets', 'label' => 'Fixed Assets', 'icon' => 'building-storefront', 'headOffice' => true],
                     ['route' => 'accounts.opening', 'label' => 'Opening Balances', 'icon' => 'calendar'],
                     ['route' => 'accounts.year-closing', 'label' => 'Year Closing', 'icon' => 'lock-closed'],
                 ]],
