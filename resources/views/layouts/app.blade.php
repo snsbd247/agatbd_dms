@@ -30,145 +30,12 @@
 </head>
 <body class="bg-slate-100 text-slate-900 overscroll-none">
     @php
-        $navGroups = [
-            ['icon' => 'building-storefront', 'label' => auth()->user()->dealer_id ? 'Buy from Agro Tech' : 'My Account', 'role' => ['Retailer', 'Dealer'], 'permission' => 'portal.access', 'prefix' => ['portal.'], 'links' => [
-                ['route' => 'portal.orders', 'label' => 'My Orders', 'icon' => 'shopping-bag'],
-                ['route' => 'portal.orders.create', 'label' => 'New Order', 'icon' => 'shopping-cart'],
-                ['route' => 'portal.statement', 'label' => 'My Statement', 'icon' => 'book-open'],
-                ['route' => 'portal.returns', 'label' => 'My Returns', 'icon' => 'refresh'],
-                ['route' => 'portal.warranty', 'label' => 'My Warranty Claims', 'icon' => 'shield-check'],
-            ]],
-            ['icon' => 'database', 'label' => 'Master Data', 'permission' => 'master-data.view', 'prefix' => ['master-data.'], 'links' => [
-                ['route' => 'master-data.companies', 'label' => 'Companies', 'icon' => 'building-storefront'],
-                ['route' => 'master-data.brands', 'label' => 'Brands', 'icon' => 'gift'],
-                ['route' => 'master-data.categories', 'label' => 'Categories', 'icon' => 'grid'],
-                ['route' => 'master-data.units', 'label' => 'Units', 'icon' => 'database'],
-                ['route' => 'master-data.products', 'label' => 'Products', 'icon' => 'archive-box'],
-            ]],
-            ['icon' => 'shopping-cart', 'label' => 'Purchase', 'permission' => 'purchase.view', 'prefix' => ['purchase.'], 'links' => [
-                ['route' => 'purchase.orders.index', 'label' => 'Purchase Orders', 'icon' => 'shopping-cart'],
-                ['route' => 'purchase.receipts.index', 'label' => 'Goods Receipts', 'icon' => 'download'],
-                ['route' => 'purchase.returns.index', 'label' => 'Purchase Returns', 'icon' => 'refresh'],
-            ]],
-            ['icon' => 'archive-box', 'label' => 'Inventory', 'permission' => 'inventory.view', 'prefix' => ['inventory.'], 'links' => [
-                ['route' => 'inventory.factories', 'label' => 'Factories', 'icon' => 'factory', 'headOffice' => true, 'module' => 'production'],
-                ['route' => 'inventory.warehouses', 'label' => 'Warehouses', 'icon' => 'archive-box'],
-                ['route' => 'inventory.areas', 'label' => 'Areas', 'icon' => 'map-pin', 'headOffice' => true],
-                ['route' => 'inventory.adjustments', 'label' => 'Stock Adjustments', 'icon' => 'refresh'],
-                ['route' => 'inventory.transfers', 'label' => 'Stock Transfers', 'icon' => 'truck'],
-            ]],
-            ['icon' => 'factory', 'label' => 'Production', 'permission' => 'production.view', 'prefix' => ['production.'], 'links' => [
-                ['route' => 'production.orders.index', 'label' => 'Production Batches', 'icon' => 'factory', 'headOffice' => true],
-                ['route' => 'production.formulas', 'label' => 'Formulas', 'icon' => 'document-text', 'headOffice' => true],
-                ['route' => 'production.planning', 'label' => 'Material Planning', 'icon' => 'calendar', 'headOffice' => true],
-                ['route' => 'production.trace', 'label' => 'Batch Trace', 'icon' => 'search', 'headOffice' => true],
-                ['route' => 'production.machines', 'label' => 'Machines & Lines', 'icon' => 'cog', 'headOffice' => true],
-                ['route' => 'production.maintenance', 'label' => 'Machine Maintenance', 'icon' => 'cog', 'headOffice' => true],
-                ['route' => 'production.report', 'label' => 'Production Report', 'icon' => 'chart-bar', 'headOffice' => true],
-            ]],
-            ['icon' => 'trending-up', 'label' => 'Costing & Prices', 'permission' => 'costing.view', 'prefix' => ['costing.'], 'links' => [
-                ['route' => 'costing.index', 'label' => 'Cost Sheets', 'icon' => 'document-text', 'headOffice' => true],
-                ['route' => 'costing.heads', 'label' => 'Cost Heads', 'icon' => 'cog', 'headOffice' => true],
-            ]],
-            ['icon' => 'globe', 'label' => 'Import', 'permission' => 'import.view', 'prefix' => ['import.'], 'links' => [
-                ['route' => 'import.index', 'label' => 'Import Shipments', 'icon' => 'globe', 'headOffice' => true],
-            ]],
-            ['icon' => 'gift', 'label' => 'Kits & Repacking', 'permission' => 'kits.view', 'prefix' => ['kits.'], 'links' => [
-                ['route' => 'kits.index', 'label' => 'Kits & Repacking', 'icon' => 'gift', 'headOffice' => true],
-            ]],
-            ['icon' => 'exclamation-triangle', 'label' => 'Damage & Repair', 'permission' => 'damage.view', 'prefix' => ['damage.'], 'links' => [
-                ['route' => 'damage.index', 'label' => 'Damage Register', 'icon' => 'exclamation-triangle'],
-                ['route' => 'damage.repairs', 'label' => 'Repair Jobs', 'icon' => 'cog'],
-            ]],
-            ['icon' => 'shopping-bag', 'label' => 'Sales', 'permission' => 'sales.view', 'prefix' => ['sales.'], 'links' => [
-                ['route' => 'sales.orders.index', 'label' => 'Sales Orders', 'icon' => 'shopping-bag'],
-            ]],
-            ['icon' => 'truck', 'label' => 'Delivery', 'permission' => 'delivery.view', 'prefix' => ['delivery.'], 'links' => [
-                ['route' => 'delivery.index', 'label' => 'Deliveries', 'icon' => 'truck'],
-                ['route' => 'delivery.invoices.index', 'label' => 'Delivery Invoices', 'icon' => 'document-text'],
-            ]],
-            ['icon' => 'banknotes', 'label' => 'Collection', 'permission' => 'collection.view', 'prefix' => ['collection.'], 'links' => [
-                ['route' => 'collection.index', 'label' => 'Collections', 'icon' => 'banknotes'],
-            ]],
-            ['icon' => 'shield-check', 'label' => 'Return & Warranty', 'permission' => ['returns.view', 'warranty.view'], 'prefix' => ['returns.', 'warranty.'], 'links' => [
-                ['route' => 'returns.index', 'label' => 'Return Requests', 'permission' => 'returns.view', 'icon' => 'refresh'],
-                ['route' => 'returns.company.index', 'label' => 'Company Returns', 'permission' => 'returns.view', 'icon' => 'truck'],
-                ['route' => 'warranty.index', 'label' => 'Warranty Claims', 'permission' => 'warranty.view', 'icon' => 'shield-exclamation'],
-            ]],
-            ['icon' => 'building-storefront', 'label' => 'Retailer', 'permission' => 'retailers.view', 'prefix' => ['retailers.'], 'links' => [
-                ['route' => 'retailers.index', 'label' => 'Retailers', 'icon' => 'building-storefront'],
-            ]],
-            ['icon' => 'building-storefront', 'label' => 'Dealers', 'permission' => 'dealers.view', 'prefix' => ['dealers.'], 'links' => [
-                ['route' => 'dealers.index', 'label' => 'Dealers', 'icon' => 'building-storefront'],
-            ]],
-            ['icon' => 'user-group', 'label' => 'Representative', 'permission' => 'representatives.view', 'prefix' => ['representatives.'], 'links' => [
-                ['route' => 'representatives.index', 'label' => 'Representatives', 'icon' => 'user-group'],
-            ]],
-            ['icon' => 'user-group', 'label' => 'HR', 'permission' => 'hr.view', 'prefix' => ['hr.'], 'links' => [
-                ['route' => 'hr.employees.index', 'label' => 'Employees', 'icon' => 'user-group', 'headOffice' => true],
-                ['route' => 'hr.attendance', 'label' => 'Attendance', 'icon' => 'clock', 'headOffice' => true],
-                ['route' => 'hr.devices', 'label' => 'Attendance Machines', 'icon' => 'database', 'headOffice' => true, 'module' => 'attendance_devices'],
-                ['route' => 'hr.leaves', 'label' => 'Leave', 'icon' => 'calendar', 'headOffice' => true],
-                ['route' => 'hr.loans', 'label' => 'Advances & Loans', 'icon' => 'credit-card', 'headOffice' => true],
-                ['route' => 'hr.payroll.index', 'label' => 'Salary Sheets', 'icon' => 'wallet', 'headOffice' => true],
-                ['route' => 'hr.setup', 'label' => 'HR Setup', 'icon' => 'cog', 'headOffice' => true],
-            ]],
-            ['icon' => 'book-open', 'label' => 'Accounts', 'permission' => 'accounts.view', 'prefix' => ['accounts.'], 'links' => [
-                ['route' => 'accounts.vouchers.index', 'label' => 'Vouchers', 'icon' => 'document-text'],
-                ['route' => 'accounts.expenses', 'label' => 'Expenses', 'icon' => 'banknotes'],
-                ['route' => 'accounts.supplier-payments', 'label' => 'Supplier Payments', 'icon' => 'credit-card', 'headOffice' => true],
-                ['route' => 'accounts.chart', 'label' => 'Chart of Accounts', 'icon' => 'database'],
-                ['route' => 'accounts.ledger', 'label' => 'General Ledger', 'icon' => 'book-open'],
-                ['route' => 'accounts.reports', 'params' => ['report' => 'trial-balance'], 'label' => 'Trial Balance', 'icon' => 'chart-bar'],
-                ['route' => 'accounts.reports', 'params' => ['report' => 'profit-loss'], 'label' => 'Profit & Loss Account', 'icon' => 'trending-up'],
-                ['route' => 'accounts.reports', 'params' => ['report' => 'balance-sheet'], 'label' => 'Balance Sheet', 'icon' => 'archive-box'],
-                ['route' => 'accounts.reports', 'params' => ['report' => 'cash-flow'], 'label' => 'Cash Flow Statement', 'icon' => 'wallet'],
-                ['route' => 'accounts.reports', 'params' => ['report' => 'receivables'], 'label' => 'Receivables & Payables', 'icon' => 'clock'],
-                ['route' => 'accounts.bank', 'label' => 'Bank Reconciliation', 'icon' => 'shield-check'],
-                ['route' => 'accounts.opening', 'label' => 'Opening Balances', 'icon' => 'calendar'],
-                ['route' => 'accounts.year-closing', 'label' => 'Year Closing', 'icon' => 'lock-closed'],
-            ]],
-            ['icon' => 'chart-bar', 'label' => 'Reports', 'permission' => 'reports.view', 'prefix' => ['reports.'], 'links' => [
-                ['route' => 'reports.sales', 'label' => 'Sales Report', 'icon' => 'chart-bar'],
-                ['route' => 'reports.purchase', 'label' => 'Purchase Report', 'icon' => 'shopping-cart', 'headOffice' => true],
-                ['route' => 'reports.stock', 'label' => 'Stock Report', 'icon' => 'archive-box'],
-                ['route' => 'reports.expiry', 'label' => 'Expiry Report', 'icon' => 'clock'],
-                ['route' => 'reports.collections', 'label' => 'Collections & Due', 'icon' => 'banknotes'],
-                ['route' => 'reports.returns', 'label' => 'Return Report', 'icon' => 'refresh', 'module' => 'returns'],
-                ['route' => 'reports.warranty', 'label' => 'Warranty Report', 'icon' => 'shield-exclamation', 'module' => 'warranty'],
-                ['route' => 'reports.representatives', 'label' => 'Representative Performance', 'icon' => 'user-group', 'module' => 'representatives'],
-                ['route' => 'reports.retailers', 'label' => 'Retailer Report', 'icon' => 'building-storefront'],
-                ['route' => 'reports.companies', 'label' => 'Company Report', 'icon' => 'gift', 'headOffice' => true],
-                ['route' => 'reports.dealers', 'label' => 'Dealer Sales Report', 'icon' => 'building-storefront', 'permission' => 'dealers.view'],
-                ['route' => 'reports.areas', 'label' => 'Area Report', 'icon' => 'map-pin'],
-                ['route' => 'reports.products', 'label' => 'Product Performance', 'icon' => 'trending-up'],
-                ['route' => 'reports.payroll', 'label' => 'Payroll & Commission', 'icon' => 'wallet', 'headOffice' => true, 'module' => 'representatives'],
-                ['route' => 'reports.profit', 'label' => 'Profit & Loss', 'icon' => 'credit-card'],
-            ]],
-            ['icon' => 'wallet', 'label' => 'Payroll', 'permission' => 'payroll.view', 'prefix' => ['payroll.'], 'links' => [
-                ['route' => 'payroll.index', 'label' => 'Payroll Runs', 'icon' => 'wallet'],
-                ['route' => 'payroll.advances.index', 'label' => 'Advances', 'icon' => 'credit-card'],
-                ['route' => 'payroll.bonuses.index', 'label' => 'Bonuses', 'icon' => 'gift'],
-            ]],
-            ['icon' => 'cog', 'label' => 'Settings', 'permission' => 'settings.manage', 'prefix' => ['settings.'], 'links' => [
-                ['route' => 'settings.company-profile', 'label' => 'Company Profile', 'icon' => 'building-storefront'],
-                ['route' => 'settings.modules', 'label' => 'Business Type & Modules', 'icon' => 'grid'],
-                ['route' => 'settings.numbering', 'label' => 'Numbering', 'icon' => 'database'],
-                ['route' => 'settings.data-import', 'label' => 'Data Import', 'icon' => 'database'],
-                ['route' => 'settings.messaging', 'label' => 'Email & SMS', 'icon' => 'mail'],
-                ['route' => 'settings.warranty-policies', 'label' => 'Warranty Policies', 'icon' => 'shield-check', 'module' => 'warranty'],
-                ['route' => 'settings.users', 'label' => 'Users', 'icon' => 'user'],
-                ['route' => 'settings.login-history', 'label' => 'Login History', 'icon' => 'clock'],
-                ['route' => 'settings.audit-log', 'label' => 'Audit Log', 'icon' => 'book-open'],
-            ]],
-        ];
+        $menu = \App\Support\Navigation::for(auth()->user());
 
         $unreadNotifications = auth()->user()->unreadNotifications()->latest()->take(5)->get();
         $unreadNotificationCount = auth()->user()->unreadNotifications()->count();
 
-        $activeGroupLabel = collect($navGroups)->first(
-            fn ($group) => collect($group['prefix'])->contains(fn ($p) => request()->routeIs($p.'*'))
-        )['label'] ?? null;
+        $activeGroupLabel = \App\Support\Navigation::activeGroupLabel($menu);
 
         $dashboardRouteName = \App\Http\Controllers\DashboardController::homeRoute(auth()->user());
         $dashboardHref = route($dashboardRouteName);
@@ -217,17 +84,14 @@
                     <span x-show="!collapsed" x-cloak>{{ __('Notifications') }}</span>
                 </a>
 
-                @foreach($navGroups as $group)
-                    @php
-                        $perms = (array) $group['permission'];
-                        $visible = isset($group['role'])
-                            ? auth()->user()->hasRole($group['role'])
-                            : collect($perms)->contains(fn ($p) => auth()->user()->can($p));
-                        $isActive = collect($group['prefix'])->contains(fn ($p) => request()->routeIs($p.'*'));
-                    @endphp
-                    @if($visible)
-                        <div x-data="{ open: {{ $isActive ? 'true' : 'false' }} }">
-                            <button type="button" @click="open = !open" class="w-full flex items-center justify-between gap-3 px-3 py-2 rounded-lg hover:bg-slate-800/70 {{ $isActive ? 'text-white' : 'text-slate-300' }}">
+                @foreach($menu as $section)
+                    @if($section['label'] !== '')
+                        <p class="px-3 pt-4 pb-1 text-[10px] font-semibold uppercase tracking-wider text-slate-500" x-show="!collapsed" x-cloak>{{ __($section['label']) }}</p>
+                        <div class="mx-3 my-2 border-t border-slate-800" x-show="collapsed" x-cloak></div>
+                    @endif
+                    @foreach($section['groups'] as $group)
+                        <div x-data="{ open: {{ $group['active'] ? 'true' : 'false' }} }">
+                            <button type="button" @click="open = !open" title="{{ __($group['label']) }}" class="w-full flex items-center justify-between gap-3 px-3 py-2 rounded-lg hover:bg-slate-800/70 {{ $group['active'] ? 'text-white' : 'text-slate-300' }}">
                                 <span class="flex items-center gap-3">
                                     <x-icon :name="$group['icon']" class="w-5 h-5 shrink-0" />
                                     <span x-show="!collapsed" x-cloak>{{ __($group['label']) }}</span>
@@ -236,19 +100,20 @@
                             </button>
                             <div class="pl-4 mt-1 space-y-0.5 border-l border-slate-800 ml-6" x-show="open && !collapsed" x-cloak>
                                 @foreach($group['links'] as $link)
-                                    @continue(isset($link['permission']) && ! auth()->user()->can($link['permission']))
-                                    @continue(! empty($link['headOffice']) && auth()->user()->dealer_id)
-                                    @continue(isset($link['module']) && ! \App\Support\Modules::enabled($link['module']))
-                                    @php $linkActive = isset($link['params']) ? request()->routeIs($link['route']) && request()->route('report') === $link['params']['report'] : request()->routeIs($link['route']); @endphp
-                                    <a href="{{ route($link['route'], $link['params'] ?? []) }}" class="flex items-center gap-2 pl-3 pr-3 py-1.5 rounded-lg text-sm {{ $linkActive ? 'bg-indigo-600/20 text-white border-l-2 border-indigo-500 -ml-px' : 'text-slate-400 hover:bg-slate-800/70 hover:text-slate-200' }}">
+                                    <a href="{{ $link['href'] }}" class="flex items-center gap-2 pl-3 pr-3 py-1.5 rounded-lg text-sm {{ $link['active'] ? 'bg-indigo-600/20 text-white border-l-2 border-indigo-500 -ml-px' : 'text-slate-400 hover:bg-slate-800/70 hover:text-slate-200' }}">
                                         <x-icon :name="$link['icon'] ?? 'chevron-right'" class="w-4 h-4 shrink-0" />
                                         <span>{{ __($link['label']) }}</span>
                                     </a>
                                 @endforeach
                             </div>
                         </div>
-                    @endif
+                    @endforeach
                 @endforeach
+
+                <a href="{{ route('help') }}" class="flex items-center gap-3 px-3 py-2 mt-3 rounded-lg hover:bg-slate-800/70 {{ request()->routeIs('help') ? 'bg-indigo-600 text-white' : 'text-slate-300' }}">
+                    <x-icon name="question-mark-circle" class="w-5 h-5 shrink-0" />
+                    <span x-show="!collapsed" x-cloak>{{ __('Help & User Guide') }}</span>
+                </a>
             </nav>
 
             <div class="p-3 shrink-0" x-show="!collapsed" x-cloak>

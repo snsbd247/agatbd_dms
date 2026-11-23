@@ -2345,5 +2345,17 @@
     "Opening Due": "প্রারম্ভিক পাওনা",
     "Opening Payable": "প্রারম্ভিক দেনা",
     "Batch No": "ব্যাচ নং",
-    "Suppliers": "সাপ্লায়ার"
+    "Suppliers": "সাপ্লায়ার",
+    "Sales & Customers": "বিক্রয় ও গ্রাহক",
+    "Purchase & Stock": "ক্রয় ও মজুদ",
+    "Finance": "হিসাব ও অর্থ",
+    "Machines": "মেশিন",
+    "Financial Statements": "আর্থিক বিবরণী",
+    "Sales Reports": "বিক্রয় রিপোর্ট",
+    "Purchase & Stock Reports": "ক্রয় ও মজুদ রিপোর্ট",
+    "Profit & Payroll Reports": "লাভ ও বেতন রিপোর্ট",
+    "Setup Wizard": "সেটআপ উইজার্ড",
+    "Data & Security": "ডাটা ও নিরাপত্তা",
+    "Help & Support": "সাহায্য ও সাপোর্ট",
+    "Find a page…": "পেজ খুঁজুন…"
 }
