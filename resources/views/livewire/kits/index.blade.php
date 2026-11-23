@@ -19,7 +19,7 @@
     </div>
 
     @if($tab === 'recipes')
-        <div class="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+        <div class="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
             @forelse($recipes as $r)
                 <div wire:key="rec-{{ $r->id }}" class="rounded-xl bg-white p-4 shadow">
                     <div class="flex items-start justify-between gap-2">

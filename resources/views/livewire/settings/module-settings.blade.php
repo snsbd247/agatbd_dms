@@ -18,7 +18,7 @@
                 'both' => ['grid', 'Produces its own products and also trades bought or imported goods, kits and repacked items.'],
             ];
         @endphp
-        <div class="grid gap-3 md:grid-cols-3">
+        <div class="grid grid-cols-1 gap-3 md:grid-cols-3">
             @foreach(\App\Support\Modules::TYPES as $key => $label)
                 @php $current = $type === $key; $picked = $pendingType === $key; @endphp
                 <button type="button" wire:click="pickType('{{ $key }}')" class="text-left rounded-xl border-2 p-4 transition {{ $current ? 'border-indigo-600 bg-indigo-50' : ($picked ? 'border-amber-500 bg-amber-50' : 'border-slate-200 hover:border-slate-300') }}">
@@ -55,7 +55,7 @@
         @continue(! isset($groups[$groupKey]))
         <section>
             <h3 class="mb-2 text-sm font-semibold uppercase tracking-wide text-slate-500">{{ __($groupLabel) }}</h3>
-            <div class="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+            <div class="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
                 @foreach($groups[$groupKey] as $m)
                     <div wire:key="mod-{{ $m['key'] }}" class="rounded-xl border bg-white p-4 shadow-sm {{ $m['coming'] ? 'border-dashed opacity-70' : '' }} {{ ! $m['enabled'] && ! $m['coming'] ? 'bg-slate-50' : '' }}">
                         <div class="flex items-start justify-between gap-3">

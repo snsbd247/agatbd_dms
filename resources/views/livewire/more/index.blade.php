@@ -13,7 +13,7 @@
                             <span class="w-7 h-7 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center"><x-icon :name="$group['icon']" class="w-4 h-4" /></span>
                             {{ __($group['label']) }}
                         </p>
-                        <div class="divide-y">
+                        <div class="divide-y divide-slate-100">
                             @foreach($group['links'] as $link)
                                 <a href="{{ $link['href'] }}" x-show="q === '' || $el.innerText.toLowerCase().includes(q.toLowerCase())"
                                     class="flex items-center justify-between gap-2 py-2 px-1 text-sm {{ $link['active'] ? 'text-indigo-600 font-medium' : 'text-slate-600' }}">

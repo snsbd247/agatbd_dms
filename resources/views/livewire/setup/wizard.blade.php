@@ -20,7 +20,7 @@
                     'both' => ['grid', 'Produces its own products and also trades bought or imported goods, kits and repacked items.'],
                 ];
             @endphp
-            <div class="grid gap-3 md:grid-cols-3">
+            <div class="grid grid-cols-1 gap-3 md:grid-cols-3">
                 @foreach(\App\Support\Modules::TYPES as $k => $l)
                     <button type="button" wire:click="$set('type', '{{ $k }}')" class="rounded-xl border-2 p-4 text-left {{ $type === $k ? 'border-indigo-600 bg-indigo-50' : 'border-slate-200 hover:border-slate-300' }}">
                         <span class="flex items-center gap-2 font-semibold text-slate-800"><x-icon :name="$info[$k][0]" class="w-5 h-5 text-indigo-600" /> {{ __($l) }}</span>
@@ -31,7 +31,7 @@
             @error('type')<p class="text-sm text-red-600">{{ $message }}</p>@enderror
         @elseif($step === 2)
             <h3 class="font-semibold text-slate-700">{{ __('Company details (printed on invoices)') }}</h3>
-            <div class="grid gap-3 sm:grid-cols-2">
+            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <div class="sm:col-span-2"><label class="text-sm text-slate-500">{{ __('Company name') }}</label><input wire:model="name" type="text" class="w-full border rounded-lg p-2 mt-1">@error('name')<p class="text-red-600 text-xs mt-1">{{ $message }}</p>@enderror</div>
                 <div class="sm:col-span-2"><label class="text-sm text-slate-500">{{ __('Address') }}</label><input wire:model="address" type="text" class="w-full border rounded-lg p-2 mt-1"></div>
                 <div><label class="text-sm text-slate-500">{{ __('Phone') }}</label><input wire:model="phone" type="text" class="w-full border rounded-lg p-2 mt-1"></div>

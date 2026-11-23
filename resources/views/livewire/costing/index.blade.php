@@ -1,7 +1,7 @@
 <div class="space-y-4">
     <p class="text-sm text-slate-500">{{ __('A cost sheet works out a product\'s cost (buying, import or formula, plus overheads) and its dealer price, retailer price and MRP. Once approved, the prices are used from the date given.') }}</p>
 
-    <div class="grid gap-3 sm:grid-cols-3">
+    <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
         <div class="rounded-xl bg-white p-4 shadow"><p class="text-xs text-slate-500">{{ __('Drafts waiting for approval') }}</p><p class="mt-1 text-2xl font-bold {{ $waiting ? 'text-amber-600' : 'text-slate-800' }}">{{ $waiting }}</p></div>
         <div class="rounded-xl bg-white p-4 shadow"><p class="text-xs text-slate-500">{{ __('Products without a cost sheet in use') }}</p><p class="mt-1 text-2xl font-bold text-slate-800">{{ $withoutSheet }}</p></div>
         @can('costing.manage')
