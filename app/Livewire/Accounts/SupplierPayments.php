@@ -25,6 +25,15 @@ class SupplierPayments extends Component
     public string $entry_date = '';
     public string $reference = '';
 
+    // VAT deducted at source (Mushak 6.6), when VAT is on
+    public string $vds_amount = '';
+    public string $invoice_no = '';
+    public string $invoice_date = '';
+    public string $invoice_amount = '';
+
+    /** Id of the 6.6 just issued, for the print link. */
+    public ?int $issuedVds = null;
+
     public function mount(): void
     {
         $this->authorize('accounts.view');
@@ -39,41 +48,52 @@ class SupplierPayments extends Component
         $this->company_id = $companyId;
     }
 
-    public function save(LedgerService $ledger): void
+    public function save(\App\Services\Vat\VdsService $vds): void
     {
         $this->authorize('accounts.manage');
         $this->validate([
             'company_id' => 'required|exists:companies,id',
             'paid_from_id' => 'required|exists:accounts,id',
-            'amount' => 'required|numeric|gt:0',
+            'amount' => 'required|numeric|min:0',
             'entry_date' => 'required|date',
             'reference' => 'nullable|string|max:100',
+            'vds_amount' => 'nullable|numeric|min:0',
+            'invoice_no' => 'nullable|string|max:60',
+            'invoice_date' => 'nullable|date',
+            'invoice_amount' => 'nullable|numeric|min:0',
         ], [], ['company_id' => __('supplier'), 'paid_from_id' => __('paid from')]);
 
-        $money = Account::money()->find($this->paid_from_id);
-        $company = Company::find($this->company_id);
+        $keep = \App\Services\Vat\VatService::enabled() ? round((float) $this->vds_amount, 2) : 0.0;
+        if ((float) $this->amount + $keep <= 0) {
+            $this->addError('amount', __('Enter the amount paid.'));
+
+            return;
+        }
+        if ($keep > 0 && blank($this->invoice_no)) {
+            $this->addError('invoice_no', __('Give the supplier\'s invoice (6.3) number for the VDS certificate.'));
+
+            return;
+        }
+
+        $money = Account::money()->findOrFail($this->paid_from_id);
+        $company = Company::findOrFail($this->company_id);
 
         try {
-            $ledger->post([
-                'type' => 'payment',
-                'entry_date' => $this->entry_date,
-                'narration' => trim(__('Payment to :name', ['name' => $company->name]).($this->reference ? ' — '.$this->reference : '')),
-                'status' => auth()->user()->can('accounts.approve') ? 'posted' : 'draft',
-                'manual' => true,
-            ], [
-                ['account' => 'ap', 'debit' => (float) $this->amount, 'party_type' => 'company', 'party_id' => $company->id, 'narration' => $this->reference ?: null],
-                ['account' => (int) $money->id, 'credit' => (float) $this->amount],
-            ]);
+            $certificate = $vds->paySupplier($company, (int) $money->id, (float) $this->amount, $keep, $this->entry_date, $this->reference ?: null,
+                $this->invoice_no ?: null, $this->invoice_date ?: null, (float) ($this->invoice_amount ?: 0),
+                auth()->user()->can('accounts.approve') ? 'posted' : 'draft');
         } catch (\RuntimeException $e) {
             $this->addError('amount', $e->getMessage());
 
             return;
         }
 
-        $this->reset(['company_id', 'amount', 'reference']);
-        session()->flash('saved', __('Payment recorded.'));
+        $this->issuedVds = $certificate?->id;
+        $this->reset(['company_id', 'amount', 'reference', 'vds_amount', 'invoice_no', 'invoice_date', 'invoice_amount']);
+        session()->flash('saved', $certificate
+            ? __('Payment recorded. VDS certificate :n issued.', ['n' => $certificate->number])
+            : __('Payment recorded.'));
     }
-
     public function render(AccountReports $reports)
     {
         $aging = $reports->aging('ap', today()->toDateString());
@@ -85,6 +105,8 @@ class SupplierPayments extends Component
             'total' => (float) $owed->sum('balance'),
             'moneyAccounts' => Account::money()->orderBy('code')->get(),
             'apAccount' => Account::bySystemKey('ap'),
+            'vatOn' => \App\Services\Vat\VatService::enabled(),
+            'certificates' => \App\Models\Vat\VdsCertificate::with('company')->where('direction', 'issued')->latest('id')->limit(10)->get(),
         ]);
     }
 }

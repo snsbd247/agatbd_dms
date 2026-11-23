@@ -168,6 +168,10 @@
                         <label class="text-sm text-slate-500">{{ __('Address / Territory') }}</label>
                         <input wire:model="address" type="text" class="w-full border rounded-lg p-2 mt-1">
                     </div>
+                                        <div>
+                        <label class="text-sm text-slate-500">{{ __('BIN (VAT registration)') }}</label>
+                        <input wire:model="bin" type="text" class="w-full border rounded-lg p-2 mt-1">
+                    </div>
                     <div class="grid grid-cols-2 gap-3">
                         <div>
                             <label class="text-sm text-slate-500">{{ __('Country') }}</label>

@@ -12,7 +12,7 @@ class Company extends Model
 
     use HasFactory;
 
-    protected $fillable = ['name', 'code', 'phone', 'email', 'address', 'country', 'currency', 'active'];
+    protected $fillable = ['name', 'code', 'phone', 'email', 'bin', 'address', 'country', 'currency', 'active'];
 
     protected function casts(): array
     {

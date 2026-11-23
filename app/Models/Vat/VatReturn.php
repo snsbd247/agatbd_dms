@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 class VatReturn extends Model
 {
     protected $fillable = [
-        'period', 'output_vat', 'input_vat', 'set_off', 'paid', 'carried_forward',
+        'period', 'output_vat', 'input_vat', 'set_off', 'paid', 'vds_paid', 'carried_forward',
         'paid_from', 'reference', 'paid_on', 'journal_entry_id', 'settled_by',
     ];
 
@@ -21,6 +21,7 @@ class VatReturn extends Model
             'input_vat' => 'decimal:2',
             'set_off' => 'decimal:2',
             'paid' => 'decimal:2',
+            'vds_paid' => 'decimal:2',
             'carried_forward' => 'decimal:2',
             'paid_on' => 'date',
         ];

@@ -25,6 +25,7 @@ class Companies extends Component
     public string $email = '';
     public string $address = '';
     public string $country = '';
+    public string $bin = '';
     public string $currency = 'BDT';
     public bool $active = true;
 
@@ -61,6 +62,7 @@ class Companies extends Component
         $this->email = (string) $company->email;
         $this->address = (string) $company->address;
         $this->country = (string) $company->country;
+        $this->bin = (string) $company->bin;
         $this->currency = (string) ($company->currency ?: 'BDT');
         $this->active = $company->active;
         $this->showModal = true;
@@ -77,11 +79,13 @@ class Companies extends Component
             'email' => 'nullable|email|max:255',
             'address' => 'nullable|string|max:255',
             'country' => 'nullable|string|max:60',
+            'bin' => 'nullable|string|max:20',
             'currency' => 'required|string|size:3',
             'active' => 'boolean',
         ]);
         $data['currency'] = strtoupper($data['currency']);
         $data['country'] = $data['country'] ?: null;
+        $data['bin'] = $data['bin'] ?: null;
 
         Company::updateOrCreate(['id' => $this->editingId], $data);
 
@@ -97,7 +101,7 @@ class Companies extends Component
 
     public function resetForm(): void
     {
-        $this->reset(['editingId', 'name', 'code', 'phone', 'email', 'address', 'country', 'currency']);
+        $this->reset(['editingId', 'name', 'code', 'phone', 'email', 'address', 'country', 'bin', 'currency']);
         $this->active = true;
         $this->resetErrorBag();
     }

@@ -19,7 +19,7 @@
         <x-stat-card icon="banknotes" color="green" label="Output VAT on sales" :value="'৳ '.number_format($s['output_month'], 2)" sublabel="This month" />
         <x-stat-card icon="refresh" color="orange" label="VAT given back on returns" :value="'৳ '.number_format($s['returns_month'], 2)" sublabel="Credit notes" />
         <x-stat-card icon="shopping-cart" color="blue" label="Input VAT on purchases" :value="'৳ '.number_format($s['input_month'], 2)" sublabel="Local 6.3 + import VAT/AT" />
-        <x-stat-card icon="credit-card" color="red" label="Net VAT payable" :value="'৳ '.number_format($settled ? (float) $settled->paid : $s['payable'], 2)" :sublabel="$settled ? __('Settled') : __('To pay with the return')" />
+        <x-stat-card icon="credit-card" color="red" label="Net VAT payable" :value="'৳ '.number_format($settled ? (float) $settled->paid + (float) $settled->vds_paid : $s['total_payable'], 2)" :sublabel="$settled ? __('Settled') : __('To pay with the return')" />
     </div>
 
     <div class="bg-white rounded-xl shadow p-4">
@@ -28,7 +28,12 @@
             <tr class="border-b"><td class="py-1.5">{{ __('Output VAT to account for (incl. earlier months not yet settled)') }}</td><td class="py-1.5 text-right font-medium">{{ number_format($settled ? (float) $settled->output_vat : $s['output_balance'], 2) }}</td></tr>
             <tr class="border-b"><td class="py-1.5">{{ __('Input VAT available (incl. :n brought forward)', ['n' => number_format($s['brought_forward'], 2)]) }}</td><td class="py-1.5 text-right">{{ number_format($settled ? (float) $settled->input_vat : $s['input_balance'], 2) }}</td></tr>
             <tr class="border-b"><td class="py-1.5">{{ __('Set off against output VAT') }}</td><td class="py-1.5 text-right">− {{ number_format($settled ? (float) $settled->set_off : $s['set_off'], 2) }}</td></tr>
-            <tr class="border-b font-semibold"><td class="py-1.5">{{ __('To pay') }}</td><td class="py-1.5 text-right">{{ number_format($settled ? (float) $settled->paid : $s['payable'], 2) }}</td></tr>
+            <tr class="border-b"><td class="py-1.5">{{ __('VAT on sales still to pay') }}</td><td class="py-1.5 text-right">{{ number_format($settled ? (float) $settled->paid : $s['payable'], 2) }}</td></tr>
+            <tr class="border-b"><td class="py-1.5">{{ __('VAT kept back from suppliers (VDS) to deposit') }}</td><td class="py-1.5 text-right">{{ number_format($settled ? (float) $settled->vds_paid : $s['vds_payable'], 2) }}</td></tr>
+            <tr class="border-b font-semibold"><td class="py-1.5">{{ __('To pay') }}</td><td class="py-1.5 text-right">{{ number_format($settled ? (float) $settled->paid + (float) $settled->vds_paid : $s['total_payable'], 2) }}</td></tr>
+            @if($s['vds_received_month'] > 0)
+                <tr class="border-b"><td class="py-1.5 text-slate-500">{{ __('Customers\' VDS certificates this month (already taken off output VAT)') }}</td><td class="py-1.5 text-right text-slate-500">{{ number_format($s['vds_received_month'], 2) }}</td></tr>
+            @endif
             <tr><td class="py-1.5 text-slate-500">{{ __('Input VAT carried to next month') }}</td><td class="py-1.5 text-right text-slate-500">{{ number_format($settled ? (float) $settled->carried_forward : $s['carried_forward'], 2) }}</td></tr>
         </table>
 

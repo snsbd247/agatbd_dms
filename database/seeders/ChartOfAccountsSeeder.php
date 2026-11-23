@@ -42,6 +42,7 @@ class ChartOfAccountsSeeder extends Seeder
         ['2110', 'Accounts Payable (Suppliers)', 'liability', '2100', 'ap', []],
         ['2120', 'Salaries Payable', 'liability', '2100', null, []],
         ['2130', 'Output VAT (Payable)', 'liability', '2100', 'vat_output', []],
+        ['2135', 'VDS Payable (VAT deducted at source)', 'liability', '2100', 'vds_payable', []],
         ['2140', 'Tax Payable (AIT/TDS)', 'liability', '2100', null, []],
         ['2150', 'Advance from Customers', 'liability', '2100', null, []],
         ['2200', 'Long-term Liabilities', 'liability', '2000', null, ['group']],

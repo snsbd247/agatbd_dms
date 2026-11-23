@@ -68,8 +68,50 @@
                     <label class="text-sm text-slate-500">{{ __('Reference (cheque / transaction no.)') }}</label>
                     <input wire:model="reference" type="text" class="w-full border rounded-lg p-2 mt-1">
                 </div>
+                @if($vatOn)
+                    <details class="rounded-lg border border-emerald-100 bg-emerald-50 p-3" @if($vds_amount !== '' || $errors->has('invoice_no')) open @endif>
+                        <summary class="cursor-pointer text-sm font-medium text-emerald-800">{{ __('VAT deducted at source (VDS, Mushak 6.6)') }}</summary>
+                        <div class="mt-3 space-y-2">
+                            <div>
+                                <label class="text-xs text-slate-600">{{ __('VAT kept back (not paid to the supplier)') }}</label>
+                                <input wire:model="vds_amount" type="number" step="0.01" min="0" class="w-full border rounded-lg p-2 mt-1 bg-white">
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="text-xs text-slate-600">{{ __('Supplier invoice (6.3) no.') }}</label>
+                                    <input wire:model="invoice_no" type="text" class="w-full border rounded-lg p-2 mt-1 bg-white">
+                                    @error('invoice_no') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
+                                </div>
+                                <div>
+                                    <label class="text-xs text-slate-600">{{ __('Invoice date') }}</label>
+                                    <input wire:model="invoice_date" type="date" class="w-full border rounded-lg p-2 mt-1 bg-white">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="text-xs text-slate-600">{{ __('Invoice amount (including VAT)') }}</label>
+                                <input wire:model="invoice_amount" type="number" step="0.01" min="0" class="w-full border rounded-lg p-2 mt-1 bg-white">
+                            </div>
+                            <p class="text-xs text-slate-500">{{ __('The supplier\'s due is cleared by the amount paid plus the VAT kept back. The VAT is deposited with this month\'s VAT return, and a 6.6 certificate is made for the supplier.') }}</p>
+                        </div>
+                    </details>
+                @endif
                 <button wire:click="save" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg p-2.5 font-medium">{{ __('Save payment') }}</button>
+                @if($issuedVds)
+                    <a href="{{ route('accounts.vds.pdf', $issuedVds) }}" target="_blank" class="block text-center rounded-lg border border-emerald-300 text-emerald-700 p-2 text-sm font-medium hover:bg-emerald-50">{{ __('Print Mushak 6.6 for the supplier') }}</a>
+                @endif
             </div>
+
+            @if($certificates->isNotEmpty())
+                <div class="mt-5 border-t pt-3">
+                    <p class="text-xs font-semibold text-slate-500 uppercase mb-2">{{ __('Recent VDS certificates') }}</p>
+                    @foreach($certificates as $c)
+                        <div class="flex items-center justify-between text-sm py-1">
+                            <span>{{ $c->number }} · {{ $c->company?->name }} <span class="text-slate-400">৳ {{ number_format($c->vat_amount, 2) }}</span></span>
+                            <a href="{{ route('accounts.vds.pdf', $c) }}" target="_blank" class="text-indigo-600 text-xs hover:underline">{{ __('Print') }}</a>
+                        </div>
+                    @endforeach
+                </div>
+            @endif
         </div>
     @endcan
 </div>

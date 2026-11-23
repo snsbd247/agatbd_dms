@@ -116,6 +116,28 @@ class DocumentPrintController extends Controller
             app()->setLocale($locale);
         }
     }
+    /** Mushak 6.6: the VDS certificate given to a supplier. */
+    public function vdsCertificate(\App\Models\Vat\VdsCertificate $certificate)
+    {
+        abort_unless(auth()->user()->can('accounts.view') && ! auth()->user()->dealer_id, 403);
+        abort_unless($certificate->direction === 'issued', 404);
+        $certificate->load('company');
+
+        $locale = app()->getLocale();
+        app()->setLocale('bn');
+
+        try {
+            return PdfService::stream('pdfs.mushak-6-6', [
+                'c' => $certificate,
+                'company' => CompanyProfile::first(),
+                'bin' => \App\Services\Vat\VatService::bin(),
+                'signer' => auth()->user(),
+                'signerTitle' => __(auth()->user()?->getRoleNames()->first() ?? ''),
+            ], 'mushak-6.6-'.$certificate->number.'.pdf', 'landscape');
+        } finally {
+            app()->setLocale($locale);
+        }
+    }
     private function abortUnlessOwnRetailer(?int $retailerId): void
     {
         $retailer = auth()->user()?->customerAccount();

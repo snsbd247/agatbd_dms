@@ -36,7 +36,7 @@ class Create extends Component
             'retailer_id' => 'required|exists:retailers,id',
             'collection_date' => 'required|date',
             'amount' => 'required|numeric|min:0.01',
-            'method' => 'required|in:cash,bank,mobile',
+            'method' => 'required|in:cash,bank,mobile,vds',
             'reference_no' => 'nullable|string|max:100',
         ]);
 
@@ -48,7 +48,22 @@ class Create extends Component
             return;
         }
 
-        app(\App\Services\CollectionService::class)->record($retailer, (float) $data['amount'], $data['method'], $data['collection_date'], $data['reference_no'] ?: null);
+        if ($data['method'] === 'vds') {
+            if (blank($data['reference_no'])) {
+                $this->addError('reference_no', __('Enter the customer\'s 6.6 certificate number.'));
+
+                return;
+            }
+            try {
+                app(\App\Services\Vat\VdsService::class)->receiveFromCustomer($retailer, (float) $data['amount'], $data['collection_date'], $data['reference_no'], null);
+            } catch (\RuntimeException $e) {
+                $this->addError('method', $e->getMessage());
+
+                return;
+            }
+        } else {
+            app(\App\Services\CollectionService::class)->record($retailer, (float) $data['amount'], $data['method'], $data['collection_date'], $data['reference_no'] ?: null);
+        }
 
         $retailer->refresh();
         app(\App\Services\SmsService::class)->send(
@@ -72,6 +87,7 @@ class Create extends Component
         return view('livewire.collection.create', [
             'retailers' => $retailers,
             'selectedRetailer' => $this->retailer_id ? Retailer::find($this->retailer_id) : null,
+            'vdsAllowed' => \App\Services\Vat\VatService::enabled() && ! $user->dealer_id,
         ]);
     }
 }

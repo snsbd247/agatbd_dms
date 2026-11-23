@@ -418,6 +418,7 @@ class AutoPosting
         return match ($method) {
             'bank' => 'bank',
             'mobile' => 'mobile',
+            'vds' => 'vat_output',   // the customer paid this part of our VAT to the government (Mushak 6.6)
             default => 'cash',
         };
     }

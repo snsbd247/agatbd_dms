@@ -182,6 +182,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/supplier-payments', \App\Livewire\Accounts\SupplierPayments::class)->middleware('head.office')->name('supplier-payments');
         Route::get('/opening-balances', \App\Livewire\Accounts\OpeningBalances::class)->name('opening');
         Route::get('/fixed-assets', \App\Livewire\Accounts\FixedAssets::class)->name('assets');
+        Route::get('/vds/{certificate}/pdf', [DocumentPrintController::class, 'vdsCertificate'])->whereNumber('certificate')->name('vds.pdf');
         Route::get('/bank-reconciliation', \App\Livewire\Accounts\BankReconciliation::class)->name('bank');
         Route::get('/year-closing', \App\Livewire\Accounts\YearClosings::class)->name('year-closing');
         Route::get('/ledger', \App\Livewire\Accounts\Reports::class)->defaults('report', 'ledger')->name('ledger');

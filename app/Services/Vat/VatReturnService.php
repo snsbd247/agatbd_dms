@@ -65,7 +65,9 @@ class VatReturnService
         $inputMonth = $sum($in, 'debit', 'vat_settlement', true) - $sum($in, 'credit', 'vat_settlement', true);
 
         // Balances at month end, before this month's own settlement.
-        $balance = function (?Account $acc, bool $credit) use ($end, $month) {
+        $own = VatReturn::where('period', $month)->first();
+        $ownInside = $own && $own->paid_on && $own->paid_on->lte($end);
+        $balance = function (?Account $acc, bool $credit, float $ownAmount) use ($end, $ownInside) {
             if (! $acc) {
                 return 0.0;
             }
@@ -73,17 +75,15 @@ class VatReturnService
             $bal = $credit ? (float) ($t->credit ?? 0) - (float) ($t->debit ?? 0) : (float) ($t->debit ?? 0) - (float) ($t->credit ?? 0);
 
             // A settlement of this very month dated inside the month is undone here.
-            $own = VatReturn::where('period', $month)->first();
-            if ($own && $own->paid_on && $own->paid_on->lte($end)) {
-                $bal += $credit ? (float) $own->output_vat : (float) $own->set_off;
-            }
-
-            return round($bal, 2);
+            return round($bal + ($ownInside ? $ownAmount : 0), 2);
         };
 
-        $outputBal = max(0, $balance($out, true));
-        $inputBal = max(0, $balance($in, false));
+        $outputBal = max(0, $balance($out, true, (float) $own?->output_vat));
+        $inputBal = max(0, $balance($in, false, (float) $own?->set_off));
+        $vdsBal = max(0, $balance(Account::bySystemKey('vds_payable'), true, (float) $own?->vds_paid));
         $setOff = round(min($outputBal, $inputBal), 2);
+        $vdsReceived = (float) \App\Models\Vat\VdsCertificate::where('direction', 'received')
+            ->whereBetween('certificate_date', [$start->toDateString(), $end->toDateString()])->sum('vat_amount');
 
         return [
             'output_month' => round($outputMonth, 2),
@@ -95,6 +95,9 @@ class VatReturnService
             'set_off' => $setOff,
             'payable' => round($outputBal - $setOff, 2),
             'carried_forward' => round($inputBal - $setOff, 2),
+            'vds_received_month' => round($vdsReceived, 2),   // customers' 6.6s: already taken off output VAT
+            'vds_payable' => $vdsBal,                          // kept back from suppliers, paid with the return
+            'total_payable' => round($outputBal - $setOff + $vdsBal, 2),
         ];
     }
 
@@ -113,7 +116,7 @@ class VatReturnService
         }
 
         $s = $this->summary($month);
-        if ($s['output_balance'] <= 0 && $s['set_off'] <= 0) {
+        if ($s['output_balance'] <= 0 && $s['set_off'] <= 0 && $s['vds_payable'] <= 0) {
             throw new \RuntimeException(__('There is no output VAT to settle for this month.'));
         }
 
@@ -124,6 +127,7 @@ class VatReturnService
                 'input_vat' => $s['input_balance'],
                 'set_off' => $s['set_off'],
                 'paid' => $s['payable'],
+                'vds_paid' => $s['vds_payable'],
                 'carried_forward' => $s['carried_forward'],
                 'paid_from' => $paidFrom,
                 'reference' => $reference,
@@ -138,9 +142,10 @@ class VatReturnService
                 'source' => $return,
                 'source_event' => 'vat_settlement',
             ], array_values(array_filter([
-                ['account' => 'vat_output', 'debit' => $s['output_balance']],
+                $s['output_balance'] > 0 ? ['account' => 'vat_output', 'debit' => $s['output_balance']] : null,
+                $s['vds_payable'] > 0 ? ['account' => 'vds_payable', 'debit' => $s['vds_payable']] : null,
                 $s['set_off'] > 0 ? ['account' => 'vat_input', 'credit' => $s['set_off']] : null,
-                $s['payable'] > 0 ? ['account' => $paidFrom, 'credit' => $s['payable']] : null,
+                $s['total_payable'] > 0 ? ['account' => $paidFrom, 'credit' => $s['total_payable']] : null,
             ])));
 
             $return->update(['journal_entry_id' => $entry->id]);

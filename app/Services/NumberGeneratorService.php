@@ -39,6 +39,7 @@ class NumberGeneratorService
         'assembly_order' => 'ASM',
         'cheque' => 'CHQ',
         'fixed_asset' => 'FA',
+        'vds_certificate' => 'VDS',
     ];
 
     public function generate(string $type): string
