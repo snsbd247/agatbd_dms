@@ -81,4 +81,24 @@ class ImportShipment extends Model
     {
         return round($this->items->sum(fn ($i) => (float) $i->quantity * (float) $i->unit_price_fc) * (float) $this->exchange_rate, 2);
     }
+
+    public function payments()
+    {
+        return $this->hasMany(ImportPayment::class)->orderBy('payment_date')->orderBy('id');
+    }
+
+    /** Goods value in the shipment's currency. */
+    public function foreignValue(): float
+    {
+        return round((float) $this->items->sum(fn ($i) => (float) $i->quantity * (float) $i->unit_price_fc), 2);
+    }
+
+    /** Foreign amount still owed to the supplier (the LC margin counts as paid at the booked rate). */
+    public function foreignOutstanding(): float
+    {
+        $rate = (float) $this->exchange_rate;
+        $marginFc = $rate > 0 ? (float) $this->lc_margin / $rate : 0;
+
+        return round(max(0, $this->foreignValue() - $marginFc - (float) $this->payments()->sum('foreign_amount')), 2);
+    }
 }

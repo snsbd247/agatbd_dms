@@ -59,6 +59,7 @@ class ChartOfAccountsSeeder extends Seeder
         ['4120', 'Sales Returns', 'income', '4000', 'sales_return', []],
         ['4200', 'Other Income', 'income', '4000', 'other_income', []],
         ['4210', 'Stock Gain', 'income', '4000', 'stock_gain', []],
+        ['4220', 'Foreign Exchange Gain/Loss', 'income', '4000', 'fx_gain_loss', []],
 
         ['5000', 'Expenses', 'expense', null, null, ['group']],
         ['5100', 'Cost of Goods Sold', 'expense', '5000', 'cogs', []],

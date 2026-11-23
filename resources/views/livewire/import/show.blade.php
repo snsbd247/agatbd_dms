@@ -186,5 +186,45 @@
                 @endif
             @endcan
         </section>
-    </div>
+        @if($s->status === 'received')
+        <section class="mt-4 rounded-xl bg-white p-4 shadow-sm">
+            <h2 class="mb-1 font-semibold">{{ __('Payment to the supplier') }}</h2>
+            <p class="text-xs text-slate-500 mb-3">{{ __('Booked at :r per :c. When the bank pays at another rate, the difference is an exchange gain or loss.', ['r' => (float) $s->exchange_rate, 'c' => $s->currency]) }}</p>
+            <p class="text-sm mb-3">{{ __('Still owed') }}: <strong>{{ number_format($outstandingFc, 2) }} {{ $s->currency }}</strong> <span class="text-slate-400">(৳ {{ number_format($outstandingFc * (float) $s->exchange_rate, 2) }} {{ __('at the booked rate') }})</span></p>
+
+            @if($s->payments->isNotEmpty())
+                <table class="w-full text-sm mb-3">
+                    <thead class="text-left text-slate-500"><tr><th class="py-1.5">{{ __('Date') }}</th><th class="py-1.5 text-right">{{ $s->currency }}</th><th class="py-1.5 text-right">{{ __('Booked ৳') }}</th><th class="py-1.5 text-right">{{ __('Paid ৳') }}</th><th class="py-1.5 text-right">{{ __('Gain / loss') }}</th></tr></thead>
+                    <tbody>
+                        @foreach($s->payments as $p)
+                            <tr class="border-t">
+                                <td class="py-1.5">{{ $p->payment_date->format('d M Y') }}<span class="block text-xs text-slate-400">{{ $p->paidFrom?->name }}{{ $p->reference ? ' · '.$p->reference : '' }}</span></td>
+                                <td class="py-1.5 text-right">{{ number_format($p->foreign_amount, 2) }}</td>
+                                <td class="py-1.5 text-right">{{ number_format($p->booked_amount, 2) }}</td>
+                                <td class="py-1.5 text-right">{{ number_format($p->paid_amount, 2) }}</td>
+                                <td class="py-1.5 text-right {{ (float) $p->fx_difference >= 0 ? 'text-green-700' : 'text-red-600' }}">{{ number_format($p->fx_difference, 2) }}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            @endif
+
+            @can('import.manage')
+                @if($outstandingFc > 0)
+                    <div class="grid grid-cols-2 sm:grid-cols-5 gap-2 items-end text-sm">
+                        <div><label class="text-xs text-slate-500">{{ __('Date') }}</label><input type="date" wire:model="pay_date" class="w-full border rounded-lg p-2 mt-1"></div>
+                        <div><label class="text-xs text-slate-500">{{ __('Amount') }} ({{ $s->currency }})</label><input type="number" step="0.01" wire:model="pay_foreign" class="w-full border rounded-lg p-2 mt-1"></div>
+                        <div><label class="text-xs text-slate-500">{{ __('Taka paid') }}</label><input type="number" step="0.01" wire:model="pay_bdt" class="w-full border rounded-lg p-2 mt-1"></div>
+                        <div><label class="text-xs text-slate-500">{{ __('From') }}</label>
+                            <select wire:model="pay_from" class="w-full border rounded-lg p-2 mt-1"><option value="">—</option>@foreach($money as $m)<option value="{{ $m->id }}">{{ $m->name }}</option>@endforeach</select>
+                        </div>
+                        <button wire:click="settle" wire:confirm="{{ __('Post this payment to the supplier?') }}" class="rounded-lg bg-indigo-600 px-3 py-2 font-medium text-white hover:bg-indigo-500">{{ __('Pay supplier') }}</button>
+                        <div class="col-span-2 sm:col-span-5"><input type="text" wire:model="pay_reference" placeholder="{{ __('Bank reference / TT no.') }}" class="w-full border rounded-lg p-2"></div>
+                    </div>
+                    @error('pay_foreign') <p class="text-red-600 text-sm mt-2">{{ $message }}</p> @enderror
+                @endif
+            @endcan
+        </section>
+    @endif
+</div>
 </div>

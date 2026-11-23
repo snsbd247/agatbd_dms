@@ -37,7 +37,7 @@ class DataResetService
         'batches', 'bonuses', 'cheques', 'collections', 'commissions', 'company_return_items', 'company_returns',
         'cost_sheet_items', 'cost_sheets', 'damage_actions', 'damage_records', 'dealer_targets', 'delivery_invoice_items',
         'delivery_invoices', 'delivery_note_items', 'delivery_notes', 'employee_loans', 'final_settlements',
-        'fiscal_year_closings', 'fixed_assets', 'goods_receipt_items', 'goods_receipts', 'import_costs', 'import_items',
+        'fiscal_year_closings', 'fixed_assets', 'goods_receipt_items', 'goods_receipts', 'import_costs', 'import_items', 'import_payments',
         'import_shipments', 'journal_lines', 'journal_entries', 'leave_applications', 'machine_maintenances',
         'notifications', 'numbering_sequences', 'payroll_entries', 'payroll_runs', 'payslips', 'production_issues',
         'production_orders', 'production_qc_checks', 'purchase_order_items', 'purchase_orders',

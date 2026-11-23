@@ -48,6 +48,13 @@ class Show extends Component
 
     // receive
     public string $receive_date = '';
+
+    // paying the supplier
+    public string $pay_date = '';
+    public string $pay_foreign = '';
+    public string $pay_bdt = '';
+    public ?int $pay_from = null;
+    public string $pay_reference = '';
     public array $batches = [];
 
     public function mount(ImportShipment $shipment): void
@@ -156,14 +163,38 @@ class Show extends Component
         $this->run(fn ($s) => $s->cancel($this->shipment), __('Import cancelled.'));
     }
 
+    public function settle(ImportService $service): void
+    {
+        $this->authorize('import.manage');
+        $this->validate([
+            'pay_date' => 'required|date',
+            'pay_foreign' => 'required|numeric|min:0.01',
+            'pay_bdt' => 'required|numeric|min:0.01',
+            'pay_from' => 'required|integer',
+            'pay_reference' => 'nullable|string|max:100',
+        ]);
+
+        try {
+            $service->settle($this->shipment, $this->pay_date, (float) $this->pay_foreign, (float) $this->pay_bdt, (int) $this->pay_from, $this->pay_reference ?: null);
+        } catch (\RuntimeException $e) {
+            $this->addError('pay_foreign', $e->getMessage());
+
+            return;
+        }
+        $this->reset(['pay_foreign', 'pay_bdt', 'pay_reference']);
+        $this->shipment->refresh();
+    }
+
     public function render(ImportService $service)
     {
-        $this->shipment->load(['company', 'warehouse', 'items.product.unit', 'costs.paidFrom', 'lcBank']);
+        $this->shipment->load(['company', 'warehouse', 'items.product.unit', 'costs.paidFrom', 'lcBank', 'payments.paidFrom']);
+        $this->pay_date = $this->pay_date ?: today()->toDateString();
         $alloc = $service->allocation($this->shipment);
 
         return view('livewire.import.show', [
             's' => $this->shipment,
             'alloc' => $alloc,
+            'outstandingFc' => $this->shipment->status === 'received' ? $this->shipment->foreignOutstanding() : 0.0,
             'products' => Product::where('active', true)->whereIn('type', ['raw_material', 'packaging', 'trading', 'finished_good', 'semi_finished'])->orderBy('name')->get(['id', 'name', 'sku']),
             'money' => Account::money()->orderBy('code')->get(),
             'capitalised' => (float) $this->shipment->costs->reject(fn ($c) => $c->recoverable())->sum('amount'),

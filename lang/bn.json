@@ -2625,5 +2625,22 @@
     "Furniture & fixtures": "আসবাবপত্র",
     "Computer & equipment": "কম্পিউটার ও সরঞ্জাম",
     "Straight line": "সরলরৈখিক",
-    "Reducing balance": "ক্রমহ্রাসমান"
+    "Reducing balance": "ক্রমহ্রাসমান",
+    "The supplier can be paid here once the goods are received.": "মাল গ্রহণের পরই এখান থেকে সাপ্লায়ারকে পরিশোধ করা যাবে।",
+    "Enter the foreign amount and the taka paid.": "বৈদেশিক মুদ্রার পরিমাণ ও পরিশোধিত টাকা লিখুন।",
+    "More than the :a :c still owed.": "বাকি :a :c-এর চেয়ে বেশি।",
+    "Payment to supplier for :n (:f :c)": ":n-এর জন্য সাপ্লায়ারকে পরিশোধ (:f :c)",
+    "Payment to the supplier": "সাপ্লায়ারকে পরিশোধ",
+    "Booked at :r per :c. When the bank pays at another rate, the difference is an exchange gain or loss.": "প্রতি :c :r টাকায় বুক করা। ব্যাংক অন্য রেটে পরিশোধ করলে পার্থক্যটি বিনিময় লাভ বা ক্ষতি হবে।",
+    "Still owed": "এখনো বাকি",
+    "at the booked rate": "বুক করা রেটে",
+    "Booked ৳": "বুক করা ৳",
+    "Paid ৳": "পরিশোধিত ৳",
+    "Gain / loss": "লাভ / ক্ষতি",
+    "Taka paid": "পরিশোধিত টাকা",
+    "Post this payment to the supplier?": "সাপ্লায়ারকে এই পরিশোধ পোস্ট করবেন?",
+    "Pay supplier": "সাপ্লায়ারকে পরিশোধ",
+    "Bank reference / TT no.": "ব্যাংক রেফারেন্স / TT নং",
+    "Foreign Exchange Gain/Loss": "বৈদেশিক মুদ্রা বিনিময় লাভ/ক্ষতি",
+    "Dealer Incentives": "ডিলার ইনসেনটিভ"
 }

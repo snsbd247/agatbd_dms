@@ -202,6 +202,58 @@ class ImportService
         }
     }
 
+    /**
+     * Pay the supplier part or all of what is owed in foreign currency. The
+     * payable clears at the shipment's rate; the bank pays at today's rate;
+     * the difference goes to Foreign Exchange Gain/Loss.
+     */
+    public function settle(ImportShipment $s, string $date, float $foreign, float $paidBdt, int $paidFromId, ?string $reference = null): \App\Models\Import\ImportPayment
+    {
+        if ($s->status !== 'received') {
+            throw new \RuntimeException(__('The supplier can be paid here once the goods are received.'));
+        }
+        if (! Account::money()->whereKey($paidFromId)->exists()) {
+            throw new \RuntimeException(__('Choose a cash or bank account.'));
+        }
+        $foreign = round($foreign, 2);
+        $paidBdt = round($paidBdt, 2);
+        if ($foreign <= 0 || $paidBdt <= 0) {
+            throw new \RuntimeException(__('Enter the foreign amount and the taka paid.'));
+        }
+        $s->loadMissing('items');
+        if ($foreign > $s->foreignOutstanding() + 0.01) {
+            throw new \RuntimeException(__('More than the :a :c still owed.', ['a' => number_format($s->foreignOutstanding(), 2), 'c' => $s->currency]));
+        }
+
+        $booked = round($foreign * (float) $s->exchange_rate, 2);
+        $diff = round($booked - $paidBdt, 2);
+
+        return DB::transaction(function () use ($s, $date, $foreign, $paidBdt, $paidFromId, $reference, $booked, $diff) {
+            $payment = $s->payments()->create([
+                'payment_date' => $date,
+                'foreign_amount' => $foreign,
+                'booked_amount' => $booked,
+                'paid_amount' => $paidBdt,
+                'fx_difference' => $diff,
+                'paid_from_account_id' => $paidFromId,
+                'reference' => $reference,
+            ]);
+
+            $entry = $this->ledger->post([
+                'type' => 'auto', 'entry_date' => $date, 'dealer_id' => null, 'source' => $payment, 'source_event' => 'import_payment',
+                'narration' => __('Payment to supplier for :n (:f :c)', ['n' => $s->number, 'f' => number_format($foreign, 2), 'c' => $s->currency]),
+            ], array_values(array_filter([
+                ['account' => 'ap', 'debit' => $booked, 'party_type' => 'company', 'party_id' => $s->company_id],
+                ['account' => $paidFromId, 'credit' => $paidBdt],
+                $diff > 0 ? ['account' => 'fx_gain_loss', 'credit' => $diff] : null,
+                $diff < 0 ? ['account' => 'fx_gain_loss', 'debit' => -$diff] : null,
+            ])));
+            $payment->update(['journal_entry_id' => $entry->id]);
+
+            return $payment;
+        });
+    }
+
     private function post(ImportShipment $s, string $event, string $date, string $narration, array $lines): void
     {
         $this->ledger->post(['type' => 'auto', 'entry_date' => $date, 'dealer_id' => null, 'source' => $s, 'source_event' => $event, 'narration' => $narration], $lines);
