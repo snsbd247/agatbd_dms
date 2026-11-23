@@ -441,7 +441,7 @@ Apache কনফিগ বদলালে: `F:\Lovable\xampp\apache\bin\httpd.ex
 | PHP | `/opt/cpanel/ea-php83/root/usr/bin/php` (CLI-র ডিফল্ট `php` 8.2, ওটা ব্যবহার করবেন না) |
 | ডাটাবেস | MySQL `sabagatbd_dms` (ইউজারও `sabagatbd_dms`), cPanel-এর uapi দিয়ে বানানো। পাসওয়ার্ড শুধু সার্ভারের `.env`-এ (chmod 600), কোথাও লেখা নেই। ব্যাকআপ `dms:backup` MySQL থেকে SQLite ফাইলে export করে zip করে। |
 | SSL | cPanel AutoSSL (Let's Encrypt), নিজে থেকে নবায়ন হয় |
-| Cron | crontab-এ `# >>> dms.agatbd.com` ব্লক: scheduler, queue, আর প্রতিদিন রাত ২টায় `dms:backup --keep=30` |
+| Cron | crontab-এ `# >>> dms.agatbd.com` ব্লক: scheduler আর queue। রাতের ব্যাকআপ (`dms:backup --keep=30`) Laravel scheduler-এ, রাত ১২টা বাংলাদেশ সময়ে ([routes/console.php](routes/console.php)); সার্ভারের ঘড়ি US Eastern, তাই crontab-এ সময় বসানো হয় না |
 
 সার্ভারে `public/.htaccess`-এর শেষে cPanel একটা `ea-php83` handler লাইন যোগ করেছে। এটা git-এ commit করবেন না, কারণ ওই লাইন XAMPP-এ PHP চলা বন্ধ করে দেয়। git pull করলে লাইনটা থেকে যায়।
 

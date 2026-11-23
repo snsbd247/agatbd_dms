@@ -14,6 +14,9 @@ Artisan::command('costing:apply-due', function () {
 
 \Illuminate\Support\Facades\Schedule::command('costing:apply-due')->dailyAt('00:05');
 
+// Nightly backup (and its off-site copy) at midnight Bangladesh time, whatever the server's clock zone.
+\Illuminate\Support\Facades\Schedule::command('dms:backup --keep=30')->dailyAt('00:00')->timezone('Asia/Dhaka')->withoutOverlapping();
+
 // Clear demo/test data before going live (a backup is taken first). Same as the button on Backup & Restore.
 Artisan::command('dms:clear-data {mode : transactions or all} {--force}', function (string $mode) {
     if (! in_array($mode, ['transactions', 'all'], true)) {

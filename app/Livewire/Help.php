@@ -301,7 +301,7 @@ class Help extends Component
             [
                 'id' => 'backup', 'title' => 'Backup ও Restore', 'icon' => 'archive-box', 'can' => 'settings.manage',
                 'steps' => [
-                    'প্রতিদিন রাত ২টায় নিজে থেকে ব্যাকআপ হয়, আর ৩০ দিনের ব্যাকআপ রাখা থাকে।',
+                    'প্রতিদিন রাত ১২টায় (বাংলাদেশ সময়) নিজে থেকে ব্যাকআপ হয়, আর ৩০ দিনের ব্যাকআপ রাখা থাকে।',
                     '<b>More → Backup &amp; Restore → Download Backup Now</b> দিয়ে এখনকার ব্যাকআপ নামিয়ে USB বা Google Drive-এ রাখুন।',
                     'Restore করতে তালিকা থেকে একটা ব্যাকআপে <b>Restore</b> চাপুন, অথবা ফাইল আপলোড করুন। তারপর নিজের পাসওয়ার্ড আর <b>RESTORE</b> লিখে নিশ্চিত করুন।',
                 ],

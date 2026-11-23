@@ -15,7 +15,7 @@
             </div>
             <div class="flex-1 min-w-0">
                 <h2 class="text-lg font-semibold">{{ __('Backup') }}</h2>
-                <p class="text-sm text-slate-500 mt-1">{{ __('A backup is taken automatically every night at 2:00 AM and kept for 30 days. You can also take one now and save it somewhere safe (USB drive, Google Drive…).') }}</p>
+                <p class="text-sm text-slate-500 mt-1">{{ __('A backup is taken automatically every night at 12:00 midnight (Bangladesh time) and kept for 30 days. You can also take one now and save it somewhere safe (USB drive, Google Drive…).') }}</p>
                 <a href="{{ route('more.backup.download') }}" class="inline-flex items-center gap-2 mt-4 bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-xl font-medium">
                     <x-icon name="download" class="w-5 h-5" /> {{ __('Download Backup Now') }}
                 </a>
