@@ -190,6 +190,9 @@
 
                     <x-theme-toggle />
 
+                    <button type="button" onclick="window.dmsExportTable(@js(isset($title) ? __($title) : 'export'))" class="hidden sm:inline-flex text-slate-500 hover:text-slate-900 p-1.5 rounded-lg hover:bg-slate-100" title="{{ __('Download as Excel (CSV)') }}">
+                        <x-icon name="download" class="w-5 h-5" />
+                    </button>
                     <button type="button" onclick="window.print()" class="hidden sm:inline-flex text-slate-500 hover:text-slate-900 p-1.5 rounded-lg hover:bg-slate-100" title="{{ __('Print this page') }}">
                         <x-icon name="printer" class="w-5 h-5" />
                     </button>
