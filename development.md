@@ -375,6 +375,22 @@ migration: `2026_11_22_000009_create_costing_import_kit_tables`। নতুন 
 
 ---
 
+## নভেম্বর ২০২৬-এর সংযোজন (কোড কোথায়, কী নিয়ম)
+
+- **মেনু:** `App\Support\Navigation` — ডেস্কটপ সাইডবার আর মোবাইলের More পেজ দুটোই এখান থেকে। নতুন পেজ বানালে এখানে লিংক দিন; `NavigationTest` মেনুতে না থাকা পেজ ধরবে।
+- **তালিকার বাটন:** `<x-icon-action>` (href দিলে লিংক)। হিসাবে ওঠা জিনিস কখনো Edit নয় — `App\Services\VoidService` (কালেকশন, GRN, স্টক সমন্বয়, স্থানান্তর; `deleteWithReversal` অন্যদের জন্য)। ভাউচার উল্টায় `LedgerService::reverse`, অডিট লগে কারণ থাকে।
+- **প্রিন্ট:** `DocumentPdfController` + `pdfs/document.blade.php` (একটি সাধারণ টেমপ্লেট), রুট `documents.print/{type}/{id}`। সরকারি ফর্ম আলাদা টেমপ্লেট: `mushak-6-3`, `mushak-6-6`, `mushak-6-7` — সবসময় বাংলায়।
+- **ডাটা ইমপোর্ট/মোছা:** `DataImportService` (+ `SpreadsheetReader`, CSV ও xlsx প্যাকেজ ছাড়াই), `OpeningBalanceService` (প্রারম্ভিক জের ভাউচার একটাই)। `DataResetService`-এর KEEP / TRANSACTIONS / MASTER তালিকায় **প্রতিটা নতুন টেবিল যোগ করতে হবে** — না করলে `GoLiveTest` ফেল করবে।
+- **মূসক:** `VatReturnService` (মাসিক হিসাব, নিষ্পত্তি, ৬.১ রেজিস্টার), `VdsService` (৬.৬)। হিসাব: `vat_output`, `vat_input` (আমদানির VAT/AT-সহ), `vds_payable`।
+- **চেক:** `ChequeService`; ক্লিয়ার হলে `CollectionService::record` (রেকর্ড পেমেন্ট পেজও এটাই ব্যবহার করে)।
+- **স্কিম/টার্গেট:** `SchemeService::apply()` অর্ডার সেভের পরে ডাকা হয় (স্টাফ ফর্ম ও পোর্টাল); ফ্রি লাইন `is_free`, আগের দাম `list_price`। `DealerTargetService`।
+- **সম্পদ:** `FixedAssetService` (যোগ, মাসিক অবচয় `run`, বিক্রি/বাতিল)।
+- **রোল:** বিল্ট-ইন রোল `RoleSeeder` প্রতি ডেপ্লয়ে আবার বসায়, তাই হাতে বদলানো যায় না; নিজস্ব রোল `App\Support\Roles` / Settings → Roles।
+- **রিমাইন্ডার:** `App\Support\Reminders` — ড্যাশবোর্ডের ট্যাব অংশে দেখায়; প্রতিটা রিমাইন্ডার অনুমতি দেখে।
+- **অফ-সাইট ব্যাকআপ:** `OffsiteBackupService`, `dms:backup` কমান্ডের শেষে চলে।
+- **ডেমো:** `ErpDemoExtrasSeeder` নতুন অংশের ডেমো (ErpDemoSeeder-এর পরে); শেষ মাসের ভ্যাট, অবচয় আর ইনসেনটিভ খোলা রাখে যাতে রিমাইন্ডার দেখা যায়।
+- **মোবাইল:** `grid` ব্যবহার করলে মোবাইলের জন্য `grid-cols-1` দিন — নইলে লম্বা লেখা (ড্রপডাউনের অপশন) কলাম চওড়া করে স্ক্রিনের বাইরে নিয়ে যায়।
+- **ডেপ্লয়ের আর্কাইভ:** PowerShell থেকে Windows-এর `tar -czf build.tgz -C public build` (`--force-local` শুধু Git Bash-এর tar-এর জন্য)।
 ## জানা সমস্যা (Known issues)
 
 | # | সমস্যা | প্রভাব / করণীয় |
