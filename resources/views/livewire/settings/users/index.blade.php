@@ -10,8 +10,9 @@
         <div class="flex flex-wrap items-center gap-3">
             <select wire:model="filter_role" class="border rounded-lg px-3 py-2 text-sm bg-white w-full sm:w-auto">
                 <option value="">{{ __('All Roles') }}</option>
-                <option value="Admin">{{ __('Admin') }}</option><option value="Accountant">{{ __('Accountant') }}</option><option value="HR Manager">{{ __('HR Manager') }}</option><option value="Factory Manager">{{ __('Factory Manager') }}</option>
-                <option value="Manager">{{ __('Manager') }}</option>
+                @foreach(\App\Support\Roles::staff() as $roleName)<option value="{{ $roleName }}">{{ __($roleName) }}</option>@endforeach
+
+
             </select>
             <input wire:model="search" type="text" placeholder="{{ __('Search by name or email...') }}" class="border rounded-lg px-3 py-2 text-sm w-full sm:w-auto sm:min-w-[200px]">
             <button wire:click="resetFilters" class="border rounded-lg px-4 py-2 text-sm text-slate-600 bg-white">{{ __('Reset') }}</button>
@@ -82,8 +83,9 @@
                     <div>
                         <label class="text-sm text-slate-500">{{ __('Role') }}</label>
                         <select wire:model="form_role" class="w-full border rounded-lg p-2 mt-1">
-                            <option value="Admin">{{ __('Admin') }}</option><option value="Accountant">{{ __('Accountant') }}</option><option value="HR Manager">{{ __('HR Manager') }}</option><option value="Factory Manager">{{ __('Factory Manager') }}</option>
-                            <option value="Manager">{{ __('Manager') }}</option>
+                            @foreach(\App\Support\Roles::staff() as $roleName)<option value="{{ $roleName }}">{{ __($roleName) }}</option>@endforeach
+
+            
                         </select>
                         @error('form_role') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>

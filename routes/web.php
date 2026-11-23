@@ -380,6 +380,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/email-sms', \App\Livewire\Settings\Messaging::class)->name('messaging');
         Route::get('/warranty-policies', SettingsWarrantyPoliciesIndex::class)->middleware('module:warranty')->name('warranty-policies');
         Route::get('/users', SettingsUsersIndex::class)->name('users');
+        Route::get('/roles', \App\Livewire\Settings\Roles::class)->name('roles');
         Route::get('/login-history', SettingsLoginHistories::class)->name('login-history');
         Route::get('/audit-log', SettingsAuditLogs::class)->name('audit-log');
     });

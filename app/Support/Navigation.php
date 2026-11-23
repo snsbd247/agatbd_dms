@@ -172,6 +172,7 @@ class Navigation
                     ['route' => 'settings.modules', 'label' => 'Business Type & Modules', 'icon' => 'grid'],
                     ['route' => 'settings.setup', 'label' => 'Setup Wizard', 'icon' => 'cog', 'headOffice' => true],
                     ['route' => 'settings.users', 'label' => 'Users', 'icon' => 'user'],
+                    ['route' => 'settings.roles', 'label' => 'Roles & Permissions', 'icon' => 'lock-closed', 'headOffice' => true],
                     ['route' => 'settings.numbering', 'label' => 'Numbering', 'icon' => 'database'],
                     ['route' => 'settings.messaging', 'label' => 'Email & SMS', 'icon' => 'mail'],
                     ['route' => 'settings.warranty-policies', 'label' => 'Warranty Policies', 'icon' => 'shield-check', 'module' => 'warranty'],
