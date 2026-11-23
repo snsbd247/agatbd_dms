@@ -33,6 +33,12 @@ class BackupDatabase extends Command
 
         $this->info("Backup written: {$zip} ({$size} MB). Old backups removed: {$deleted}.");
 
+        // Off-site copy (Backup & Restore → Off-site copy), when set up.
+        if (\App\Services\OffsiteBackupService::method() !== 'none') {
+            [$ok, $message] = app(\App\Services\OffsiteBackupService::class)->send($zip, (int) $this->option('keep'));
+            $ok ? $this->info('Off-site: '.$message) : $this->error('Off-site copy failed: '.$message);
+        }
+
         return self::SUCCESS;
     }
 }

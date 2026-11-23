@@ -23,6 +23,10 @@
         </div>
     </div>
 
+    @unless(auth()->user()->dealer_id)
+        <livewire:more.offsite-backup />
+    @endunless
+
     {{-- Stored backups --}}
     <div class="bg-white rounded-xl shadow overflow-hidden">
         <div class="px-6 py-4 border-b">
