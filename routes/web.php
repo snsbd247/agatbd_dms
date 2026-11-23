@@ -270,6 +270,9 @@ Route::middleware('auth')->group(function () {
     Route::middleware('can:sales.view')->prefix('sales')->name('sales.')->group(function () {
         Route::get('/orders', SalesOrderIndex::class)->name('orders.index');
         Route::get('/schemes', \App\Livewire\Sales\Schemes::class)->name('schemes');
+        Route::get('/offline-orders', \App\Livewire\Sales\OfflineOrders::class)->middleware('can:sales.create')->name('offline');
+        Route::get('/offline-orders/data', [\App\Http\Controllers\OfflineOrderController::class, 'data'])->middleware('can:sales.create')->name('offline.data');
+        Route::post('/offline-orders/sync', [\App\Http\Controllers\OfflineOrderController::class, 'sync'])->middleware(['can:sales.create', 'throttle:30,1'])->name('offline.sync');
         Route::get('/orders/create', SalesOrderCreate::class)->name('orders.create');
         Route::get('/orders/{salesOrder}', SalesOrderShow::class)->name('orders.show');
         Route::get('/orders/{salesOrder}/edit', SalesOrderCreate::class)->middleware('can:sales.create')->name('orders.edit');

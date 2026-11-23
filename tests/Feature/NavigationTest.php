@@ -35,7 +35,7 @@ class NavigationTest extends TestCase
         $inMenu = collect(Navigation::definition())->flatMap(fn ($s) => collect($s['groups'])->flatMap(fn ($g) => collect($g['links'])->pluck('route')))->all();
 
         // Pages reached from another page (create forms, exports, dashboards ...).
-        $reachedElsewhere = '/^(home$|dashboard|notifications|search|help|business|more\.(index|about|backup\.)|account\.|locale|login|logout|password|portal\.|livewire|storage|up$|.*\.(create|export|exports?\..*|pdf|print|generate|download)$|reports\.export\.|reports\.index|master-data\.index|settings\.data-import\.template)/';
+        $reachedElsewhere = '/^(home$|dashboard|notifications|search|help|business|more\.(index|about|backup\.)|account\.|locale|login|logout|password|portal\.|livewire|storage|up$|.*\.(create|export|exports?\..*|pdf|print|generate|download)$|reports\.export\.|reports\.index|master-data\.index|settings\.data-import\.template|sales\.offline\.data)/';
 
         $missing = collect(Route::getRoutes()->getRoutes())
             ->filter(fn ($r) => in_array('GET', $r->methods()) && $r->getName() && ! str_contains($r->uri(), '{'))

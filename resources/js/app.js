@@ -108,3 +108,89 @@ window.dmsScan = function () {
         })();
     });
 };
+
+// Offline order taking (Sales → Offline Orders): customers, products and
+// unsent orders are kept in this phone's storage per user; see OfflineOrderController.
+window.dmsOfflineOrders = (key, dataUrl, syncUrl, t) => ({
+        online: navigator.onLine, busy: false, message: '',
+        customers: [], products: [], dataAt: null, token: document.querySelector('meta[name=csrf-token]')?.content || '',
+        queue: [], sent: [], customerId: '', search: '', lines: [],
+        init() {
+            try {
+                const s = JSON.parse(localStorage.getItem(key) || '{}');
+                Object.assign(this, { customers: s.customers || [], products: s.products || [], dataAt: s.dataAt || null, queue: s.queue || [], sent: s.sent || [] });
+                if (s.token) this.token = s.token;
+            } catch (e) {}
+            window.addEventListener('online', () => { this.online = true; this.sync(); });
+            window.addEventListener('offline', () => { this.online = false; });
+            if (this.online && !this.customers.length) this.refresh();
+        },
+        store() {
+            try { localStorage.setItem(key, JSON.stringify({ customers: this.customers, products: this.products, dataAt: this.dataAt, queue: this.queue, sent: this.sent.slice(0, 20), token: this.token })); } catch (e) {}
+        },
+        async refresh() {
+            this.busy = true;
+            try {
+                const r = await fetch(dataUrl, { headers: { Accept: 'application/json' }, credentials: 'same-origin' });
+                if (!r.ok) throw new Error(r.status);
+                const d = await r.json();
+                Object.assign(this, { customers: d.customers, products: d.products, dataAt: d.at, token: d.token });
+                this.store();
+                this.message = t.refreshed;
+            } catch (e) { this.message = t.failed; }
+            this.busy = false;
+        },
+        customer() { return this.customers.find(c => c.id === this.customerId); },
+        customerName(id) { return (this.customers.find(c => c.id === id) || {}).name || '#' + id; },
+        productById(id) { return this.products.find(p => p.id === id) || { price: 0 }; },
+        priceOf(p) { const c = this.customer(); return c && c.dealer && p.dealer_price > 0 ? p.dealer_price : p.price; },
+        matches() {
+            const q = this.search.toLowerCase();
+            return this.products.filter(p => (p.name + ' ' + p.sku + ' ' + (p.barcode || '')).toLowerCase().includes(q)).slice(0, 30);
+        },
+        add(p) {
+            const line = this.lines.find(l => l.id === p.id);
+            line ? line.qty++ : this.lines.push({ id: p.id, name: p.name, qty: 1 });
+        },
+        addByCode(code) {
+            const p = this.products.find(p => p.barcode === code || p.sku === code);
+            p ? this.add(p) : (this.message = code + ' ?');
+        },
+        total() { return this.lines.reduce((s, l) => s + l.qty * this.priceOf(this.productById(l.id)), 0); },
+        save() {
+            const uuid = (crypto.randomUUID ? crypto.randomUUID() : Date.now() + '-' + Math.random().toString(16).slice(2));
+            const d = new Date();
+            const date = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+            this.queue.push({ uuid, retailer_id: this.customerId, order_date: date, items: this.lines.map(l => ({ product_id: l.id, quantity: l.qty })) });
+            this.lines = []; this.customerId = '';
+            this.store();
+            this.message = t.saved;
+            if (this.online) this.sync();
+        },
+        drop(uuid) { this.queue = this.queue.filter(o => o.uuid !== uuid); this.store(); },
+        async sync() {
+            if (!this.queue.length || this.busy) return;
+            this.busy = true;
+            try {
+                // A fresh token first, in case the page was opened long ago.
+                try { const r = await fetch(dataUrl, { headers: { Accept: 'application/json' }, credentials: 'same-origin' }); if (r.ok) { const d = await r.json(); Object.assign(this, { customers: d.customers, products: d.products, dataAt: d.at, token: d.token }); } } catch (e) {}
+                const r = await fetch(syncUrl, { method: 'POST', credentials: 'same-origin',
+                    headers: { 'Content-Type': 'application/json', Accept: 'application/json', 'X-CSRF-TOKEN': this.token },
+                    body: JSON.stringify({ orders: this.queue.map(({ error, ...o }) => o) }) });
+                if (r.status === 419 || r.status === 401) { this.message = t.expired; this.busy = false; return; }
+                if (!r.ok) throw new Error(r.status);
+                const d = await r.json();
+                this.token = d.token || this.token;
+                let n = 0;
+                for (const res of d.results) {
+                    const o = this.queue.find(q => q.uuid === res.uuid);
+                    if (!o) continue;
+                    if (res.ok) { this.sent.unshift({ uuid: o.uuid, retailer_id: o.retailer_id, number: res.number }); this.queue = this.queue.filter(q => q.uuid !== res.uuid); n++; }
+                    else { o.error = res.error; }
+                }
+                this.message = t.synced.replace(':n', n);
+            } catch (e) { this.message = t.failed; }
+            this.store();
+            this.busy = false;
+        },
+    });

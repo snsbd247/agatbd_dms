@@ -9,6 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="{{ \App\Support\Brand::name() }}">
     <link rel="manifest" href="{{ asset('manifest.json') }}">
+    <script>if ('serviceWorker' in navigator) { window.addEventListener('load', () => navigator.serviceWorker.register(@js(asset('sw.js'))).catch(() => {})); }</script>
     <link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png') }}">
     <link rel="icon" type="image/png" href="{{ asset('icon-192.png') }}">
     <title>{{ \App\Support\Brand::title(isset($title) ? __($title) : null) }}</title>

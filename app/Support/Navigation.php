@@ -36,6 +36,7 @@ class Navigation
             ['label' => 'Sales & Customers', 'groups' => [
                 ['icon' => 'shopping-bag', 'label' => 'Sales', 'links' => [
                     ['route' => 'sales.orders.index', 'label' => 'Sales Orders', 'icon' => 'shopping-bag', 'permission' => 'sales.view'],
+                    ['route' => 'sales.offline', 'label' => 'Offline Orders', 'icon' => 'download', 'permission' => 'sales.create'],
                     ['route' => 'delivery.index', 'label' => 'Deliveries', 'icon' => 'truck', 'permission' => 'delivery.view'],
                     ['route' => 'delivery.invoices.index', 'label' => 'Delivery Invoices', 'icon' => 'document-text', 'permission' => 'delivery.view'],
                     ['route' => 'collection.index', 'label' => 'Collections', 'icon' => 'banknotes', 'permission' => 'collection.view'],

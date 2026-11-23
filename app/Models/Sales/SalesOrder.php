@@ -19,7 +19,7 @@ class SalesOrder extends Model
     use Auditable;
 
     protected $fillable = [
-        'number', 'order_type', 'retailer_id', 'representative_id', 'warehouse_id',
+        'number', 'client_uuid', 'order_type', 'retailer_id', 'representative_id', 'warehouse_id',
         'status', 'order_date', 'subtotal', 'discount', 'grand_total', 'approved_by', 'approved_at',
     ];
 
