@@ -40,10 +40,12 @@ class Navigation
                     ['route' => 'delivery.invoices.index', 'label' => 'Delivery Invoices', 'icon' => 'document-text', 'permission' => 'delivery.view'],
                     ['route' => 'collection.index', 'label' => 'Collections', 'icon' => 'banknotes', 'permission' => 'collection.view'],
                     ['route' => 'collection.cheques', 'label' => 'Cheques', 'icon' => 'credit-card', 'permission' => 'collection.view'],
+                    ['route' => 'sales.schemes', 'label' => 'Trade Schemes', 'icon' => 'gift', 'permission' => 'sales.view', 'headOffice' => true],
                 ]],
                 ['icon' => 'building-storefront', 'label' => 'Customers', 'links' => [
                     ['route' => 'retailers.index', 'label' => 'Retailers', 'icon' => 'building-storefront', 'permission' => 'retailers.view'],
                     ['route' => 'dealers.index', 'label' => 'Dealers', 'icon' => 'building-storefront', 'permission' => 'dealers.view'],
+                    ['route' => 'dealers.targets', 'label' => 'Dealer Targets', 'icon' => 'trending-up', 'permission' => 'dealers.view', 'headOffice' => true],
                     ['route' => 'inventory.areas', 'label' => 'Areas', 'icon' => 'map-pin', 'permission' => 'inventory.view', 'headOffice' => true],
                 ]],
                 ['icon' => 'user-group', 'label' => 'Marketing Staff', 'links' => [

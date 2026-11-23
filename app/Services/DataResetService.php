@@ -35,7 +35,7 @@ class DataResetService
     public const TRANSACTIONS = [
         'advances', 'assembly_order_items', 'assembly_orders', 'attendance_punches', 'attendances', 'audit_logs',
         'batches', 'bonuses', 'cheques', 'collections', 'commissions', 'company_return_items', 'company_returns',
-        'cost_sheet_items', 'cost_sheets', 'damage_actions', 'damage_records', 'delivery_invoice_items',
+        'cost_sheet_items', 'cost_sheets', 'damage_actions', 'damage_records', 'dealer_targets', 'delivery_invoice_items',
         'delivery_invoices', 'delivery_note_items', 'delivery_notes', 'employee_loans', 'final_settlements',
         'fiscal_year_closings', 'goods_receipt_items', 'goods_receipts', 'import_costs', 'import_items',
         'import_shipments', 'journal_lines', 'journal_entries', 'leave_applications', 'machine_maintenances',
@@ -51,7 +51,7 @@ class DataResetService
     public const MASTER = [
         'areas', 'brands', 'categories', 'companies', 'products', 'product_prices', 'product_units', 'boms',
         'bom_items', 'dealers', 'dealer_representative', 'employees', 'factories', 'machines', 'representatives',
-        'retailers', 'warehouses', 'attendance_devices',
+        'retailers', 'schemes', 'warehouses', 'attendance_devices',
     ];
 
     /** Tables in the database that none of the lists name. */

@@ -140,6 +140,9 @@ class OrderCreate extends Component
             return $order;
         });
 
+        app(\App\Services\SchemeService::class)->apply($order->fresh());
+        $order->refresh();
+
         $recipients = \App\Support\Staff::approvers(\App\Support\Staff::dealerOfRetailer($order->retailer_id), 'sales_order_pending');
         Notification::send($recipients, new SalesOrderPending($order));
 

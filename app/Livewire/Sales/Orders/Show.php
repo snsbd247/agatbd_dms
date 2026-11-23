@@ -117,7 +117,7 @@ class Show extends Component
 
     public function render()
     {
-        $this->salesOrder->load(['retailer', 'representative', 'warehouse', 'items.product', 'deliveryNotes', 'invoices', 'deliveryInvoices']);
+        $this->salesOrder->load(['retailer', 'representative', 'warehouse', 'items.product', 'items.scheme', 'deliveryNotes', 'invoices', 'deliveryInvoices']);
 
         return view('livewire.sales.orders.show', [
             'vatOn' => \App\Services\Vat\VatService::appliesTo($this->salesOrder->retailer),

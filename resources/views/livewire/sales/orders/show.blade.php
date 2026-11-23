@@ -105,11 +105,18 @@
             <tbody class="divide-y">
                 @foreach($salesOrder->items as $item)
                     <tr>
-                        <td class="px-4 py-3 font-medium" data-label="{{ __('Product') }}">{{ $item->product?->name }}</td>
+                        <td class="px-4 py-3 font-medium" data-label="{{ __('Product') }}">
+                            {{ $item->product?->name }}
+                            @if($item->is_free)<span class="ml-1 px-1.5 py-0.5 rounded bg-green-100 text-green-700 text-xs">{{ __('Free') }}</span>@endif
+                            @if($item->scheme)<span class="block text-xs text-indigo-600 font-normal">{{ $item->scheme->name }}</span>@endif
+                        </td>
                         <td class="px-4 py-3" data-label="{{ __('Ordered') }}">{{ rtrim(rtrim(number_format($item->quantity, 3), '0'), '.') }}</td>
                         <td class="px-4 py-3" data-label="{{ __('Delivered') }}">{{ rtrim(rtrim(number_format($item->delivered_quantity, 3), '0'), '.') }}</td>
                         <td class="px-4 py-3" data-label="{{ __('Remaining') }}">{{ rtrim(rtrim(number_format($item->quantity - $item->delivered_quantity, 3), '0'), '.') }}</td>
-                        <td class="px-4 py-3" data-label="{{ __('Unit Price') }}">৳ {{ number_format($item->unit_price, 2) }}</td>
+                        <td class="px-4 py-3" data-label="{{ __('Unit Price') }}">
+                            @if($item->list_price !== null && (float) $item->list_price !== (float) $item->unit_price)<span class="line-through text-slate-400 text-xs mr-1">৳ {{ number_format($item->list_price, 2) }}</span>@endif
+                            ৳ {{ number_format($item->unit_price, 2) }}
+                        </td>
                     </tr>
                 @endforeach
             </tbody>

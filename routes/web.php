@@ -241,6 +241,7 @@ Route::middleware('auth')->group(function () {
 
     Route::middleware('can:dealers.view')->prefix('dealers')->name('dealers.')->group(function () {
         Route::get('/', DealersIndex::class)->name('index');
+        Route::get('/targets', \App\Livewire\Dealers\Targets::class)->name('targets');
         Route::get('/{dealer}', DealersShow::class)->name('show');
     });
 
@@ -266,6 +267,7 @@ Route::middleware('auth')->group(function () {
 
     Route::middleware('can:sales.view')->prefix('sales')->name('sales.')->group(function () {
         Route::get('/orders', SalesOrderIndex::class)->name('orders.index');
+        Route::get('/schemes', \App\Livewire\Sales\Schemes::class)->name('schemes');
         Route::get('/orders/create', SalesOrderCreate::class)->name('orders.create');
         Route::get('/orders/{salesOrder}', SalesOrderShow::class)->name('orders.show');
         Route::get('/orders/{salesOrder}/edit', SalesOrderCreate::class)->middleware('can:sales.create')->name('orders.edit');

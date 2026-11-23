@@ -44,11 +44,12 @@ class Create extends Component
             $this->retailer_id = $salesOrder->retailer_id;
             $this->warehouse_id = $salesOrder->warehouse_id;
             $this->order_date = $salesOrder->order_date->toDateString();
-            $this->items = $salesOrder->items->map(fn ($i) => [
+            // Free-goods lines and scheme prices are worked out again on save.
+            $this->items = $salesOrder->items->reject(fn ($i) => $i->is_free)->map(fn ($i) => [
                 'product_id' => $i->product_id,
                 'quantity' => (float) $i->quantity,
-                'unit_price' => (string) $i->unit_price,
-            ])->all();
+                'unit_price' => (string) ($i->list_price ?? $i->unit_price),
+            ])->values()->all();
 
             return;
         }
@@ -206,6 +207,12 @@ class Create extends Component
 
             return $order;
         });
+
+        $applied = app(\App\Services\SchemeService::class)->apply($order->fresh());
+        if ($applied) {
+            session()->flash('success', __('Schemes applied: :list', ['list' => implode(', ', $applied)]));
+        }
+        $order->refresh();
 
         if (! $editing && in_array($order->status, ['pending', 'credit_hold'], true)) {
             $recipients = \App\Support\Staff::approvers(\App\Support\Staff::dealerOfRetailer($order->retailer_id), 'sales_order_pending');

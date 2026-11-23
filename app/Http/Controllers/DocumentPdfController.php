@@ -101,7 +101,7 @@ class DocumentPdfController extends Controller
             'meta' => [$o->representative ? __('Representative').': '.$o->representative->name : null],
             'parties' => [$this->retailerParty($o->retailer, __('Customer')), $this->warehouseParty($o->warehouse, __('From warehouse'))],
             'columns' => [[__('Product'), 'l', null], [__('Quantity'), 'r', 12], [__('Unit'), 'c', 8], [__('Unit Price'), 'r', 14], [__('Amount'), 'r', 16]],
-            'rows' => $o->items->map(fn ($i) => [$i->product?->name.' ('.$i->product?->sku.')', $this->q($i->quantity), $this->unit($i->product), $this->m($i->unit_price), $this->m($i->quantity * $i->unit_price)])->all(),
+            'rows' => $o->items->map(fn ($i) => [$i->product?->name.' ('.$i->product?->sku.')'.($i->is_free ? ' — '.__('Free') : ($i->list_price !== null ? ' — '.__('scheme price, list :p', ['p' => $this->m($i->list_price)]) : '')), $this->q($i->quantity), $this->unit($i->product), $this->m($i->unit_price), $this->m($i->quantity * $i->unit_price)])->all(),
             'totals' => array_values(array_filter([
                 [__('Subtotal'), $this->m($o->subtotal)],
                 (float) $o->discount > 0 ? [__('Discount'), '- '.$this->m($o->discount)] : null,
