@@ -2711,5 +2711,8 @@
     "VAT kept back from suppliers (VDS) to deposit": "সাপ্লায়ারদের থেকে কর্তনকৃত ভ্যাট (VDS) জমা দিতে হবে",
     "Customers' VDS certificates this month (already taken off output VAT)": "এই মাসে গ্রাহকদের VDS সনদ (উৎপাদ কর থেকে ইতিমধ্যে বাদ)",
     "BIN (VAT registration)": "BIN (ভ্যাট নিবন্ধন)",
-    "VDS Payable (VAT deducted at source)": "উৎসে কর্তিত ভ্যাট প্রদেয় (VDS)"
+    "VDS Payable (VAT deducted at source)": "উৎসে কর্তিত ভ্যাট প্রদেয় (VDS)",
+    "No product with the code :c.": ":c কোডের কোনো পণ্য নেই।",
+    ":p added.": ":p যোগ হয়েছে।",
+    "Scan barcode with the camera": "ক্যামেরা দিয়ে বারকোড স্ক্যান করুন"
 }

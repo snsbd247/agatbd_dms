@@ -21,7 +21,7 @@
                         <option value="{{ $category->id }}">{{ $category->name }}</option>
                     @endforeach
                 </select>
-                <input wire:model.live.debounce.300ms="productSearch" type="search" placeholder="{{ __('Search products…') }}" class="border rounded-lg px-3 py-2 text-sm flex-1">
+                <div class="relative flex-1"><input wire:model.live.debounce.300ms="productSearch" type="search" placeholder="{{ __('Search products…') }}" class="border rounded-lg pl-3 pr-10 py-2 text-sm w-full"><button type="button" x-data x-on:click="window.dmsScan().then(c => c && $wire.addByCode(c))" class="absolute right-1.5 top-1/2 -translate-y-1/2 rounded-md p-1.5 text-slate-500 hover:bg-slate-100 hover:text-indigo-600" title="{{ __('Scan barcode with the camera') }}" aria-label="{{ __('Scan barcode with the camera') }}"><svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.6" stroke="currentColor"><path stroke-linecap="round" d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2M7 8v8M10 8v8M13 8v8M16.5 8v8"/></svg></button></div>@if($scanMessage)<p class="text-xs text-indigo-600 w-full">{{ $scanMessage }}</p>@endif
             </div>
             <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 p-4 max-h-[70vh] overflow-y-auto">
                 @forelse($products as $product)

@@ -22,6 +22,8 @@ use Livewire\Component;
 #[Title('New Sales Order')]
 class Create extends Component
 {
+    use \App\Livewire\Concerns\AddsProductByCode;
+
     public ?int $retailer_id = null;
     public ?int $warehouse_id = null;
     public string $order_date;

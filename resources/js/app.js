@@ -50,3 +50,61 @@ window.dmsExportTable = function (filename) {
     a.click();
     setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
 };
+
+// Camera barcode / QR scanner. window.dmsScan() opens the camera and
+// resolves with the first code read (or null if closed). Uses the browser's
+// own BarcodeDetector where there is one (Chrome, Android) and loads the
+// ZXing reader only when needed (iPhone Safari, Firefox).
+window.dmsScan = function () {
+    return new Promise((resolve) => {
+        const bn = document.documentElement.lang === 'bn';
+        const overlay = document.createElement('div');
+        overlay.className = 'fixed inset-0 z-[60] bg-black/90 flex flex-col items-center justify-center p-4';
+        overlay.innerHTML = '<video playsinline muted class="w-full max-w-md rounded-xl bg-black aspect-[3/4] object-cover"></video>'
+            + '<div class="pointer-events-none absolute w-64 h-40 border-2 border-white/80 rounded-lg"></div>'
+            + '<p class="text-white text-sm mt-3 text-center" data-msg>' + (bn ? 'বারকোড বা QR কোড ফ্রেমের ভেতরে ধরুন' : 'Hold the barcode or QR code inside the frame') + '</p>'
+            + '<button type="button" class="mt-4 px-6 py-2 rounded-lg bg-white text-slate-800 font-medium">' + (bn ? 'বন্ধ করুন' : 'Close') + '</button>';
+        document.body.appendChild(overlay);
+        const video = overlay.querySelector('video');
+        const msg = overlay.querySelector('[data-msg]');
+        let stream = null, stopZxing = null, done = false, timer = null;
+
+        const finish = (code) => {
+            if (done) return;
+            done = true;
+            clearInterval(timer);
+            if (stopZxing) { try { stopZxing(); } catch (e) {} }
+            if (stream) stream.getTracks().forEach(t => t.stop());
+            overlay.remove();
+            if (code && navigator.vibrate) navigator.vibrate(80);
+            resolve(code || null);
+        };
+        overlay.querySelector('button').addEventListener('click', () => finish(null));
+
+        (async () => {
+            try {
+                if ('BarcodeDetector' in window) {
+                    const detector = new window.BarcodeDetector({ formats: ['ean_13', 'ean_8', 'code_128', 'code_39', 'upc_a', 'upc_e', 'qr_code', 'itf'] });
+                    stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+                    video.srcObject = stream;
+                    await video.play();
+                    timer = setInterval(async () => {
+                        try {
+                            const found = await detector.detect(video);
+                            if (found.length) finish(found[0].rawValue);
+                        } catch (e) {}
+                    }, 250);
+                } else {
+                    const { BrowserMultiFormatReader } = await import('@zxing/browser');
+                    const reader = new BrowserMultiFormatReader();
+                    const controls = await reader.decodeFromConstraints({ video: { facingMode: 'environment' } }, video, (result) => {
+                        if (result) finish(result.getText());
+                    });
+                    stopZxing = () => controls.stop();
+                }
+            } catch (e) {
+                msg.textContent = bn ? 'ক্যামেরা চালু করা যায়নি। অনুমতি দিন, অথবা HTTPS-এ খুলুন।' : 'Could not start the camera. Allow camera access, or open the site over HTTPS.';
+            }
+        })();
+    });
+};

@@ -25,6 +25,8 @@ use Livewire\Component;
 #[Title('New Order')]
 class OrderCreate extends Component
 {
+    use \App\Livewire\Concerns\AddsProductByCode;
+
     use ForCurrentRetailer;
 
     /** @var array<int, array{product_id: int, quantity: float|string}> */

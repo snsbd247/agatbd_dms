@@ -334,4 +334,14 @@ class ActionButtonsTest extends TestCase
         Livewire::test(\App\Livewire\Hr\Leaves::class)->call('cancelLeave', $other->id)->assertSee('already approved');
         $this->assertSame('approved', $other->fresh()->status);
     }
+
+    public function test_a_scanned_barcode_or_sku_adds_the_product(): void
+    {
+        $p = $this->product(['type' => 'finished_good', 'barcode' => '8901234567890', 'sku' => 'SCAN-1']);
+
+        $c = Livewire::test(SalesOrderForm::class)->call('addByCode', '8901234567890')->assertSet('items.0.product_id', $p->id);
+        $c->call('addByCode', 'SCAN-1')->assertSet('items.0.quantity', 2.0);
+        $c->call('addByCode', 'nope')->assertSet('scanMessage', 'No product with the code nope.');
+        $this->get(route('sales.orders.create'))->assertOk()->assertSee('Scan barcode with the camera');
+    }
 }
