@@ -78,7 +78,12 @@
         @forelse($returnRequest->receives as $receive)
             <div class="flex justify-between py-2 border-b last:border-0">
                 <span>{{ $receive->number }}</span>
-                <span class="text-slate-500">{{ $receive->receive_date->format('d M Y') }}</span>
+                <span class="flex items-center gap-3">
+                    <span class="text-slate-500">{{ $receive->receive_date->format('d M Y') }}</span>
+                    @if(\App\Services\Vat\VatService::appliesTo($returnRequest->retailer))
+                        <a href="{{ route('returns.credit-note', $receive) }}" target="_blank" class="rounded border border-emerald-300 px-1.5 py-0.5 text-xs font-semibold text-emerald-700 hover:bg-emerald-50">{{ __('Mushak 6.7') }}</a>
+                    @endif
+                </span>
             </div>
         @empty
             <p class="text-slate-400">{{ __('Not received yet.') }}</p>

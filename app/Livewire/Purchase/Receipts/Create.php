@@ -22,6 +22,10 @@ class Create extends Component
 
     public array $lines = [];
 
+    /** The supplier's VAT invoice (Mushak 6.3): its number and the VAT on it. */
+    public string $supplier_invoice_no = '';
+    public string $vat_amount = '';
+
     public function mount(): void
     {
         $this->authorize('purchase.manage');
@@ -52,6 +56,11 @@ class Create extends Component
     public function save(NumberGeneratorService $numbers, InventoryService $inventory): void
     {
         $this->authorize('purchase.manage');
+        // First: validate() clears the error bag, so it must run before the line checks below.
+        $this->validate([
+            'supplier_invoice_no' => 'nullable|string|max:60',
+            'vat_amount' => 'nullable|numeric|min:0',
+        ]);
 
         $hasAny = false;
 
@@ -79,6 +88,7 @@ class Create extends Component
             $this->addError('lines', 'Enter a quantity for at least one item.');
         }
 
+
         if ($this->getErrorBag()->isNotEmpty()) {
             return;
         }
@@ -89,6 +99,8 @@ class Create extends Component
                 'purchase_order_id' => $this->purchaseOrder->id,
                 'warehouse_id' => $this->purchaseOrder->warehouse_id,
                 'receipt_date' => today(),
+                'supplier_invoice_no' => $this->supplier_invoice_no ?: null,
+                'vat_amount' => \App\Services\Vat\VatService::enabled() ? round((float) $this->vat_amount, 2) : 0,
                 'total_amount' => 0,
                 'created_by' => Auth::id(),
             ]);
@@ -144,6 +156,6 @@ class Create extends Component
 
     public function render()
     {
-        return view('livewire.purchase.receipts.create');
+        return view('livewire.purchase.receipts.create', ['vatOn' => \App\Services\Vat\VatService::enabled()]);
     }
 }

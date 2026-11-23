@@ -307,6 +307,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/company-returns/{companyReturn}', CompanyReturnShow::class)->name('company.show');
         Route::get('/{returnRequest}', ReturnRequestShow::class)->name('show');
         Route::get('/{returnRequest}/edit', ReturnRequestCreate::class)->middleware('can:returns.create')->name('edit');
+        Route::get('/receives/{returnReceive}/mushak', [DocumentPrintController::class, 'creditNote'])->whereNumber('returnReceive')->name('credit-note');
         Route::get('/{returnRequest}/receive', ReturnReceiveCreate::class)->middleware('can:returns.manage')->name('receive');
     });
 

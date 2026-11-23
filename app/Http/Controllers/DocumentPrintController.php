@@ -62,6 +62,60 @@ class DocumentPrintController extends Controller
         return $this->renderReceipt($collection);
     }
 
+    /** Mushak 6.7: the credit note for goods a head-office customer sent back. */
+    public function creditNote(\App\Models\Returns\ReturnReceive $returnReceive)
+    {
+        abort_unless(auth()->user()->can('returns.view'), 403);
+        $returnReceive->load(['items.product.unit', 'returnRequest.items', 'returnRequest.retailer']);
+        $request = $returnReceive->returnRequest;
+        $customer = $request?->retailer;
+        abort_unless(\App\Services\Vat\VatService::appliesTo($customer), 404);
+
+        $prices = $request?->items->pluck('unit_price', 'product_id') ?? collect();
+        $rows = $returnReceive->items->map(function ($item) use ($prices) {
+            $rate = (float) ($item->product?->vat_rate ?? 0);
+            $total = round((float) $item->quantity * (float) ($prices[$item->product_id] ?? 0), 2);
+            $vat = \App\Services\Vat\VatService::included($total, $rate);
+            $value = round($total - $vat, 2);
+
+            return [
+                'name' => (string) $item->product?->name,
+                'unit' => (string) $item->product?->unit?->short_code,
+                'quantity' => (float) $item->quantity,
+                'unit_price' => (float) $item->quantity > 0 ? $value / (float) $item->quantity : 0,
+                'value' => $value,
+                'rate' => $rate,
+                'vat' => $vat,
+                'total' => $total,
+            ];
+        })->all();
+
+        // The customer's earlier invoices for these products (the original 6.3s).
+        $invoices = SalesInvoice::where('retailer_id', $customer->id)
+            ->whereDate('invoice_date', '<=', $returnReceive->receive_date)
+            ->whereHas('items', fn ($q) => $q->whereIn('product_id', $returnReceive->items->pluck('product_id')))
+            ->latest('invoice_date')->limit(3)->pluck('number')->implode(', ');
+
+        $locale = app()->getLocale();
+        app()->setLocale('bn');
+
+        try {
+            return PdfService::stream('pdfs.mushak-6-7', [
+                'receive' => $returnReceive,
+                'request' => $request,
+                'customer' => $customer,
+                'reason' => $request?->reason,
+                'invoices' => $invoices,
+                'rows' => $rows,
+                'company' => CompanyProfile::first(),
+                'bin' => \App\Services\Vat\VatService::bin(),
+                'signer' => auth()->user(),
+                'signerTitle' => __(auth()->user()?->getRoleNames()->first() ?? ''),
+            ], 'mushak-6.7-'.$returnReceive->number.'.pdf', 'landscape');
+        } finally {
+            app()->setLocale($locale);
+        }
+    }
     private function abortUnlessOwnRetailer(?int $retailerId): void
     {
         $retailer = auth()->user()?->customerAccount();

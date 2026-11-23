@@ -44,7 +44,7 @@ class DataResetService
         'purchase_return_items', 'purchase_returns', 'repair_jobs', 'representative_targets', 'retailer_ledger',
         'return_receive_items', 'return_receives', 'return_request_items', 'return_requests', 'sales_invoice_items',
         'sales_invoices', 'sales_order_items', 'sales_orders', 'sms_logs', 'stock_adjustments', 'stock_ledger',
-        'stock_transfer_items', 'stock_transfers', 'stocks', 'warranty_claims', 'warranty_tracking',
+        'stock_transfer_items', 'stock_transfers', 'stocks', 'vat_returns', 'warranty_claims', 'warranty_tracking',
     ];
 
     /** Cleared only by "all". */

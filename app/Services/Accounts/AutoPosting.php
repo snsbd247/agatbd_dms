@@ -108,7 +108,9 @@ class AutoPosting
                 'narration' => __('Goods receipt :n', ['n' => $receipt->number])],
             [
                 ['account' => 'inventory', 'debit' => $value],
-                ['account' => 'ap', 'credit' => $value, 'party_type' => 'company', 'party_id' => $receipt->purchaseOrder?->company_id],
+                // VAT on the supplier's Mushak 6.3 is claimed back as input VAT; the supplier is owed it too.
+                ['account' => 'vat_input', 'debit' => round((float) $receipt->vat_amount, 2)],
+                ['account' => 'ap', 'credit' => round($value + (float) $receipt->vat_amount, 2), 'party_type' => 'company', 'party_id' => $receipt->purchaseOrder?->company_id],
             ],
         ]);
     }

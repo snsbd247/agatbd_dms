@@ -37,6 +37,22 @@
             @endforeach
         </div>
 
+        @if($vatOn)
+            <div class="mt-4 grid sm:grid-cols-2 gap-3 bg-emerald-50 border border-emerald-100 rounded-lg p-3">
+                <div>
+                    <label class="text-sm text-slate-600">{{ __('Supplier\'s VAT invoice (Mushak 6.3) no.') }}</label>
+                    <input wire:model="supplier_invoice_no" type="text" class="w-full border rounded-lg p-2 mt-1 bg-white">
+                    @error('supplier_invoice_no') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
+                </div>
+                <div>
+                    <label class="text-sm text-slate-600">{{ __('VAT on that invoice (input VAT)') }}</label>
+                    <input wire:model="vat_amount" type="number" step="0.01" min="0" class="w-full border rounded-lg p-2 mt-1 bg-white">
+                    @error('vat_amount') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
+                </div>
+                <p class="sm:col-span-2 text-xs text-slate-500">{{ __('Unit costs above are without VAT. The VAT is added to what you owe the supplier and claimed back in the VAT return.') }}</p>
+            </div>
+        @endif
+
         <div class="mt-6 flex justify-end gap-2">
             <a href="{{ route('purchase.orders.show', $purchaseOrder) }}" class="px-4 py-2 rounded-lg text-slate-600">{{ __('Cancel') }}</a>
             <button wire:click="save" class="px-4 py-2 rounded-lg bg-green-600 text-white font-medium">{{ __('Confirm Receipt') }}</button>

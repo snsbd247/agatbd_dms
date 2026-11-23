@@ -16,7 +16,7 @@ class GoodsReceipt extends Model
 
     use Auditable;
 
-    protected $fillable = ['number', 'purchase_order_id', 'warehouse_id', 'receipt_date', 'total_amount', 'created_by'];
+    protected $fillable = ['number', 'purchase_order_id', 'warehouse_id', 'receipt_date', 'supplier_invoice_no', 'total_amount', 'vat_amount', 'created_by'];
 
     protected function casts(): array
     {

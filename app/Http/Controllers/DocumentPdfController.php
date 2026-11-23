@@ -139,11 +139,13 @@ class DocumentPdfController extends Controller
             'title' => __('Goods Receipt Note'),
             'number' => $r->number,
             'date' => $this->d($r->receipt_date),
-            'meta' => [__('Purchase Order').': '.$r->purchaseOrder?->number],
+            'meta' => [__('Purchase Order').': '.$r->purchaseOrder?->number, $r->supplier_invoice_no ? __('Supplier invoice').': '.$r->supplier_invoice_no : null],
             'parties' => [$this->companyParty($r->purchaseOrder?->company, __('Supplier')), $this->warehouseParty($r->warehouse, __('Received at'))],
             'columns' => [[__('Product'), 'l', null], [__('Batch No'), 'l', 14], [__('Expiry Date'), 'c', 12], [__('Quantity'), 'r', 10], [__('Unit Cost'), 'r', 12], [__('Amount'), 'r', 14]],
             'rows' => $r->items->map(fn ($i) => [$i->product?->name, $i->batch_no, $this->d($i->expiry_date), $this->q($i->quantity).' '.$this->unit($i->product), $this->m($i->unit_cost), $this->m($i->quantity * $i->unit_cost)])->all(),
-            'totals' => [[__('Total'), $this->m($r->total_amount), true]],
+            'totals' => (float) $r->vat_amount > 0
+                ? [[__('Value'), $this->m($r->total_amount)], [__('Input VAT'), $this->m($r->vat_amount)], [__('Total'), $this->m((float) $r->total_amount + (float) $r->vat_amount), true]]
+                : [[__('Total'), $this->m($r->total_amount), true]],
             'signatures' => [__('Received by').($r->createdBy ? ': '.$r->createdBy->name : ''), __('Store keeper'), __('Approved by')],
         ];
     }
