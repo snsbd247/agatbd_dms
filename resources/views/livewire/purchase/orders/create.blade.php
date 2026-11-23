@@ -74,7 +74,7 @@
 
         <div class="mt-6 flex justify-end gap-2">
             <a href="{{ route('purchase.orders.index') }}" class="px-4 py-2 rounded-lg text-slate-600">{{ __('Cancel') }}</a>
-            <button wire:click="save" class="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-medium">{{ __('Save as Draft') }}</button>
+            <button wire:click="save" class="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-medium">{{ $editingId ? __('Save changes') : __('Save as Draft') }}</button>
         </div>
     </div>
 </div>

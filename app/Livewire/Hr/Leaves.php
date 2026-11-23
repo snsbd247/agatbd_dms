@@ -91,6 +91,15 @@ class Leaves extends Component
         $leave->update(['status' => $decision, 'decided_by' => auth()->id(), 'decided_at' => now()]);
     }
 
+    /** Delete an application that has not been decided yet. */
+    public function delete(int $id): void
+    {
+        $this->authorize('hr.manage');
+        $leave = \App\Models\Hr\LeaveApplication::findOrFail($id);
+        if ($leave->status === 'pending') {
+            $leave->delete();
+        }
+    }
     public function render()
     {
         $leaves = LeaveApplication::with(['employee', 'leaveType', 'decider'])

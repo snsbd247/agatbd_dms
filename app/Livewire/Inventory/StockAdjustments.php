@@ -113,6 +113,21 @@ class StockAdjustments extends Component
         session()->flash('status', 'Stock adjusted.');
     }
 
+    /** Undo an adjustment: the opposite movement, and its voucher reversed. */
+    public function void(int $id, string $reason): void
+    {
+        $this->authorize('accounts.manage');
+        $this->authorize('inventory.manage');
+
+        try {
+            app(\App\Services\VoidService::class)->adjustment(StockAdjustment::findOrFail($id), mb_substr(trim($reason), 0, 200));
+        } catch (\RuntimeException $e) {
+            session()->flash('error', $e->getMessage());
+
+            return;
+        }
+        session()->flash('success', __('Adjustment voided.'));
+    }
     public function render()
     {
         $adjustments = StockAdjustment::query()
@@ -173,6 +188,8 @@ class StockAdjustments extends Component
 
         return view('livewire.inventory.stock-adjustments', [
             'adjustments' => $adjustments,
+            'voidedIds' => StockAdjustment::where('reason', 'like', 'VOID #%')->pluck('reason')
+                ->map(fn ($r) => (int) preg_replace('/^VOID #(\d+):.*$/s', '$1', $r))->all(),
             'summary' => $summary,
             'warehouses' => Warehouse::orderBy('name')->get(),
             'formProducts' => $formProducts,

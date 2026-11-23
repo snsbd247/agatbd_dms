@@ -149,12 +149,13 @@ class InventoryService
         string $reason,
         ?int $userId,
         string $date,
+        bool $post = true,   // false when the books are handled by the caller (a void reverses the original voucher)
     ): StockAdjustment {
         if (abs($change) < 0.0005) {
             throw new \RuntimeException('Quantity change cannot be zero.');
         }
 
-        return DB::transaction(function () use ($warehouseId, $productId, $batchId, $change, $reason, $userId, $date) {
+        return DB::transaction(function () use ($warehouseId, $productId, $batchId, $change, $reason, $userId, $date, $post) {
             $stock = Stock::firstOrCreate(
                 ['warehouse_id' => $warehouseId, 'product_id' => $productId],
                 ['quantity' => 0]
@@ -237,7 +238,9 @@ class InventoryService
                 'adjusted_by' => $userId,
                 'adjustment_date' => $date,
             ]);
-            app(\App\Services\Accounts\AutoPosting::class)->stockAdjustment($adjustment);
+            if ($post) {
+                app(\App\Services\Accounts\AutoPosting::class)->stockAdjustment($adjustment);
+            }
 
             StockLedger::create([
                 'product_id' => $productId,

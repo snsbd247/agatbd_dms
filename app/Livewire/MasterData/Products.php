@@ -21,6 +21,8 @@ use Livewire\WithPagination;
 #[Title('Products')]
 class Products extends Component
 {
+    use \App\Livewire\Concerns\DeletesSafely;
+
     use WithPagination;
 
     public bool $showModal = false;
@@ -205,7 +207,7 @@ class Products extends Component
     public function delete(int $id): void
     {
         $this->authorize('master-data.manage');
-        Product::findOrFail($id)->delete();
+        $this->deleteSafely(Product::findOrFail($id));
     }
 
     public function resetForm(): void

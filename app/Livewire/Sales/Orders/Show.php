@@ -95,6 +95,21 @@ class Show extends Component
         $this->salesOrder->update(['status' => 'cancelled']);
     }
 
+    public function delete()
+    {
+        $this->authorize('sales.create');
+        $rep = auth()->user()->representative;
+        abort_if($rep && $this->salesOrder->representative_id !== $rep->id, 403);
+
+        if (! $this->salesOrder->deleteIfEditable()) {
+            session()->flash('error', __('Only a pending order with no delivery or invoice can be deleted. Cancel it instead.'));
+
+            return null;
+        }
+
+        return $this->redirect(route('sales.orders.index'));
+    }
+
     public function printDeliveryInvoices()
     {
         return redirect()->route('delivery.sales-order.invoices.print', $this->salesOrder->id);

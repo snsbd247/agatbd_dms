@@ -33,7 +33,7 @@
                     <th class="px-4 py-3 text-right">{{ __('Yield') }}</th>
                     <th class="px-4 py-3 text-right">{{ __('Unit cost') }}</th>
                     <th class="px-4 py-3">{{ __('Status') }}</th>
-                </tr>
+                <th class="px-4 py-3"></th></tr>
             </thead>
             <tbody class="divide-y">
                 @forelse($orders as $o)
@@ -47,9 +47,15 @@
                         <td class="px-4 py-3 text-right" data-label="{{ __('Yield') }}">{{ $o->yieldPercent() !== null ? $o->yieldPercent().'%' : '—' }}</td>
                         <td class="px-4 py-3 text-right" data-label="{{ __('Unit cost') }}">{{ $o->status === 'completed' ? '৳ '.number_format((float) $o->unit_cost, 2) : '—' }}</td>
                         <td class="px-4 py-3" data-label="{{ __('Status') }}"><span class="px-2 py-0.5 rounded-full text-xs {{ $pill[$o->status] ?? '' }}">{{ $o->statusLabel() }}</span></td>
-                    </tr>
+                        <td class="px-4 py-3 text-right whitespace-nowrap" data-actions>
+                    <div class="inline-flex gap-1">
+                        <x-icon-action :href="route('production.orders.show', $o)" icon="eye" color="blue" label="View" />
+                        <x-icon-action :href="route('production.orders.pdf', $o)" target="_blank" icon="printer" color="green" label="Print" />
+                    </div>
+                </td>
+            </tr>
                 @empty
-                    <tr><td colspan="9" class="px-4 py-8 text-center text-slate-400">{{ __('No production batches yet.') }}</td></tr>
+                    <tr><td colspan="10" class="px-4 py-8 text-center text-slate-400">{{ __('No production batches yet.') }}</td></tr>
                 @endforelse
             </tbody>
         </table>

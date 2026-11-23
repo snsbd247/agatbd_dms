@@ -12,6 +12,8 @@ use Livewire\WithPagination;
 #[Title('Areas')]
 class Areas extends Component
 {
+    use \App\Livewire\Concerns\DeletesSafely;
+
     use WithPagination;
 
     public bool $showModal = false;
@@ -76,7 +78,7 @@ class Areas extends Component
     public function delete(int $id): void
     {
         $this->authorize('inventory.manage');
-        Area::findOrFail($id)->delete();
+        $this->deleteSafely(Area::findOrFail($id));
     }
 
     public function resetForm(): void

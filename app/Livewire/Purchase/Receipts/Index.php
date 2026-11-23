@@ -36,6 +36,22 @@ class Index extends Component
         $this->resetPage();
     }
 
+    /** Cancel a receipt whose stock is untouched: stock out, order reopened, payable reversed. */
+    public function void(int $id, string $reason): void
+    {
+        $this->authorize('accounts.manage');
+        $this->authorize('purchase.manage');
+        $receipt = \App\Models\Purchase\GoodsReceipt::findOrFail($id);
+
+        try {
+            app(\App\Services\VoidService::class)->goodsReceipt($receipt, mb_substr(trim($reason), 0, 200));
+        } catch (\RuntimeException $e) {
+            session()->flash('error', $e->getMessage());
+
+            return;
+        }
+        session()->flash('success', __('Goods receipt :n voided.', ['n' => $receipt->number]));
+    }
     public function render()
     {
         $receipts = GoodsReceipt::query()

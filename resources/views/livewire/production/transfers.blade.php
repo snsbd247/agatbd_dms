@@ -8,7 +8,7 @@
     <div class="bg-white rounded-xl shadow overflow-hidden overflow-x-auto">
         <table class="w-full text-sm rtable">
             <thead class="bg-slate-50 text-slate-500 text-left">
-                <tr><th class="px-4 py-3">{{ __('Number') }}</th><th class="px-4 py-3">{{ __('Date') }}</th><th class="px-4 py-3">{{ __('From') }}</th><th class="px-4 py-3">{{ __('To') }}</th><th class="px-4 py-3 text-right">{{ __('Batches') }}</th><th class="px-4 py-3">{{ __('By') }}</th></tr>
+                <tr><th class="px-4 py-3">{{ __('Number') }}</th><th class="px-4 py-3">{{ __('Date') }}</th><th class="px-4 py-3">{{ __('From') }}</th><th class="px-4 py-3">{{ __('To') }}</th><th class="px-4 py-3 text-right">{{ __('Batches') }}</th><th class="px-4 py-3">{{ __('By') }}</th><th class="px-4 py-3"></th></tr>
             </thead>
             <tbody class="divide-y">
                 @forelse($transfers as $t)
@@ -19,9 +19,15 @@
                         <td class="px-4 py-3" data-label="{{ __('To') }}">{{ $t->toWarehouse?->name }}</td>
                         <td class="px-4 py-3 text-right" data-label="{{ __('Batches') }}">{{ $t->items_count }}</td>
                         <td class="px-4 py-3 text-slate-500" data-label="{{ __('By') }}">{{ $t->creator?->name }}</td>
-                    </tr>
+                        <td class="px-4 py-3 text-right whitespace-nowrap" data-actions>
+                    <div class="inline-flex gap-1">
+                        <x-icon-action wire:click.stop="$set('viewing', {{ $t->id }})" icon="eye" color="blue" label="View" />
+                        <x-icon-action :href="route('documents.print', ['stock-transfer', $t->id])" target="_blank" onclick="event.stopPropagation()" icon="printer" color="green" label="Print" />
+                    </div>
+                </td>
+            </tr>
                 @empty
-                    <tr><td colspan="6" class="px-4 py-8 text-center text-slate-400">{{ __('No transfers yet.') }}</td></tr>
+                    <tr><td colspan="7" class="px-4 py-8 text-center text-slate-400">{{ __('No transfers yet.') }}</td></tr>
                 @endforelse
             </tbody>
         </table>

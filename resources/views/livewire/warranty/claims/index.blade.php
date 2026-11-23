@@ -1,4 +1,5 @@
 <div>
+    <x-flash />
     <div class="hidden sm:grid grid-cols-2 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-4">
         <x-stat-card icon="shield-exclamation" color="blue" label="Total Warranty Claims" :value="$summary['total']" />
         <x-stat-card icon="clock" color="orange" label="Pending" :value="$summary['pending']" />
@@ -87,10 +88,16 @@
                                 'bg-green-100 text-green-700' => in_array($claim->status, ['replaced', 'repaired']),
                             ])>{{ __(ucfirst($claim->status)) }}</span>
                         </td>
-                        <td class="px-4 py-3 text-right">
-                            <a href="{{ route('warranty.show', $claim) }}">
-                                <x-icon-action icon="eye" color="blue" label="View" />
-                            </a>
+                        <td class="px-4 py-3 text-right whitespace-nowrap">
+                            <div class="inline-flex gap-1">
+                                <x-icon-action :href="route('warranty.show', $claim)" icon="eye" color="blue" label="View" />
+                                <x-icon-action :href="route('documents.print', ['warranty-claim', $claim->id])" target="_blank" icon="printer" color="green" label="Print" />
+                                @if($claim->status === 'pending')
+                                    @can('warranty.manage')
+                                        <x-icon-action wire:click="delete({{ $claim->id }})" wire:confirm="{{ __('Delete this warranty claim?') }}" icon="trash" color="red" label="Delete" />
+                                    @endcan
+                                @endif
+                            </div>
                         </td>
                     </tr>
                 @empty

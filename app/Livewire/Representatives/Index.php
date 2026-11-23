@@ -15,6 +15,8 @@ use Livewire\WithPagination;
 #[Title('Representatives')]
 class Index extends Component
 {
+    use \App\Livewire\Concerns\DeletesSafely;
+
     use WithPagination;
 
     public string $search = '';
@@ -146,7 +148,7 @@ class Index extends Component
     public function delete(int $id): void
     {
         $this->authorize('representatives.manage');
-        Representative::findOrFail($id)->delete();
+        $this->deleteSafely(Representative::findOrFail($id));
     }
 
     public function resetForm(): void

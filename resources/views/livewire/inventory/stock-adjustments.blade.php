@@ -3,6 +3,7 @@
 @endphp
 
 <div>
+    <x-flash />
     <div class="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-4">
         <x-stat-card icon="refresh" color="indigo" label="Total Adjustments" :value="$summary['total']" />
         <x-stat-card icon="calendar" color="blue" label="This Month" :value="$summary['this_month']" />
@@ -45,7 +46,7 @@
                     <th class="px-4 py-3 text-right">{{ __('Change') }}</th>
                     <th class="px-4 py-3">{{ __('Reason') }}</th>
                     <th class="px-4 py-3">{{ __('By') }}</th>
-                </tr>
+                <th class="px-4 py-3"></th></tr>
             </thead>
             <tbody class="divide-y">
                 @forelse($adjustments as $a)
@@ -60,10 +61,19 @@
                         </td>
                         <td class="px-4 py-3 text-slate-600" data-label="{{ __('Reason') }}">{{ $a->reason }}</td>
                         <td class="px-4 py-3 text-slate-500 rtable-hide-mobile" data-label="{{ __('By') }}">{{ $a->adjustedBy?->name ?? '—' }}</td>
-                    </tr>
+                        <td class="px-4 py-3 text-right whitespace-nowrap" data-actions>
+                    <div class="inline-flex gap-1">
+                        @can('accounts.manage')
+                            @unless(str_starts_with((string) $a->reason, 'VOID') || in_array($a->id, $voidedIds, true))
+                                <x-icon-action x-on:click="let r = prompt(@js(__('Why is this adjustment being voided? The stock change will be undone.'))); if (r && r.trim()) $wire.void({{ $a->id }}, r.trim())" icon="x-circle" color="red" label="Void" />
+                            @endunless
+                        @endcan
+                    </div>
+                </td>
+            </tr>
                 @empty
                     <tr>
-                        <td colspan="7" class="px-4 py-8 text-center text-slate-400">{{ __('No stock adjustments yet.') }}</td>
+                        <td colspan="8" class="px-4 py-8 text-center text-slate-400">{{ __('No stock adjustments yet.') }}</td>
                     </tr>
                 @endforelse
             </tbody>

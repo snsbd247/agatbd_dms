@@ -129,6 +129,8 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/search', \App\Livewire\GlobalSearch::class)->name('search');
     Route::get('/help', \App\Livewire\Help::class)->name('help');
+    // Print (PDF) of orders, receipts, challans, returns, transfers ... (permission checked per type)
+    Route::get('/print/{type}/{id}', \App\Http\Controllers\DocumentPdfController::class)->whereNumber('id')->name('documents.print');
     Route::get('/notifications', NotificationsIndex::class)->name('notifications.index');
     Route::get('/notifications/{notification}/open', [NotificationController::class, 'open'])->name('notifications.open');
 
@@ -254,6 +256,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/orders', PurchaseOrderIndex::class)->name('orders.index');
         Route::get('/orders/create', PurchaseOrderCreate::class)->name('orders.create');
         Route::get('/orders/{purchaseOrder}', PurchaseOrderShow::class)->name('orders.show');
+        Route::get('/orders/{purchaseOrder}/edit', PurchaseOrderCreate::class)->middleware('can:purchase.manage')->name('orders.edit');
         Route::get('/orders/{purchaseOrder}/receive', GoodsReceiptCreate::class)->name('receipts.create');
         Route::get('/receipts', GoodsReceiptIndex::class)->name('receipts.index');
         Route::get('/returns', PurchaseReturnsIndex::class)->name('returns.index');
@@ -265,6 +268,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/orders', SalesOrderIndex::class)->name('orders.index');
         Route::get('/orders/create', SalesOrderCreate::class)->name('orders.create');
         Route::get('/orders/{salesOrder}', SalesOrderShow::class)->name('orders.show');
+        Route::get('/orders/{salesOrder}/edit', SalesOrderCreate::class)->middleware('can:sales.create')->name('orders.edit');
         Route::get('/orders/{salesOrder}/deliver', DeliveryCreate::class)->middleware('can:delivery.manage')->name('orders.deliver');
         Route::get('/invoices/{salesInvoice}/print', [DocumentPrintController::class, 'salesInvoice'])->name('invoices.print');
         Route::get('/invoices/{salesInvoice}/mushak', [DocumentPrintController::class, 'mushak'])->name('invoices.mushak');

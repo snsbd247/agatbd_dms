@@ -1,4 +1,5 @@
 <div>
+    <x-flash />
     <div class="hidden sm:grid grid-cols-2 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-4">
         <x-stat-card icon="shield-check" color="blue" label="Total Return Requests" :value="$summary['total']" />
         <x-stat-card icon="clock" color="orange" label="Pending" :value="$summary['pending']" />
@@ -84,10 +85,16 @@
                                 'bg-green-100 text-green-700' => $request->status === 'received',
                             ])>{{ __(ucfirst($request->status)) }}</span>
                         </td>
-                        <td class="px-4 py-3 text-right">
-                            <a href="{{ route('returns.show', $request) }}">
-                                <x-icon-action icon="eye" color="blue" label="View" />
-                            </a>
+                        <td class="px-4 py-3 text-right whitespace-nowrap">
+                            <div class="inline-flex gap-1">
+                                <x-icon-action :href="route('returns.show', $request)" icon="eye" color="blue" label="View" />
+                                <x-icon-action :href="route('documents.print', ['return-request', $request->id])" target="_blank" icon="printer" color="green" label="Print" />
+                                @if($request->status === 'pending')
+                                    @can('returns.create')
+                                        <x-icon-action wire:click="delete({{ $request->id }})" wire:confirm="{{ __('Delete this return request?') }}" icon="trash" color="red" label="Delete" />
+                                    @endcan
+                                @endif
+                            </div>
                         </td>
                     </tr>
                 @empty

@@ -23,7 +23,7 @@
                     <th class="px-4 py-3 text-right">{{ __('Costs paid') }}</th>
                     <th class="px-4 py-3">{{ __('ETA') }}</th>
                     <th class="px-4 py-3">{{ __('Status') }}</th>
-                </tr>
+                <th class="px-4 py-3"></th></tr>
             </thead>
             <tbody class="divide-y">
                 @forelse($shipments as $s)
@@ -35,9 +35,14 @@
                         <td class="px-4 py-3 text-right" data-label="{{ __('Costs paid') }}">৳ {{ number_format($s->costs->sum('amount'), 2) }}</td>
                         <td class="px-4 py-3 text-slate-500" data-label="{{ __('ETA') }}">{{ $s->eta?->format('d M Y') ?? '—' }}</td>
                         <td class="px-4 py-3" data-label="{{ __('Status') }}"><span @class(['rounded px-2 py-0.5 text-xs font-medium', 'bg-emerald-100 text-emerald-800' => $s->status === 'received', 'bg-slate-100 text-slate-500' => $s->status === 'cancelled', 'bg-sky-100 text-sky-800' => ! in_array($s->status, ['received', 'cancelled'], true)])>{{ $s->statusLabel() }}</span></td>
-                    </tr>
+                        <td class="px-4 py-3 text-right whitespace-nowrap" data-actions>
+                    <div class="inline-flex gap-1">
+                        <x-icon-action :href="route('import.show', $s)" icon="eye" color="blue" label="View" />
+                    </div>
+                </td>
+            </tr>
                 @empty
-                    <tr><td colspan="7" class="px-4 py-10 text-center text-slate-400">{{ __('No imports yet.') }}</td></tr>
+                    <tr><td colspan="8" class="px-4 py-10 text-center text-slate-400">{{ __('No imports yet.') }}</td></tr>
                 @endforelse
             </tbody>
         </table>

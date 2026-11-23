@@ -34,6 +34,14 @@ class Index extends Component
         $this->resetPage();
     }
 
+    public function delete(int $id): void
+    {
+        $this->authorize('purchase.manage');
+        if (! \App\Models\Purchase\PurchaseOrder::findOrFail($id)->deleteIfEditable()) {
+            session()->flash('error', __('Only a draft or sent order with nothing received can be deleted. Cancel it instead.'));
+        }
+    }
+
     public function render()
     {
         $orders = PurchaseOrder::query()

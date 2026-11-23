@@ -77,7 +77,12 @@ class Index extends Component
     public function delete(int $id): void
     {
         $this->authorize('payroll.manage');
-        Advance::findOrFail($id)->delete();
+        $advance = Advance::findOrFail($id);
+        if ($advance->deducted) {
+            return;   // already taken back through payroll
+        }
+        // Its payment voucher is reversed, so the books no longer show the advance.
+        app(\App\Services\VoidService::class)->deleteWithReversal($advance, 'advance', __('Advance deleted'));
     }
 
     public function resetForm(): void

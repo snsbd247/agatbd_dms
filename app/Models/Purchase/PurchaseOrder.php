@@ -55,4 +55,25 @@ class PurchaseOrder extends Model
     {
         return $this->hasMany(GoodsReceipt::class);
     }
+
+    /** Draft or sent with nothing received: the order can be changed or deleted. */
+    public function isEditable(): bool
+    {
+        return in_array($this->status, ['draft', 'sent'], true)
+            && ! $this->items()->where('received_quantity', '>', 0)->exists()
+            && ! $this->goodsReceipts()->exists();
+    }
+
+    public function deleteIfEditable(): bool
+    {
+        if (! $this->isEditable()) {
+            return false;
+        }
+        \Illuminate\Support\Facades\DB::transaction(function () {
+            $this->items()->delete();
+            $this->delete();
+        });
+
+        return true;
+    }
 }

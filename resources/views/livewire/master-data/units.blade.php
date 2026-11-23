@@ -1,4 +1,5 @@
 <div>
+    <x-flash />
     <div class="grid grid-cols-3 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-4">
         <x-stat-card icon="database" color="blue" label="Total Units" :value="$summary['total']" />
         <x-stat-card icon="shield-check" color="green" label="In Use" :value="$summary['in_use']" sublabel="Used by at least one product" />

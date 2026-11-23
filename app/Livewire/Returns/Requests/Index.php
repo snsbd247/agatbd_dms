@@ -34,6 +34,21 @@ class Index extends Component
         $this->resetPage();
     }
 
+    /** Delete a request that has not been approved or received yet. */
+    public function delete(int $id): void
+    {
+        $this->authorize('returns.create');
+        $r = \App\Models\Returns\ReturnRequest::findOrFail($id);
+        if ($r->status !== 'pending' || $r->receives()->exists()) {
+            session()->flash('error', __('Only a pending return request can be deleted.'));
+
+            return;
+        }
+        \Illuminate\Support\Facades\DB::transaction(function () use ($r) {
+            $r->items()->delete();
+            $r->delete();
+        });
+    }
     public function render()
     {
         $requests = ReturnRequest::query()

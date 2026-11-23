@@ -1,4 +1,5 @@
 <div>
+    <x-flash />
     <div class="hidden sm:grid grid-cols-2 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-4">
         <x-stat-card icon="shopping-bag" color="blue" label="Total Sales Orders" :value="$summary['total']" />
         <x-stat-card icon="clock" color="orange" label="Pending" :value="$summary['pending']" />
@@ -92,10 +93,17 @@
                                 'bg-green-100 text-green-700' => $order->status === 'completed',
                             ])>{{ __(ucfirst(str_replace('_', ' ', $order->status))) }}</span>
                         </td>
-                        <td class="px-4 py-3 text-right">
-                            <a href="{{ route('sales.orders.show', $order) }}">
-                                <x-icon-action icon="eye" color="blue" label="View" />
-                            </a>
+                        <td class="px-4 py-3 text-right whitespace-nowrap">
+                            <div class="inline-flex gap-1">
+                                <x-icon-action :href="route('sales.orders.show', $order)" icon="eye" color="blue" label="View" />
+                                @if(in_array($order->status, ['pending', 'credit_hold'], true))
+                                    @can('sales.create')
+                                        <x-icon-action :href="route('sales.orders.edit', $order)" icon="pencil" color="amber" label="Edit" />
+                                        <x-icon-action wire:click="delete({{ $order->id }})" wire:confirm="{{ __('Delete this order?') }}" icon="trash" color="red" label="Delete" />
+                                    @endcan
+                                @endif
+                                <x-icon-action :href="route('documents.print', ['sales-order', $order->id])" target="_blank" icon="printer" color="green" label="Print" />
+                            </div>
                         </td>
                     </tr>
                 @empty

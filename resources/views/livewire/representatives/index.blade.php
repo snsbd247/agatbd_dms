@@ -1,4 +1,5 @@
 <div>
+    <x-flash />
     <div class="grid grid-cols-3 sm:grid-cols-2 xl:grid-cols-5 gap-4 mb-4 items-stretch">
         <div class="xl:col-span-1"><x-stat-card icon="user-group" color="blue" label="Total Representatives" :value="$summary['total']" sublabel="All registered representatives" /></div>
         <div class="xl:col-span-1"><x-stat-card icon="shield-check" color="green" label="Active Representatives" :value="$summary['active']" sublabel="Currently active" /></div>

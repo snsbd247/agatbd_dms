@@ -129,3 +129,21 @@ a, button {
         content: none;
     }
 }
+
+/* Printing a list page (the Print button): only the page title and the
+   tables, no menu, header, filters or row buttons. */
+.print-only { display: none; }
+@media print {
+    @page { margin: 10mm; }
+    body { background: #fff !important; }
+    aside, header, nav, .no-print, [data-actions], button, input, select, form, .pagination,
+    .rtable td:last-child:has(> .inline-flex), th:empty { display: none !important; }
+    .print-only { display: block !important; }
+    main { padding: 0 !important; max-width: none !important; }
+    .shadow, .shadow-sm { box-shadow: none !important; }
+    .overflow-hidden, .overflow-x-auto { overflow: visible !important; }
+    table { font-size: 10px; }
+    tr { break-inside: avoid; }
+    a { color: inherit !important; text-decoration: none !important; }
+    .rtable td::before { content: none !important; }
+}

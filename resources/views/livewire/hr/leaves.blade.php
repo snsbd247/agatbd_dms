@@ -33,6 +33,7 @@
                                     @can('hr.manage')
                                         <button wire:click="decide({{ $l->id }}, 'approved')" class="px-2 py-1 rounded bg-green-600 text-white text-xs">{{ __('Approve') }}</button>
                                         <button wire:click="decide({{ $l->id }}, 'rejected')" class="px-2 py-1 rounded border border-red-200 text-red-600 text-xs">{{ __('Reject') }}</button>
+                                        <x-icon-action wire:click="delete({{ $l->id }})" wire:confirm="{{ __('Delete this leave application?') }}" icon="trash" color="red" label="Delete" class="align-middle ml-1" />
                                     @else
                                         <span class="text-xs text-amber-600">{{ __('Pending') }}</span>
                                     @endcan

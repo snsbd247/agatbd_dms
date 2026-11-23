@@ -40,7 +40,7 @@
                     <th class="px-4 py-3 text-right">{{ __('MRP') }}</th>
                     <th class="px-4 py-3">{{ __('From') }}</th>
                     <th class="px-4 py-3">{{ __('Status') }}</th>
-                </tr>
+                <th class="px-4 py-3"></th></tr>
             </thead>
             <tbody class="divide-y">
                 @forelse($sheets as $s)
@@ -53,9 +53,15 @@
                         <td class="px-4 py-3 text-right" data-label="{{ __('MRP') }}">{{ number_format($s->mrp, 2) }}</td>
                         <td class="px-4 py-3 text-slate-500" data-label="{{ __('From') }}">{{ $s->effective_from->format('d M Y') }}</td>
                         <td class="px-4 py-3" data-label="{{ __('Status') }}"><span @class(['rounded px-2 py-0.5 text-xs font-medium', 'bg-amber-100 text-amber-800' => $s->status === 'draft', 'bg-sky-100 text-sky-800' => $s->status === 'approved', 'bg-emerald-100 text-emerald-800' => $s->status === 'applied', 'bg-slate-100 text-slate-500' => in_array($s->status, ['superseded', 'rejected'], true)])>{{ $s->statusLabel() }}</span></td>
-                    </tr>
+                        <td class="px-4 py-3 text-right whitespace-nowrap" data-actions>
+                    <div class="inline-flex gap-1">
+                        <x-icon-action :href="route('costing.sheets.show', $s)" icon="eye" color="blue" label="View" />
+                        <x-icon-action :href="route('costing.sheets.pdf', $s)" target="_blank" onclick="event.stopPropagation()" icon="printer" color="green" label="Print" />
+                    </div>
+                </td>
+            </tr>
                 @empty
-                    <tr><td colspan="8" class="px-4 py-10 text-center text-slate-400">{{ __('No cost sheets yet.') }}</td></tr>
+                    <tr><td colspan="9" class="px-4 py-10 text-center text-slate-400">{{ __('No cost sheets yet.') }}</td></tr>
                 @endforelse
             </tbody>
         </table>

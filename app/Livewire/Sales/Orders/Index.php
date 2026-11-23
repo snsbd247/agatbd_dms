@@ -34,6 +34,19 @@ class Index extends Component
         $this->resetPage();
     }
 
+    /** Delete an order that is not approved yet and has nothing delivered or invoiced. */
+    public function delete(int $id): void
+    {
+        $this->authorize('sales.create');
+        $order = SalesOrder::findOrFail($id);
+        $rep = auth()->user()->representative;
+        abort_if($rep && $order->representative_id !== $rep->id, 403);
+
+        if (! $order->deleteIfEditable()) {
+            session()->flash('error', __('Only a pending order with no delivery or invoice can be deleted. Cancel it instead.'));
+        }
+    }
+
     public function render()
     {
         $orders = SalesOrder::query()

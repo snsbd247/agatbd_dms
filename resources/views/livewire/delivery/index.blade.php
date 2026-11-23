@@ -40,6 +40,7 @@
                     <th class="px-4 py-3">{{ __('Sales Order') }}</th>
                     <th class="px-4 py-3">{{ __('Retailer') }}</th>
                     <th class="px-4 py-3">{{ __('Status') }}</th>
+                    <th class="px-4 py-3"></th>
                 </tr>
             </thead>
             <tbody class="divide-y">
@@ -71,10 +72,18 @@
                         <td class="px-4 py-3 rtable-hide-mobile" data-label="{{ __('Status') }}">
                             <span class="px-2 py-1 rounded-full text-xs bg-green-100 text-green-700">{{ __(ucfirst($note->status)) }}</span>
                         </td>
+                        <td class="px-4 py-3 text-right whitespace-nowrap">
+                            <div class="inline-flex gap-1">
+                                @if($note->salesOrder)
+                                    <x-icon-action :href="route('sales.orders.show', $note->salesOrder)" icon="eye" color="blue" label="View" />
+                                @endif
+                                <x-icon-action :href="route('documents.print', ['delivery-note', $note->id])" target="_blank" icon="printer" color="green" label="Print challan" />
+                            </div>
+                        </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="7" class="px-4 py-8 text-center text-slate-400">{{ __('No deliveries yet.') }}</td>
+                        <td colspan="8" class="px-4 py-8 text-center text-slate-400">{{ __('No deliveries yet.') }}</td>
                     </tr>
                 @endforelse
             </tbody>

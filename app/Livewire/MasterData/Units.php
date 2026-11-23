@@ -13,6 +13,8 @@ use Livewire\WithPagination;
 #[Title('Units')]
 class Units extends Component
 {
+    use \App\Livewire\Concerns\DeletesSafely;
+
     use WithPagination;
 
     public bool $showModal = false;
@@ -85,7 +87,7 @@ class Units extends Component
     public function delete(int $id): void
     {
         $this->authorize('master-data.manage');
-        Unit::findOrFail($id)->delete();
+        $this->deleteSafely(Unit::findOrFail($id));
     }
 
     public function addConversion(): void

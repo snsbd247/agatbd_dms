@@ -37,7 +37,7 @@
                     <th class="px-4 py-3">{{ __('Narration') }}</th>
                     <th class="px-4 py-3 text-right">{{ __('Amount') }}</th>
                     <th class="px-4 py-3">{{ __('Status') }}</th>
-                </tr>
+                <th class="px-4 py-3"></th></tr>
             </thead>
             <tbody class="divide-y">
                 @forelse($entries as $e)
@@ -51,9 +51,15 @@
                             <span class="px-2 py-1 rounded-full text-xs {{ $e->status === 'posted' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700' }}">{{ $e->status === 'posted' ? __('Posted') : __('Draft') }}</span>
                             @if($e->reversal_of_id)<span class="ml-1 text-xs text-slate-400">{{ __('reversal') }}</span>@endif
                         </td>
-                    </tr>
+                        <td class="px-4 py-3 text-right whitespace-nowrap" data-actions>
+                    <div class="inline-flex gap-1">
+                        <x-icon-action :href="route('accounts.vouchers.show', $e)" icon="eye" color="blue" label="View" />
+                        <x-icon-action :href="route('accounts.vouchers.pdf', $e)" target="_blank" icon="printer" color="green" label="Print" />
+                    </div>
+                </td>
+            </tr>
                 @empty
-                    <tr><td colspan="6" class="px-4 py-8 text-center text-slate-400">{{ __('No vouchers in this period.') }}</td></tr>
+                    <tr><td colspan="7" class="px-4 py-8 text-center text-slate-400">{{ __('No vouchers in this period.') }}</td></tr>
                 @endforelse
             </tbody>
         </table>

@@ -30,10 +30,28 @@ class Create extends Component
     public string $productSearch = '';
     public ?int $categoryId = null;
 
-    public function mount(): void
+    /** Set when editing an order that is still pending or on credit hold. */
+    public ?int $editingId = null;
+
+    public function mount(?SalesOrder $salesOrder = null): void
     {
         $this->authorize('sales.create');
         $this->order_date = today()->toDateString();
+
+        if ($salesOrder?->exists) {
+            abort_unless($salesOrder->isEditable(), 403, __('Only a pending order can be changed.'));
+            $this->editingId = $salesOrder->id;
+            $this->retailer_id = $salesOrder->retailer_id;
+            $this->warehouse_id = $salesOrder->warehouse_id;
+            $this->order_date = $salesOrder->order_date->toDateString();
+            $this->items = $salesOrder->items->map(fn ($i) => [
+                'product_id' => $i->product_id,
+                'quantity' => (float) $i->quantity,
+                'unit_price' => (string) $i->unit_price,
+            ])->all();
+
+            return;
+        }
 
         // e.g. "New order for this dealer" on the dealer page
         if ($preset = request()->integer('retailer')) {
@@ -119,7 +137,14 @@ class Create extends Component
 
         $representative = Auth::user()->representative;
 
-        $order = DB::transaction(function () use ($data, $numbers, $representative) {
+        $editing = $this->editingId ? SalesOrder::findOrFail($this->editingId) : null;
+        if ($editing && ! $editing->isEditable()) {
+            $this->addError('items', __('This order can no longer be changed.'));
+
+            return;
+        }
+
+        $order = DB::transaction(function () use ($data, $numbers, $representative, $editing) {
             $retailer = Retailer::findOrFail($data['retailer_id']);
 
             $total = 0;
@@ -131,6 +156,31 @@ class Create extends Component
             }
 
             $status = ($retailer->current_due + $total) > $retailer->credit_limit ? 'credit_hold' : 'pending';
+
+            if ($editing) {
+                // Keep an approver's discount, but never more than the new subtotal.
+                $discount = min((float) $editing->discount, $total);
+                $editing->update([
+                    'retailer_id' => $retailer->id,
+                    'warehouse_id' => $data['warehouse_id'],
+                    'status' => $status,
+                    'order_date' => $data['order_date'],
+                    'subtotal' => $total,
+                    'discount' => $discount,
+                    'grand_total' => round($total - $discount, 2),
+                ]);
+                $editing->items()->delete();
+                foreach ($data['items'] as $index => $item) {
+                    SalesOrderItem::create([
+                        'sales_order_id' => $editing->id,
+                        'product_id' => $item['product_id'],
+                        'quantity' => $item['quantity'],
+                        'unit_price' => $this->items[$index]['unit_price'],
+                    ]);
+                }
+
+                return $editing;
+            }
 
             $order = SalesOrder::create([
                 'number' => $numbers->generate('sales_order'),
@@ -157,7 +207,7 @@ class Create extends Component
             return $order;
         });
 
-        if (in_array($order->status, ['pending', 'credit_hold'], true)) {
+        if (! $editing && in_array($order->status, ['pending', 'credit_hold'], true)) {
             $recipients = \App\Support\Staff::approvers(\App\Support\Staff::dealerOfRetailer($order->retailer_id), 'sales_order_pending');
             Notification::send($recipients, new SalesOrderPending($order));
         }
@@ -193,6 +243,7 @@ class Create extends Component
             ->limit(60)
             ->get();
 
+
         return view('livewire.sales.orders.create', [
             'retailers' => $retailers,
             'warehouses' => Warehouse::where('active', true)->whereNotIn('purpose', ['damage', 'raw_material'])
@@ -204,6 +255,6 @@ class Create extends Component
             'products' => $products,
             'customer' => $this->customer(),
             'cartProducts' => Product::whereIn('id', collect($this->items)->pluck('product_id')->filter())->get()->keyBy('id'),
-        ]);
+        ])->title($this->editingId ? 'Edit Sales Order' : 'New Sales Order');
     }
 }

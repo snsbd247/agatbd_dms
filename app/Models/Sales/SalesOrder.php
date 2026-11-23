@@ -59,6 +59,28 @@ class SalesOrder extends Model
         return $this->hasMany(SalesOrderItem::class);
     }
 
+    /** Not approved yet and nothing delivered or invoiced: the order can be changed or deleted. */
+    public function isEditable(): bool
+    {
+        return in_array($this->status, ['pending', 'credit_hold'], true)
+            && ! $this->deliveryNotes()->exists()
+            && ! $this->invoices()->exists();
+    }
+
+    /** Delete an order that is still editable, with its lines. */
+    public function deleteIfEditable(): bool
+    {
+        if (! $this->isEditable()) {
+            return false;
+        }
+        \Illuminate\Support\Facades\DB::transaction(function () {
+            $this->items()->delete();
+            $this->delete();
+        });
+
+        return true;
+    }
+
     public function invoices()
     {
         return $this->hasMany(SalesInvoice::class);

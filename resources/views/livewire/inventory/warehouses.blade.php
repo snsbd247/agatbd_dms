@@ -1,4 +1,5 @@
 <div>
+    <x-flash />
     <div class="grid grid-cols-3 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-4">
         <x-stat-card icon="archive-box" color="blue" label="Total Warehouses" :value="$summary['total']" />
         <x-stat-card icon="shield-check" color="green" label="Active" :value="$summary['active']" />

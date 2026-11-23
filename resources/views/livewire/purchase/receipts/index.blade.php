@@ -1,4 +1,5 @@
 <div>
+    <x-flash />
     <div class="hidden sm:grid grid-cols-2 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-4">
         <x-stat-card icon="archive-box" color="blue" label="Total Receipts" :value="$summary['total']" />
         <x-stat-card icon="banknotes" color="green" label="Total Value" :value="'৳ '.number_format($summary['total_value'], 2)" />
@@ -59,6 +60,7 @@
                     <th class="px-4 py-3 rtable-hide-mobile">{{ __('Warehouse') }}</th>
                     <th class="px-4 py-3">{{ __('Purchase Order') }}</th>
                     <th class="px-4 py-3 rtable-hide-mobile">{{ __('Total') }}</th>
+                    <th class="px-4 py-3"></th>
                 </tr>
             </thead>
             <tbody class="divide-y">
@@ -94,10 +96,23 @@
                             @endif
                         </td>
                         <td class="px-4 py-3 rtable-hide-mobile" data-label="{{ __('Total') }}">{{ number_format($receipt->total_amount, 2) }}</td>
+                        <td class="px-4 py-3 text-right whitespace-nowrap">
+                            <div class="inline-flex gap-1">
+                                @if($receipt->purchaseOrder)
+                                    <x-icon-action :href="route('purchase.orders.show', $receipt->purchaseOrder)" icon="eye" color="blue" label="View" />
+                                @endif
+                                <x-icon-action :href="route('documents.print', ['goods-receipt', $receipt->id])" target="_blank" icon="printer" color="green" label="Print" />
+                                @can('accounts.manage')
+                                    @can('purchase.manage')
+                                        <x-icon-action x-on:click="let r = prompt(@js(__('Why is this receipt being voided? The stock comes out and the supplier payable is reversed.'))); if (r && r.trim()) $wire.void({{ $receipt->id }}, r.trim())" icon="x-circle" color="red" label="Void" />
+                                    @endcan
+                                @endcan
+                            </div>
+                        </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6" class="px-4 py-8 text-center text-slate-400">{{ __('No goods receipts yet.') }}</td>
+                        <td colspan="7" class="px-4 py-8 text-center text-slate-400">{{ __('No goods receipts yet.') }}</td>
                     </tr>
                 @endforelse
             </tbody>

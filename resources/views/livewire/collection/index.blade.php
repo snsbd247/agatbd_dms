@@ -1,4 +1,5 @@
 <div>
+    <x-flash />
     {{-- Mobile-only: hero card + collection rate --}}
     <div class="sm:hidden mb-4">
         <div class="bg-blue-600 text-white rounded-2xl p-4 mb-3 flex items-center justify-between">
@@ -90,16 +91,17 @@
                         <td class="px-4 py-3 text-slate-500 capitalize rtable-hide-mobile" data-label="{{ __('Method') }}">{{ $collection->method }}</td>
                         <td class="px-4 py-3 rtable-hide-mobile" data-label="{{ __('Amount') }}">{{ number_format($collection->amount, 2) }}</td>
                         <td class="px-4 py-3 text-right whitespace-nowrap">
-                            <a href="{{ route('collection.receipt', $collection) }}" target="_blank">
-                                <x-icon-action icon="printer" color="amber" label="Money Receipt" />
-                            </a>
-                            @can('retailers.view')
-                                @if($collection->retailer)
-                                    <a href="{{ route('retailers.ledger', $collection->retailer) }}">
-                                        <x-icon-action icon="eye" color="blue" label="View Ledger" />
-                                    </a>
-                                @endif
-                            @endcan
+                            <div class="inline-flex gap-1">
+                                @can('retailers.view')
+                                    @if($collection->retailer)
+                                        <x-icon-action :href="route('retailers.ledger', $collection->retailer)" icon="eye" color="blue" label="View Ledger" />
+                                    @endif
+                                @endcan
+                                <x-icon-action :href="route('collection.receipt', $collection)" target="_blank" icon="printer" color="green" label="Money Receipt" />
+                                @can('accounts.manage')
+                                    <x-icon-action x-on:click="let r = prompt(@js(__('Why is this collection being voided? The customer will owe this amount again.'))); if (r && r.trim()) $wire.void({{ $collection->id }}, r.trim())" icon="x-circle" color="red" label="Void" />
+                                @endcan
+                            </div>
                         </td>
                     </tr>
                 @empty

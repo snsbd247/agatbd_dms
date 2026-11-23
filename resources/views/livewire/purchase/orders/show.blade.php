@@ -1,7 +1,19 @@
 <div class="max-w-4xl">
-    <a href="{{ route('purchase.orders.index') }}" class="flex items-center gap-1.5 text-sm text-slate-500 hover:text-indigo-600 mb-4">
-        <x-icon name="chevron-left" class="w-4 h-4" /> {{ __('Back to Purchase Orders') }}
-    </a>
+    <div class="flex items-center justify-between gap-3 mb-4">
+        <a href="{{ route('purchase.orders.index') }}" class="flex items-center gap-1.5 text-sm text-slate-500 hover:text-indigo-600">
+            <x-icon name="chevron-left" class="w-4 h-4" /> {{ __('Back to Purchase Orders') }}
+        </a>
+        <div class="flex gap-1">
+            @if($purchaseOrder->isEditable())
+                @can('purchase.manage')
+                    <x-icon-action :href="route('purchase.orders.edit', $purchaseOrder)" icon="pencil" color="amber" label="Edit" />
+                    <x-icon-action wire:click="delete" wire:confirm="{{ __('Delete this order?') }}" icon="trash" color="red" label="Delete" />
+                @endcan
+            @endif
+            <x-icon-action :href="route('documents.print', ['purchase-order', $purchaseOrder->id])" target="_blank" icon="printer" color="green" label="Print" />
+        </div>
+    </div>
+    <x-flash />
 
     <div class="bg-white rounded-xl shadow p-6 mb-6">
         <div class="flex justify-between items-start gap-4">

@@ -1,7 +1,19 @@
 <div class="max-w-4xl">
-    <a href="{{ route('sales.orders.index') }}" class="flex items-center gap-1.5 text-sm text-slate-500 hover:text-indigo-600 mb-4">
-        <x-icon name="chevron-left" class="w-4 h-4" /> {{ __('Back to Sales Orders') }}
-    </a>
+    <div class="flex items-center justify-between gap-3 mb-4">
+        <a href="{{ route('sales.orders.index') }}" class="flex items-center gap-1.5 text-sm text-slate-500 hover:text-indigo-600">
+            <x-icon name="chevron-left" class="w-4 h-4" /> {{ __('Back to Sales Orders') }}
+        </a>
+        <div class="flex gap-1">
+            @if($salesOrder->isEditable())
+                @can('sales.create')
+                    <x-icon-action :href="route('sales.orders.edit', $salesOrder)" icon="pencil" color="amber" label="Edit" />
+                    <x-icon-action wire:click="delete" wire:confirm="{{ __('Delete this order?') }}" icon="trash" color="red" label="Delete" />
+                @endcan
+            @endif
+            <x-icon-action :href="route('documents.print', ['sales-order', $salesOrder->id])" target="_blank" icon="printer" color="green" label="Print" />
+        </div>
+    </div>
+    <x-flash />
 
     @if($salesOrder->status === 'credit_hold')
         <div class="bg-red-50 border border-red-200 text-red-800 rounded-xl p-4 mb-6">

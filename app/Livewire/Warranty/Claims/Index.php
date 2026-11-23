@@ -34,6 +34,21 @@ class Index extends Component
         $this->resetPage();
     }
 
+    /** Delete a claim that has not been decided yet. */
+    public function delete(int $id): void
+    {
+        $this->authorize('warranty.manage');
+        $c = \App\Models\Warranty\WarrantyClaim::findOrFail($id);
+        if ($c->status !== 'pending') {
+            session()->flash('error', __('Only a pending warranty claim can be deleted.'));
+
+            return;
+        }
+        \Illuminate\Support\Facades\DB::transaction(function () use ($c) {
+            $c->tracking()->delete();
+            $c->delete();
+        });
+    }
     public function render()
     {
         $claims = WarrantyClaim::query()

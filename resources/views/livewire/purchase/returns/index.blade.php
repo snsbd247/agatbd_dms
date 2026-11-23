@@ -1,4 +1,5 @@
 <div>
+    <x-flash />
     <div class="hidden sm:grid grid-cols-2 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-4">
         <x-stat-card icon="archive-box" color="blue" label="Total Purchase Returns" :value="$summary['total']" />
         <x-stat-card icon="clock" color="orange" label="Draft" :value="$summary['draft']" />
@@ -90,10 +91,11 @@
                                 'bg-green-100 text-green-700' => $purchaseReturn->status === 'completed',
                             ])>{{ __(ucfirst($purchaseReturn->status)) }}</span>
                         </td>
-                        <td class="px-4 py-3 text-right">
-                            <a href="{{ route('purchase.returns.show', $purchaseReturn) }}">
-                                <x-icon-action icon="eye" color="blue" label="View" />
-                            </a>
+                        <td class="px-4 py-3 text-right whitespace-nowrap">
+                            <div class="inline-flex gap-1">
+                                <x-icon-action :href="route('purchase.returns.show', $purchaseReturn)" icon="eye" color="blue" label="View" />
+                                <x-icon-action :href="route('documents.print', ['purchase-return', $purchaseReturn->id])" target="_blank" icon="printer" color="green" label="Print" />
+                            </div>
                         </td>
                     </tr>
                 @empty

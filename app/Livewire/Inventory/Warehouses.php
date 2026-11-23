@@ -12,6 +12,8 @@ use Livewire\WithPagination;
 #[Title('Warehouses')]
 class Warehouses extends Component
 {
+    use \App\Livewire\Concerns\DeletesSafely;
+
     use WithPagination;
 
     public bool $showModal = false;
@@ -91,7 +93,7 @@ class Warehouses extends Component
     public function delete(int $id): void
     {
         $this->authorize('inventory.manage');
-        Warehouse::findOrFail($id)->delete();
+        $this->deleteSafely(Warehouse::findOrFail($id));
     }
 
     public function resetForm(): void

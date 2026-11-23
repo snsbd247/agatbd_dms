@@ -16,6 +16,8 @@ use Livewire\WithPagination;
 #[Title('Retailers')]
 class Index extends Component
 {
+    use \App\Livewire\Concerns\DeletesSafely;
+
     use WithPagination;
 
     public string $search = '';
@@ -136,7 +138,7 @@ class Index extends Component
     public function delete(int $id): void
     {
         $this->authorize('retailers.manage');
-        Retailer::findOrFail($id)->delete();
+        $this->deleteSafely(Retailer::findOrFail($id));
     }
 
     public function resetForm(): void

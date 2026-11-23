@@ -35,6 +35,22 @@ class Index extends Component
         $this->resetPage();
     }
 
+    /** Cancel a collection: the customer owes it again and its voucher is reversed. */
+    public function void(int $id, string $reason): void
+    {
+        $this->authorize('accounts.manage');
+        $collection = \App\Models\PaymentCollection::findOrFail($id);
+
+        try {
+            app(\App\Services\VoidService::class)->collection($collection, mb_substr(trim($reason), 0, 250));
+        } catch (\RuntimeException $e) {
+            session()->flash('error', $e->getMessage());
+
+            return;
+        }
+        session()->flash('success', __('Collection :n voided.', ['n' => $collection->number]));
+    }
+
     public function render()
     {
         $collections = PaymentCollection::query()

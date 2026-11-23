@@ -37,6 +37,18 @@ class Show extends Component
         $this->purchaseOrder->update(['status' => 'cancelled']);
     }
 
+    public function delete()
+    {
+        $this->authorize('purchase.manage');
+        if (! $this->purchaseOrder->deleteIfEditable()) {
+            session()->flash('error', __('Only a draft or sent order with nothing received can be deleted. Cancel it instead.'));
+
+            return null;
+        }
+
+        return $this->redirect(route('purchase.orders.index'));
+    }
+
     public function render()
     {
         $this->purchaseOrder->load(['company', 'warehouse', 'items.product', 'goodsReceipts']);

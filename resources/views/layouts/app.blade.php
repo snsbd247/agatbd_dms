@@ -190,6 +190,10 @@
 
                     <x-theme-toggle />
 
+                    <button type="button" onclick="window.print()" class="hidden sm:inline-flex text-slate-500 hover:text-slate-900 p-1.5 rounded-lg hover:bg-slate-100" title="{{ __('Print this page') }}">
+                        <x-icon name="printer" class="w-5 h-5" />
+                    </button>
+
                     <button type="button" onclick="window.location.reload()" class="hidden sm:inline-flex text-slate-500 hover:text-slate-900 p-1.5 rounded-lg hover:bg-slate-100" title="{{ __('Refresh') }}">
                         <x-icon name="refresh" class="w-5 h-5" />
                     </button>
@@ -252,6 +256,7 @@
                 </div>
             </header>
             <main class="flex-1 p-4 sm:p-6 max-w-7xl w-full mx-auto pb-safe-nav lg:pb-6">
+                <div class="print-only mb-3 border-b pb-2"><p class="text-lg font-bold">{{ \App\Support\Brand::name() }}</p><p class="text-sm">{{ isset($title) ? __($title) : '' }} · {{ __('Printed') }} {{ now()->format('d M Y H:i') }}</p></div>
                 {{ $slot }}
             </main>
         </div>

@@ -12,6 +12,8 @@ use Livewire\WithPagination;
 #[Title('Categories')]
 class Categories extends Component
 {
+    use \App\Livewire\Concerns\DeletesSafely;
+
     use WithPagination;
 
     public bool $showModal = false;
@@ -83,7 +85,7 @@ class Categories extends Component
     public function delete(int $id): void
     {
         $this->authorize('master-data.manage');
-        Category::findOrFail($id)->delete();
+        $this->deleteSafely(Category::findOrFail($id));
     }
 
     public function resetForm(): void

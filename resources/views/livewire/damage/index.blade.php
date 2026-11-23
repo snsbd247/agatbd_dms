@@ -39,7 +39,7 @@
                     <th class="px-4 py-3 text-right">{{ __('Value') }}</th>
                     <th class="px-4 py-3">{{ __('Status') }}</th>
                     <th class="px-4 py-3"></th>
-                </tr>
+                <th class="px-4 py-3"></th></tr>
             </thead>
             <tbody class="divide-y">
                 @forelse($records as $r)
@@ -59,9 +59,15 @@
                                 @endcan
                             @endif
                         </td>
-                    </tr>
+                        <td class="px-4 py-3 text-right whitespace-nowrap" data-actions>
+                    <div class="inline-flex gap-1">
+                        <x-icon-action :href="route('damage.show', $r)" icon="eye" color="blue" label="View" />
+                        <x-icon-action :href="route('documents.print', ['damage', $r->id])" target="_blank" icon="printer" color="green" label="Print" />
+                    </div>
+                </td>
+            </tr>
                 @empty
-                    <tr><td colspan="8" class="px-4 py-8 text-center text-slate-400">{{ __('No damage recorded.') }}</td></tr>
+                    <tr><td colspan="9" class="px-4 py-8 text-center text-slate-400">{{ __('No damage recorded.') }}</td></tr>
                 @endforelse
             </tbody>
         </table>
