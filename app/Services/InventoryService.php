@@ -284,6 +284,35 @@ class InventoryService
         });
     }
 
+    /** Put a quantity back into one particular batch (undoing a move). */
+    public function returnToBatch(int $batchId, float $quantity, Model $reference): Batch
+    {
+        return DB::transaction(function () use ($batchId, $quantity, $reference) {
+            $batch = Batch::query()->whereKey($batchId)->lockForUpdate()->firstOrFail();
+            $batch->increment('quantity_available', $quantity);
+
+            $stock = Stock::firstOrCreate(
+                ['warehouse_id' => $batch->warehouse_id, 'product_id' => $batch->product_id],
+                ['quantity' => 0]
+            );
+            $stock = Stock::query()->whereKey($stock->id)->lockForUpdate()->first();
+            $stock->increment('quantity', $quantity);
+
+            StockLedger::create([
+                'product_id' => $batch->product_id,
+                'warehouse_id' => $batch->warehouse_id,
+                'batch_id' => $batch->id,
+                'type' => 'in',
+                'quantity' => $quantity,
+                'reference_type' => $reference->getMorphClass(),
+                'reference_id' => $reference->getKey(),
+                'balance_after' => $stock->quantity,
+            ]);
+
+            return $batch;
+        });
+    }
+
     /** Take a quantity out of one particular batch (not FIFO). */
     public function takeFromBatch(int $batchId, float $quantity, Model $reference, ?string $error = null): Batch
     {

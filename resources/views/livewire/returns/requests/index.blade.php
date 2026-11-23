@@ -91,6 +91,7 @@
                                 <x-icon-action :href="route('documents.print', ['return-request', $request->id])" target="_blank" icon="printer" color="green" label="Print" />
                                 @if($request->status === 'pending')
                                     @can('returns.create')
+                                        <x-icon-action :href="route('returns.edit', $request)" icon="pencil" color="amber" label="Edit" />
                                         <x-icon-action wire:click="delete({{ $request->id }})" wire:confirm="{{ __('Delete this return request?') }}" icon="trash" color="red" label="Delete" />
                                     @endcan
                                 @endif

@@ -94,6 +94,7 @@
                                 <x-icon-action :href="route('documents.print', ['warranty-claim', $claim->id])" target="_blank" icon="printer" color="green" label="Print" />
                                 @if($claim->status === 'pending')
                                     @can('warranty.manage')
+                                        <x-icon-action :href="route('warranty.edit', $claim)" icon="pencil" color="amber" label="Edit" />
                                         <x-icon-action wire:click="delete({{ $claim->id }})" wire:confirm="{{ __('Delete this warranty claim?') }}" icon="trash" color="red" label="Delete" />
                                     @endcan
                                 @endif

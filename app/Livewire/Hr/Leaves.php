@@ -91,6 +91,29 @@ class Leaves extends Component
         $leave->update(['status' => $decision, 'decided_by' => auth()->id(), 'decided_at' => now()]);
     }
 
+    /**
+     * Cancel an approved leave (the employee came to work after all). Not
+     * once a salary sheet covering it is approved or paid: the pay would
+     * no longer match.
+     */
+    public function cancelLeave(int $id): void
+    {
+        $this->authorize('hr.manage');
+        $leave = LeaveApplication::where('status', 'approved')->findOrFail($id);
+
+        $months = [];
+        for ($m = $leave->from_date->copy()->startOfMonth(); $m->lte($leave->to_date); $m->addMonth()) {
+            $months[] = $m->format('Y-m');
+        }
+        if (\App\Models\Hr\PayrollRun::whereIn('period', $months)->whereIn('status', ['approved', 'paid'])->exists()) {
+            session()->flash('error', __('The salary sheet for this month is already approved, so this leave cannot be cancelled.'));
+
+            return;
+        }
+
+        $leave->update(['status' => 'cancelled', 'decided_by' => auth()->id(), 'decided_at' => now()]);
+    }
+
     /** Delete an application that has not been decided yet. */
     public function delete(int $id): void
     {

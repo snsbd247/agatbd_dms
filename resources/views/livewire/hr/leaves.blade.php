@@ -1,4 +1,5 @@
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <x-flash />
     <div class="lg:col-span-2 space-y-4">
         <div class="flex flex-wrap items-center gap-2">
             @foreach(['pending' => 'Pending', 'approved' => 'Approved', 'rejected' => 'Rejected', '' => 'All'] as $k => $label)
@@ -38,7 +39,12 @@
                                         <span class="text-xs text-amber-600">{{ __('Pending') }}</span>
                                     @endcan
                                 @else
-                                    <span class="px-2 py-1 rounded-full text-xs {{ $l->status === 'approved' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }}">{{ __(ucfirst($l->status)) }}</span>
+                                    <span class="px-2 py-1 rounded-full text-xs {{ $l->status === 'approved' ? 'bg-green-100 text-green-700' : ($l->status === 'cancelled' ? 'bg-slate-100 text-slate-600' : 'bg-red-100 text-red-700') }}">{{ __(ucfirst($l->status)) }}</span>
+                                    @if($l->status === 'approved')
+                                        @can('hr.manage')
+                                            <x-icon-action wire:click="cancelLeave({{ $l->id }})" wire:confirm="{{ __('Cancel this approved leave? The days count as working days again.') }}" icon="x-circle" color="red" label="Cancel leave" class="align-middle ml-1" />
+                                        @endcan
+                                    @endif
                                     <span class="block text-xs text-slate-400 mt-1">{{ $l->decider?->name }}</span>
                                 @endif
                             </td>

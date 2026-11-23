@@ -1,4 +1,5 @@
 <div class="space-y-4">
+    <x-flash />
     @php $q = fn ($v) => rtrim(rtrim(number_format((float) $v, 3, '.', ','), '0'), '.'); @endphp
     <div class="flex justify-between items-center gap-3">
         <p class="text-sm text-slate-500">{{ __('Move batches between your own warehouses. Batch number, expiry and cost go with the stock.') }}</p>
@@ -23,6 +24,9 @@
                     <div class="inline-flex gap-1">
                         <x-icon-action wire:click.stop="$set('viewing', {{ $t->id }})" icon="eye" color="blue" label="View" />
                         <x-icon-action :href="route('documents.print', ['stock-transfer', $t->id])" target="_blank" onclick="event.stopPropagation()" icon="printer" color="green" label="Print" />
+                        @can('inventory.manage')
+                            <x-icon-action x-on:click.stop="let r = prompt(@js(__('Why is this transfer being voided? The stock goes back to the first warehouse.'))); if (r && r.trim()) $wire.void({{ $t->id }}, r.trim())" icon="x-circle" color="red" label="Void" />
+                        @endcan
                     </div>
                 </td>
             </tr>

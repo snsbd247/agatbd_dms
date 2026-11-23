@@ -26,10 +26,23 @@ class Create extends Component
     public string $claim_date;
     public string $issue_description = '';
 
-    public function mount(): void
+    /** Set when editing a claim that is still pending. */
+    public ?int $editingId = null;
+
+    public function mount(?WarrantyClaim $warrantyClaim = null): void
     {
         $this->authorize('warranty.manage');
         $this->claim_date = today()->toDateString();
+
+        if ($warrantyClaim?->exists) {
+            abort_unless($warrantyClaim->status === 'pending', 403, __('Only a pending warranty claim can be changed.'));
+            $this->editingId = $warrantyClaim->id;
+            $this->retailer_id = $warrantyClaim->retailer_id;
+            $this->product_id = $warrantyClaim->product_id;
+            $this->sales_invoice_id = $warrantyClaim->sales_invoice_id;
+            $this->claim_date = $warrantyClaim->claim_date->toDateString();
+            $this->issue_description = (string) $warrantyClaim->issue_description;
+        }
     }
 
     public function save(NumberGeneratorService $numbers): void
@@ -43,6 +56,25 @@ class Create extends Component
             'claim_date' => 'required|date',
             'issue_description' => 'nullable|string|max:1000',
         ]);
+
+        if ($this->editingId) {
+            $claim = WarrantyClaim::findOrFail($this->editingId);
+            if ($claim->status !== 'pending') {
+                $this->addError('issue_description', __('This claim can no longer be changed.'));
+
+                return;
+            }
+            $claim->update([
+                'retailer_id' => $data['retailer_id'],
+                'product_id' => $data['product_id'],
+                'sales_invoice_id' => $data['sales_invoice_id'] ?: null,
+                'claim_date' => $data['claim_date'],
+                'issue_description' => $data['issue_description'] ?: null,
+            ]);
+            $this->redirect(route('warranty.show', $claim), navigate: false);
+
+            return;
+        }
 
         $claim = WarrantyClaim::create([
             'number' => $numbers->generate('warranty_claim'),
@@ -83,6 +115,6 @@ class Create extends Component
             'products' => Product::orderBy('name')->get(),
             'invoices' => $invoices,
             'policy' => $policy,
-        ]);
+        ])->title($this->editingId ? 'Edit Warranty Claim' : 'New Warranty Claim');
     }
 }

@@ -306,6 +306,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/company-returns', CompanyReturnIndex::class)->name('company.index');
         Route::get('/company-returns/{companyReturn}', CompanyReturnShow::class)->name('company.show');
         Route::get('/{returnRequest}', ReturnRequestShow::class)->name('show');
+        Route::get('/{returnRequest}/edit', ReturnRequestCreate::class)->middleware('can:returns.create')->name('edit');
         Route::get('/{returnRequest}/receive', ReturnReceiveCreate::class)->middleware('can:returns.manage')->name('receive');
     });
 
@@ -313,6 +314,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/', WarrantyClaimIndex::class)->name('index');
         Route::get('/create', WarrantyClaimCreate::class)->middleware('can:warranty.manage')->name('create');
         Route::get('/{warrantyClaim}', WarrantyClaimShow::class)->name('show');
+        Route::get('/{warrantyClaim}/edit', WarrantyClaimCreate::class)->middleware('can:warranty.manage')->name('edit');
     });
 
     Route::middleware('can:reports.view')->prefix('reports')->name('reports.')->group(function () {

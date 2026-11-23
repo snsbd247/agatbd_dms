@@ -138,6 +138,28 @@ class VoidService
         });
     }
 
+    /** A stock transfer, while the moved stock is still in the receiving warehouse. */
+    public function transfer(\App\Models\Production\StockTransfer $t, string $reason): void
+    {
+        $t->load('items');
+        foreach ($t->items as $item) {
+            $arrived = Batch::find($item->to_batch_id);
+            if (! $arrived || bccomp((string) $arrived->quantity_available, (string) $item->quantity, 3) < 0) {
+                throw new \RuntimeException(__('Some of the moved stock has already been sold or moved on. Transfer it back instead.'));
+            }
+        }
+
+        DB::transaction(function () use ($t, $reason) {
+            foreach ($t->items as $item) {
+                $this->inventory->takeFromBatch($item->to_batch_id, (float) $item->quantity, $t);
+                $this->inventory->returnToBatch($item->batch_id, (float) $item->quantity, $t);
+            }
+            $this->log('stock_transfer', $t, $reason);
+            $t->items()->delete();
+            $t->delete();
+        });
+    }
+
     /** Delete a record that has auto-posted vouchers: the vouchers are reversed first. */
     public function deleteWithReversal(Model $record, string $type, string $reason): void
     {

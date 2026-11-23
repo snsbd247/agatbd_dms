@@ -42,4 +42,10 @@ class ReturnRequest extends Model
     {
         return $this->hasMany(ReturnReceive::class);
     }
+
+    /** Still pending and nothing received: can be changed or deleted. */
+    public function isEditable(): bool
+    {
+        return $this->status === 'pending' && ! $this->receives()->exists();
+    }
 }

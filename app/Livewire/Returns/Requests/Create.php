@@ -28,10 +28,27 @@ class Create extends Component
         ['product_id' => '', 'quantity' => 1, 'unit_price' => '0.00', 'reason' => ''],
     ];
 
-    public function mount(): void
+    /** Set when editing a request that is still pending. */
+    public ?int $editingId = null;
+
+    public function mount(?ReturnRequest $returnRequest = null): void
     {
         $this->authorize('returns.create');
         $this->request_date = today()->toDateString();
+
+        if ($returnRequest?->exists) {
+            abort_unless($returnRequest->isEditable(), 403, __('Only a pending return request can be changed.'));
+            $this->editingId = $returnRequest->id;
+            $this->retailer_id = $returnRequest->retailer_id;
+            $this->request_date = $returnRequest->request_date->toDateString();
+            $this->reason = (string) $returnRequest->reason;
+            $this->items = $returnRequest->items->map(fn ($i) => [
+                'product_id' => $i->product_id,
+                'quantity' => (float) $i->quantity,
+                'unit_price' => (string) $i->unit_price,
+                'reason' => (string) $i->reason,
+            ])->all();
+        }
     }
 
     public function updatedItems($value, $key): void
@@ -67,7 +84,34 @@ class Create extends Component
             'items.*.quantity' => 'required|numeric|min:0.001',
         ]);
 
-        $request = DB::transaction(function () use ($data, $numbers) {
+        $editing = $this->editingId ? ReturnRequest::findOrFail($this->editingId) : null;
+        if ($editing && ! $editing->isEditable()) {
+            $this->addError('items', __('This request can no longer be changed.'));
+
+            return;
+        }
+
+        $request = DB::transaction(function () use ($data, $numbers, $editing) {
+            if ($editing) {
+                $editing->update([
+                    'retailer_id' => $data['retailer_id'],
+                    'request_date' => $data['request_date'],
+                    'reason' => $data['reason'] ?: null,
+                ]);
+                $editing->items()->delete();
+                foreach ($data['items'] as $index => $item) {
+                    ReturnRequestItem::create([
+                        'return_request_id' => $editing->id,
+                        'product_id' => $item['product_id'],
+                        'quantity' => $item['quantity'],
+                        'unit_price' => $this->items[$index]['unit_price'],
+                        'reason' => $item['reason'] ?? null,
+                    ]);
+                }
+
+                return $editing;
+            }
+
             $request = ReturnRequest::create([
                 'number' => $numbers->generate('return_request'),
                 'retailer_id' => $data['retailer_id'],
@@ -90,8 +134,10 @@ class Create extends Component
             return $request;
         });
 
-        $recipients = \App\Support\Staff::approvers(\App\Support\Staff::dealerOfRetailer($request->retailer_id), 'return_request_pending');
-        Notification::send($recipients, new ReturnRequestPending($request));
+        if (! $editing) {
+            $recipients = \App\Support\Staff::approvers(\App\Support\Staff::dealerOfRetailer($request->retailer_id), 'return_request_pending');
+            Notification::send($recipients, new ReturnRequestPending($request));
+        }
 
         $this->redirect(route('returns.show', $request), navigate: false);
     }
@@ -108,6 +154,6 @@ class Create extends Component
         return view('livewire.returns.requests.create', [
             'retailers' => $retailers,
             'products' => Product::orderBy('name')->get(),
-        ]);
+        ])->title($this->editingId ? 'Edit Return Request' : 'New Return Request');
     }
 }

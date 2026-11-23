@@ -275,4 +275,63 @@ class ActionButtonsTest extends TestCase
             $this->get(route($r))->assertOk();
         }
     }
+
+    public function test_pending_return_requests_and_warranty_claims_can_be_edited(): void
+    {
+        $p = $this->product();
+        $r = $this->retailer();
+        Livewire::test(\App\Livewire\Returns\Requests\Create::class)
+            ->set('retailer_id', $r->id)->set('items', [['product_id' => $p->id, 'quantity' => 2, 'unit_price' => '100', 'reason' => '']])
+            ->call('save')->assertHasNoErrors();
+        $req = \App\Models\Returns\ReturnRequest::first();
+
+        Livewire::test(\App\Livewire\Returns\Requests\Create::class, ['returnRequest' => $req])
+            ->assertSet('editingId', $req->id)->set('items.0.quantity', 5)->call('save')->assertHasNoErrors();
+        $this->assertSame(5.0, (float) $req->items()->value('quantity'));
+        $this->assertSame(1, \App\Models\Returns\ReturnRequest::count());
+
+        $req->update(['status' => 'approved']);
+        $this->get(route('returns.edit', $req))->assertForbidden();
+
+        Livewire::test(\App\Livewire\Warranty\Claims\Create::class)
+            ->set('retailer_id', $r->id)->set('product_id', $p->id)->set('issue_description', 'Leaks')->call('save')->assertHasNoErrors();
+        $claim = \App\Models\Warranty\WarrantyClaim::first();
+        Livewire::test(\App\Livewire\Warranty\Claims\Create::class, ['warrantyClaim' => $claim])
+            ->set('issue_description', 'Leaks at the valve')->call('save')->assertHasNoErrors();
+        $this->assertSame('Leaks at the valve', $claim->fresh()->issue_description);
+        $this->assertSame(1, \App\Models\Warranty\WarrantyClaim::count());
+    }
+
+    public function test_voiding_a_transfer_puts_the_stock_back(): void
+    {
+        $p = $this->product();
+        $a = $this->warehouse();
+        $b = \App\Models\Warehouse::create(['name' => 'Second', 'type' => 'branch', 'active' => true]);
+        $this->receive($p, 10, 'T1');
+        $batch = \App\Models\Batch::where('batch_no', 'T1')->first();
+        $t = app(\App\Services\Production\StockTransferService::class)->create($a->id, $b->id, today()->toDateString(), [['batch_id' => $batch->id, 'quantity' => 4]]);
+        $this->assertSame(6.0, (float) $batch->fresh()->quantity_available);
+
+        Livewire::test(\App\Livewire\Production\Transfers::class)->call('void', $t->id, 'Wrong store');
+
+        $this->assertNull($t->fresh());
+        $this->assertSame(10.0, (float) $batch->fresh()->quantity_available);
+        $this->assertSame(10.0, (float) \App\Models\Stock::where('warehouse_id', $a->id)->value('quantity'));
+        $this->assertSame(0.0, (float) \App\Models\Stock::where('warehouse_id', $b->id)->value('quantity'));
+    }
+
+    public function test_an_approved_leave_can_be_cancelled_until_the_salary_sheet_is_approved(): void
+    {
+        $e = \App\Models\Hr\Employee::create(['employee_code' => 'L-1', 'name' => 'Worker', 'join_date' => '2025-01-01', 'category' => 'factory', 'basic' => 9000]);
+        $type = \App\Models\Hr\LeaveType::query()->value('id');
+        $leave = \App\Models\Hr\LeaveApplication::create(['employee_id' => $e->id, 'leave_type_id' => $type, 'from_date' => '2026-10-05', 'to_date' => '2026-10-06', 'days' => 2, 'status' => 'approved']);
+        $other = \App\Models\Hr\LeaveApplication::create(['employee_id' => $e->id, 'leave_type_id' => $type, 'from_date' => '2026-09-05', 'to_date' => '2026-09-05', 'days' => 1, 'status' => 'approved']);
+        \App\Models\Hr\PayrollRun::create(['number' => 'SAL-1', 'period' => '2026-09', 'status' => 'approved']);
+
+        Livewire::test(\App\Livewire\Hr\Leaves::class)->call('cancelLeave', $leave->id);
+        $this->assertSame('cancelled', $leave->fresh()->status);
+
+        Livewire::test(\App\Livewire\Hr\Leaves::class)->call('cancelLeave', $other->id)->assertSee('already approved');
+        $this->assertSame('approved', $other->fresh()->status);
+    }
 }

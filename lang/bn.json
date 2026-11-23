@@ -2407,5 +2407,17 @@
     "No items.": "কোনো আইটেম নেই।",
     "This record is already used in transactions, so it cannot be deleted. Mark it inactive instead.": "এই রেকর্ড লেনদেনে ব্যবহার হয়েছে, তাই মোছা যাবে না। এর বদলে নিষ্ক্রিয় করুন।",
     "Edit Sales Order": "বিক্রয় অর্ডার সম্পাদনা",
-    "Edit Purchase Order": "ক্রয় অর্ডার সম্পাদনা"
+    "Edit Purchase Order": "ক্রয় অর্ডার সম্পাদনা",
+    "Only a pending return request can be changed.": "শুধু অপেক্ষমাণ ফেরত অনুরোধ বদলানো যায়।",
+    "This request can no longer be changed.": "এই অনুরোধ আর বদলানো যাবে না।",
+    "Edit Return Request": "ফেরত অনুরোধ সম্পাদনা",
+    "Only a pending warranty claim can be changed.": "শুধু অপেক্ষমাণ ওয়ারেন্টি দাবি বদলানো যায়।",
+    "This claim can no longer be changed.": "এই দাবি আর বদলানো যাবে না।",
+    "Edit Warranty Claim": "ওয়ারেন্টি দাবি সম্পাদনা",
+    "Some of the moved stock has already been sold or moved on. Transfer it back instead.": "স্থানান্তরিত মজুদের কিছু অংশ বিক্রি বা আবার সরানো হয়েছে। এর বদলে ফিরতি স্থানান্তর করুন।",
+    "Transfer voided. The stock is back where it came from.": "স্থানান্তর বাতিল হয়েছে। মজুদ আগের গুদামে ফিরে গেছে।",
+    "Why is this transfer being voided? The stock goes back to the first warehouse.": "স্থানান্তরটি কেন বাতিল করছেন? মজুদ আগের গুদামে ফিরে যাবে।",
+    "The salary sheet for this month is already approved, so this leave cannot be cancelled.": "এই মাসের বেতন শিট অনুমোদিত হয়ে গেছে, তাই এই ছুটি বাতিল করা যাবে না।",
+    "Cancel this approved leave? The days count as working days again.": "অনুমোদিত ছুটি বাতিল করবেন? দিনগুলো আবার কর্মদিবস হিসেবে গণ্য হবে।",
+    "Cancel leave": "ছুটি বাতিল"
 }

@@ -76,6 +76,21 @@ class Transfers extends Component
         $this->showModal = false;
     }
 
+    /** Undo a transfer: the stock goes back to the batches it came from. */
+    public function void(int $id, string $reason): void
+    {
+        $this->authorize('inventory.manage');
+
+        try {
+            app(\App\Services\VoidService::class)->transfer(\App\Models\Production\StockTransfer::findOrFail($id), mb_substr(trim($reason), 0, 200));
+        } catch (\RuntimeException $e) {
+            session()->flash('error', $e->getMessage());
+
+            return;
+        }
+        $this->viewing = null;
+        session()->flash('success', __('Transfer voided. The stock is back where it came from.'));
+    }
     public function render()
     {
         $batches = $this->showModal && $this->from_id
