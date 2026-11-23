@@ -286,6 +286,7 @@ Route::middleware('auth')->group(function () {
     Route::middleware('can:collection.view')->prefix('collections')->name('collection.')->group(function () {
         Route::get('/', CollectionIndex::class)->name('index');
         Route::get('/create', CollectionCreate::class)->name('create');
+        Route::get('/cheques', \App\Livewire\Collection\Cheques::class)->name('cheques');
         Route::get('/{collection}/receipt', [DocumentPrintController::class, 'moneyReceipt'])->name('receipt');
     });
 

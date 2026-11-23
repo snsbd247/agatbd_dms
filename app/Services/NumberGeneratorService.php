@@ -37,6 +37,7 @@ class NumberGeneratorService
         'cost_sheet' => 'CS',
         'import_shipment' => 'IMP',
         'assembly_order' => 'ASM',
+        'cheque' => 'CHQ',
     ];
 
     public function generate(string $type): string

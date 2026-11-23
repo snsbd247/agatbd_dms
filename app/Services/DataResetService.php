@@ -34,7 +34,7 @@ class DataResetService
     /** Cleared by both modes. */
     public const TRANSACTIONS = [
         'advances', 'assembly_order_items', 'assembly_orders', 'attendance_punches', 'attendances', 'audit_logs',
-        'batches', 'bonuses', 'collections', 'commissions', 'company_return_items', 'company_returns',
+        'batches', 'bonuses', 'cheques', 'collections', 'commissions', 'company_return_items', 'company_returns',
         'cost_sheet_items', 'cost_sheets', 'damage_actions', 'damage_records', 'delivery_invoice_items',
         'delivery_invoices', 'delivery_note_items', 'delivery_notes', 'employee_loans', 'final_settlements',
         'fiscal_year_closings', 'goods_receipt_items', 'goods_receipts', 'import_costs', 'import_items',

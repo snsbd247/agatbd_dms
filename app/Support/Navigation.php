@@ -39,6 +39,7 @@ class Navigation
                     ['route' => 'delivery.index', 'label' => 'Deliveries', 'icon' => 'truck', 'permission' => 'delivery.view'],
                     ['route' => 'delivery.invoices.index', 'label' => 'Delivery Invoices', 'icon' => 'document-text', 'permission' => 'delivery.view'],
                     ['route' => 'collection.index', 'label' => 'Collections', 'icon' => 'banknotes', 'permission' => 'collection.view'],
+                    ['route' => 'collection.cheques', 'label' => 'Cheques', 'icon' => 'credit-card', 'permission' => 'collection.view'],
                 ]],
                 ['icon' => 'building-storefront', 'label' => 'Customers', 'links' => [
                     ['route' => 'retailers.index', 'label' => 'Retailers', 'icon' => 'building-storefront', 'permission' => 'retailers.view'],

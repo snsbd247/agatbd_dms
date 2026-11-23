@@ -48,20 +48,7 @@ class Create extends Component
             return;
         }
 
-        DB::transaction(function () use ($data, $retailer, $numbers, $allocator) {
-            $collection = PaymentCollection::create([
-                'number' => $numbers->generate('collection'),
-                'retailer_id' => $retailer->id,
-                'collected_by' => Auth::id(),
-                'collection_date' => $data['collection_date'],
-                'amount' => $data['amount'],
-                'method' => $data['method'],
-                'reference_no' => $data['reference_no'] ?: null,
-            ]);
-
-            $allocator->allocate($retailer, (float) $data['amount'], $collection);
-            app(\App\Services\Accounts\AutoPosting::class)->collection($collection);
-        });
+        app(\App\Services\CollectionService::class)->record($retailer, (float) $data['amount'], $data['method'], $data['collection_date'], $data['reference_no'] ?: null);
 
         $retailer->refresh();
         app(\App\Services\SmsService::class)->send(
